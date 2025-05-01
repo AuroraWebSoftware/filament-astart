@@ -2,6 +2,8 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
+use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
+use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -13,8 +15,6 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
-use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 
 class FilamentAstartServiceProvider extends PackageServiceProvider
 {
