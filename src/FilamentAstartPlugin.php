@@ -1,15 +1,15 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace AuroraWebSoftware\FilamentAstart;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
-class SkeletonPlugin implements Plugin
+class FilamentAstartPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'skeleton';
+        return 'filament-astart';
     }
 
     public function register(Panel $panel): void

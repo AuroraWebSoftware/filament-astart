@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace AuroraWebSoftware\FilamentAstart\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentAstartCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-astart';
 
     public $description = 'My command';
 
