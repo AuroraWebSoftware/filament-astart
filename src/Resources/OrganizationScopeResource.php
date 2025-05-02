@@ -18,6 +18,8 @@ class OrganizationScopeResource extends Resource
 {
     protected static ?string $model = OrganizationScope::class;
 
+    protected static ?string $navigationGroup = 'Astart';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

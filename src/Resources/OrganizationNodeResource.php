@@ -17,6 +17,8 @@ class OrganizationNodeResource extends Resource
 {
     protected static ?string $model = OrganizationNode::class;
 
+    protected static ?string $navigationGroup = 'Astart';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getEloquentQuery(): Builder
