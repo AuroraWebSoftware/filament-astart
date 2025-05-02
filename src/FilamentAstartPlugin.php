@@ -2,7 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
-
 use AuroraWebSoftware\FilamentAstart\Pages\Settings;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
@@ -11,7 +10,6 @@ use Filament\Panel;
 
 class FilamentAstartPlugin implements Plugin
 {
-
     public function getId(): string
     {
         return 'filament-astart';
@@ -24,12 +22,11 @@ class FilamentAstartPlugin implements Plugin
             [
                 OrganizationScopeResource::class,
                 OrganizationNodeResource::class,
-            ]);
+            ]
+        );
     }
 
-    public function boot(Panel $panel): void
-    {
-    }
+    public function boot(Panel $panel): void {}
 
     public static function make(): static
     {

@@ -2,7 +2,8 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
-
+use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
+use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -14,13 +15,11 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
-use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 
 class FilamentAstartServiceProvider extends PackageServiceProvider
 {
-
     public static string $name = 'filament-astart';
+
     public static string $viewNamespace = 'filament-astart';
 
     public function configurePackage(Package $package): void
@@ -65,9 +64,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         parent::packageRegistered();
 
         $this->app->scoped('filament-astart', function (): FilamentAstart {
-            return new FilamentAstart();
+            return new FilamentAstart;
         });
-
 
     }
 
@@ -95,7 +93,6 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
                 ], 'filament-astart-stubs');
             }
         }
-
 
         // Testing
         Testable::mixin(new TestsFilamentAstart);

@@ -10,5 +10,4 @@ class OrganizationNode extends \AuroraWebSoftware\AAuth\Models\OrganizationNode
     {
         return $this->belongsTo(OrganizationNode::class, 'parent_id');
     }
-
 }
