@@ -2,8 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources;
 
-use App\Filament\Resources\OrganizationScopeResource\Pages;
-use App\Filament\Resources\OrganizationScopeResource\RelationManagers;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -25,7 +23,7 @@ class OrganizationScopeResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required(),
-                Placeholder::make('level')->content(fn(?OrganizationScope $record) => $record?->level)->visibleOn('edit'),
+                Placeholder::make('level')->content(fn (?OrganizationScope $record) => $record?->level)->visibleOn('edit'),
                 Select::make('status')->required()->options(['active' => 'Active', 'passive' => 'Passive']),
                 TextInput::make('level')->visibleOn('create'),
             ]);

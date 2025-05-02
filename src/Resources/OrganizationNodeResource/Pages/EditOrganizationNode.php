@@ -2,7 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages;
 
-
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
