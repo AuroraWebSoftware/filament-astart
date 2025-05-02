@@ -2,7 +2,8 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
-use Filament\Support\Assets\AlpineComponent;
+
+use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
@@ -18,12 +19,13 @@ use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 
 class FilamentAstartServiceProvider extends PackageServiceProvider
 {
-    public static string $name = 'filament-astart';
 
+    public static string $name = 'filament-astart';
     public static string $viewNamespace = 'filament-astart';
 
     public function configurePackage(Package $package): void
     {
+
         /*
          * This class is a Package Service Provider
          *
@@ -58,7 +60,16 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void {}
+    public function packageRegistered(): void
+    {
+        parent::packageRegistered();
+
+        $this->app->scoped('filament-astart', function (): FilamentAstart {
+            return new FilamentAstart();
+        });
+
+
+    }
 
     public function packageBooted(): void
     {
@@ -84,6 +95,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
                 ], 'filament-astart-stubs');
             }
         }
+
 
         // Testing
         Testable::mixin(new TestsFilamentAstart);
