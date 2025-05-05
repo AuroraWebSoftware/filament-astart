@@ -4,6 +4,7 @@ namespace AuroraWebSoftware\FilamentAstart;
 
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -11,6 +12,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -71,6 +73,11 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['en','tr']); // also accepts a closure
+        });
+
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
@@ -96,6 +103,9 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
         // Testing
         Testable::mixin(new TestsFilamentAstart);
+
+        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
+
     }
 
     protected function getAssetPackageName(): ?string

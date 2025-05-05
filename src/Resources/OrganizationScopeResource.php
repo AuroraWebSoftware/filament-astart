@@ -3,6 +3,9 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\CreateOrganizationScope;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\EditOrganizationScope;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\ListOrganizationScopes;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -63,9 +66,9 @@ class OrganizationScopeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\ListOrganizationScopes::route('/'),
-            'create' => \AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\CreateOrganizationScope::route('/create'),
-            'edit' => \AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\EditOrganizationScope::route('/{record}/edit'),
+            'index' => ListOrganizationScopes::route('/'),
+            'create' => CreateOrganizationScope::route('/create'),
+            'edit' => EditOrganizationScope::route('/{record}/edit'),
         ];
     }
 }
