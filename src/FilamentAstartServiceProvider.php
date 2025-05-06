@@ -2,10 +2,17 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
+use App\Providers\Filament\AdminPanelProvider;
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
+use AuroraWebSoftware\FilamentAstart\Filament\Pages\RoleSwitch;
+use AuroraWebSoftware\FilamentAstart\Http\Middleware\EnsureUserHasRoleSelected;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Facades\Filament;
+use Filament\Navigation\MenuItem;
+use Filament\Navigation\UserMenuItem;
+use Filament\Panel;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
@@ -75,7 +82,11 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
-                ->locales(['en','tr']); // also accepts a closure
+                ->locales(['en', 'tr']);
+        });
+
+        PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
+            $panelSwitch->modalHeading('Available Panels');
         });
 
         // Asset Registration
@@ -106,8 +117,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
 
-    }
 
+    }
     protected function getAssetPackageName(): ?string
     {
         return 'aurorawebsoftware/filament-astart';
@@ -168,4 +179,5 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             'create_filament-astart_table',
         ];
     }
+
 }

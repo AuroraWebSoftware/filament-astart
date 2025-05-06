@@ -19,7 +19,7 @@ class OrganizationScopeResource extends Resource
 {
     protected static ?string $model = OrganizationScope::class;
 
-    protected static ?string $navigationGroup = 'Astart';
+    protected static ?string $navigationGroup = 'AStart';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -27,10 +27,27 @@ class OrganizationScopeResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->required(),
-                Placeholder::make('level')->content(fn (?OrganizationScope $record) => $record?->level)->visibleOn('edit'),
-                Select::make('status')->required()->options(['active' => 'Active', 'passive' => 'Passive']),
-                TextInput::make('level')->visibleOn('create'),
+                TextInput::make('name')
+                    ->label(__('filament-astart::organization-scope.name'))
+                    ->required(),
+
+                Placeholder::make('level')
+                    ->label(__('filament-astart::organization-scope.level'))
+                    ->content(fn (?OrganizationScope $record) => $record?->level)
+                    ->visibleOn('edit'),
+
+                Select::make('status')
+                    ->label(__('filament-astart::organization-scope.status'))
+                    ->required()
+                    ->options([
+                        'active' => __('filament-astart::organization-scope.status_active'),
+                        'passive' => __('filament-astart::organization-scope.status_passive'),
+                    ]),
+
+                TextInput::make('level')
+                    ->label(__('filament-astart::organization-scope.level'))
+                    ->visibleOn('create'),
+
             ]);
     }
 
@@ -38,10 +55,17 @@ class OrganizationScopeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->sortable(),
-                TextColumn::make('level')->sortable(),
-                TextColumn::make('status')->sortable(),
+                TextColumn::make('name')
+                    ->label(__('filament-astart::organization-scope.name'))
+                    ->sortable(),
 
+                TextColumn::make('level')
+                    ->label(__('filament-astart::organization-scope.level'))
+                    ->sortable(),
+
+                TextColumn::make('status')
+                    ->label(__('filament-astart::organization-scope.status'))
+                    ->sortable(),
             ])
             ->filters([
                 //

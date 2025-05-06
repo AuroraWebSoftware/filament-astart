@@ -26,7 +26,9 @@
         "aurorawebsoftware/aauth" : "^11.0.0",
         "bezhansalleh/filament-panel-switch": "^1.0",
         "bezhanSalleh/filament-language-switch": "^3.0",
-        "hasnayeen/themes": "^3.0"
+        "hasnayeen/themes": "^3.0",
+        "aurorawebsoftware/arflow": "^11.0.0",
+        "aurorawebsoftware/connective": "^11.0.0"
     },
     "require-dev": {
         "laravel/pint": "^1.0",

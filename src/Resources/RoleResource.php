@@ -2,8 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources;
 
-use AuroraWebSoftware\AAuth\Enums\ActivityStatus;
-use AuroraWebSoftware\AAuth\Enums\RoleType;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
@@ -28,7 +26,7 @@ class RoleResource extends Resource
      |  Temel Ayarlar
      ───────────────────────────── */
     protected static ?string $model = Role::class;
-    protected static ?string $navigationGroup = 'Astart';
+    protected static ?string $navigationGroup = 'AStart';
     protected static ?string $navigationLabel = 'Roller';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

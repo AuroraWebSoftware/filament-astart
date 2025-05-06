@@ -117,6 +117,8 @@ class ViewUser extends ViewRecord
                         ->title('Rol başarıyla eklendi')
                         ->success()
                         ->send();
+
+                    return redirect()->route('filament.admin.resources.users.view', ['record' => $user->id]);
                 }),
         ];
     }

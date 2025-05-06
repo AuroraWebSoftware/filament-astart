@@ -16,4 +16,9 @@ class OrganizationNode extends \AuroraWebSoftware\AAuth\Models\OrganizationNode
     {
         return $this->belongsTo(OrganizationScope::class);
     }
+
+    public function children()
+    {
+        return $this->hasMany(OrganizationNode::class, 'parent_id');
+    }
 }
