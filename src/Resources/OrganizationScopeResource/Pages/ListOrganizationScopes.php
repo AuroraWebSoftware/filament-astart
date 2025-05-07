@@ -13,7 +13,8 @@ class ListOrganizationScopes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label(__('filament-astart::organization-scope.add_scope')),
         ];
     }
 }

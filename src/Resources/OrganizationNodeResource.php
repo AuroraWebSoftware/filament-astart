@@ -6,6 +6,10 @@ use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\CreateOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\EditOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\ListOrganizationNodes;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -15,20 +19,25 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrganizationNodeResource extends Resource
 {
+    use AStartResourceAccessPolicy;
+
     protected static ?string $model = OrganizationNode::class;
 
-    protected static ?string $navigationGroup = 'Astart';
+    protected static ?string $navigationGroup = 'AStart';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getEloquentQuery(): Builder
     {
+        if (request()->route()?->parameter('record')) {
+            return parent::getEloquentQuery();
+        }
+
         $query = parent::getEloquentQuery();
 
-        if (request()->has('parent_id')) {
-            $query->where('parent_id', request()->input('parent_id'));
+        if (request()->filled('parent_id')) {
+            $query->where('parent_id', request('parent_id'));
         } else {
-            // Only list nodes without parent_id (top-level nodes)
             $query->whereNull('parent_id');
         }
 
@@ -39,7 +48,28 @@ class OrganizationNodeResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Hidden::make('parent_id')
+                    ->default(request()->get('parent_id')),
+
+                TextInput::make('name')
+                    ->label(__('filament-astart::organization-node.node_name'))
+                    ->required()
+                    ->maxLength(255),
+
+                Select::make('organization_scope_id')
+                    ->label(__('filament-astart::organization-node.organization_scope'))
+                    ->options(function () {
+                        $parentId = request()->get('parent_id');
+
+                        if ($parentId) {
+                            $node = OrganizationNode::find($parentId);
+
+                            return $node?->availableScopes()?->pluck('name', 'id') ?? [];
+                        }
+
+                        return [];
+                    })
+                    ->required(),
             ]);
     }
 
@@ -47,28 +77,27 @@ class OrganizationNodeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')->label(__('filament-astart::organization-node.node_name')),
                 TextColumn::make('organization_scope.name')->label('Organization Scope'),
-                TextColumn::make('model_type'),
-                TextColumn::make('model_id'),
-                TextColumn::make('path')->label('Path'),
-                TextColumn::make('parent.name')->label('Parent'),
+                TextColumn::make('model_type')->label(__('filament-astart::organization-node.model_type')),
+                TextColumn::make('model_id')->label(__('filament-astart::organization-node.model_id')),
+                TextColumn::make('path')->label(__('filament-astart::organization-node.path')),
+                TextColumn::make('parent.name')->label(__('filament-astart::organization-node.parent')),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Alt Node')
+                    ->label(__('filament-astart::organization-node.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
                     ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\EditAction::make()
+                    ->label(__('filament-astart::organization-node.edit_node')),
+
             ]);
+
     }
 
     public static function getRelations(): array
