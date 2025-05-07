@@ -3,6 +3,7 @@
 namespace AuroraWebSoftware\FilamentAstart\Traits;
 
 use AuroraWebSoftware\AAuth\Facades\AAuth;
+use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Illuminate\Support\Str;
@@ -52,6 +53,6 @@ trait AStartCustomPageAccessPolicy
 
     public static function canAccess(array $parameters = []): bool
     {
-        return AAuth::can(static::getPermissionSlug(self::$permission));
+        return AAuthUtil::can(static::getPermissionSlug(self::$permission));
     }
 }

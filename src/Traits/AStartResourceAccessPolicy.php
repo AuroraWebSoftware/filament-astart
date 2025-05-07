@@ -3,6 +3,7 @@
 namespace AuroraWebSoftware\FilamentAstart\Traits;
 
 use AuroraWebSoftware\AAuth\Facades\AAuth;
+use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -26,8 +27,9 @@ trait AStartResourceAccessPolicy
 
     public static function canViewAny(): bool
     {
-        return AAuth::can(static::getPermissionSlug('view_any'));
+        return AAuthUtil::can(static::getPermissionSlug('view_any'));
     }
+
 
     public static function canCreate(): bool
     {

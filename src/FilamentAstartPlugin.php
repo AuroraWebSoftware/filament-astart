@@ -2,6 +2,7 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
+use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Filament\Pages\RoleSwitch;
 use AuroraWebSoftware\FilamentAstart\Http\Middleware\EnsureUserHasRoleSelected;
@@ -62,14 +63,7 @@ class FilamentAstartPlugin implements Plugin
                 \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
             ]);
 
-        //        $panel->userName(function () {
-        //            $user = auth()->user();
-        //            $roleName = \AuroraWebSoftware\AAuth\Models\Role::find(session('roleId'))?->name;
-        //
-        //            return $roleName
-        //                ? "{$user->name} ({$roleName})"
-        //                : $user->name;
-        //        });
+
 
     }
 
