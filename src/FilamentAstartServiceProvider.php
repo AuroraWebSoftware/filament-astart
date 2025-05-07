@@ -3,6 +3,7 @@
 namespace AuroraWebSoftware\FilamentAstart;
 
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
+use AuroraWebSoftware\FilamentAstart\Http\Livewire\StateTransitionListbox;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
@@ -15,6 +16,7 @@ use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportTesting\Testable;
+use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -74,6 +76,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        Livewire::component('arflow-state-transition-listbox', StateTransitionListbox::class);
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['en', 'tr']);
@@ -99,27 +102,27 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
+            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/filament-astart/{$file->getFilename()}"),
                 ], 'filament-astart-stubs');
             }
 
             $this->publishes([
-                __DIR__.'/../config/astart-auth.php' => config_path('astart-auth.php'),
+                __DIR__ . '/../config/astart-auth.php' => config_path('astart-auth.php'),
             ], 'filament-astart-config');
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => lang_path('vendor/filament-astart'),
+                __DIR__ . '/../resources/lang' => lang_path('vendor/filament-astart'),
             ], 'filament-astart-lang');
         }
 
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-astart');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-astart');
 
         // Testing
         Testable::mixin(new TestsFilamentAstart);
 
-        $this->loadViewsFrom(__DIR__.'/Resources/views', 'filament-astart');
+        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
 
     }
 
@@ -135,8 +138,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         return [
             // AlpineComponent::make('filament-astart', __DIR__ . '/../resources/dist/components/filament-astart.js'),
-            Css::make('filament-astart-styles', __DIR__.'/../resources/dist/filament-astart.css'),
-            Js::make('filament-astart-scripts', __DIR__.'/../resources/dist/filament-astart.js'),
+            Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
+            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
         ];
     }
 
@@ -181,6 +184,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         return [
             'create_filament-astart_table',
+            'create_astart_examples_table',
         ];
     }
 
