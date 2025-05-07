@@ -3,18 +3,18 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationNode;
-use AuroraWebSoftware\AAuth\Models\Role;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\DB;
 
 class UserRolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'roles';
-    protected static ?string $label       = 'Roller';
-    protected static ?string $title       = 'Tanımlı Roller';
+
+    protected static ?string $label = 'Roller';
+
+    protected static ?string $title = 'Tanımlı Roller';
 
     public function form(Forms\Form $form): Forms\Form
     {
@@ -32,8 +32,7 @@ class UserRolesRelationManager extends RelationManager
                 ]),
                 Tables\Columns\TextColumn::make('pivot.organization_node_id')
                     ->label('Organizasyon Düğümü')
-                    ->formatStateUsing(fn ($state, $record) =>
-                    $record->pivot->organization_node_id
+                    ->formatStateUsing(fn ($state, $record) => $record->pivot->organization_node_id
                         ? OrganizationNode::find($record->pivot->organization_node_id)?->name
                         : '—'
                     ),

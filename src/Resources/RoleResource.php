@@ -26,83 +26,89 @@ class RoleResource extends Resource
      |  Temel Ayarlar
      ───────────────────────────── */
     protected static ?string $model = Role::class;
+
     protected static ?string $navigationGroup = 'AStart';
-    protected static ?string $navigationLabel = 'Roller';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    /* ─────────────────────────────
-     |  Form
-     ───────────────────────────── */
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-astart::role.model_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament-astart::role.model_label');
+    }
+
     public static function form(Form $form): Form
     {
-        $permissionConfig = config('aauth.permissions');
+        $permissionConfig = config('astart-auth.permissions');
 
-        //  🏷️  Permission gruplarındaki toplam eleman sayıları
         $resourceCount = collect($permissionConfig['resource'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $pagesCount = collect($permissionConfig['pages'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $widgetKey = isset($permissionConfig['widget']) ? 'widget' : 'widgets';
         $widgetCount = collect($permissionConfig[$widgetKey] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $customCount = collect($permissionConfig['custom_permission'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         return $form
             ->schema([
-                /* ───────── 1. Temel Bilgiler ───────── */
-                Fieldset::make('Temel Bilgiler')
+                Fieldset::make(__('filament-astart::role.resource_label'))
                     ->schema([
 
                         Forms\Components\TextInput::make('name')
-                            ->label('Ad')
+                            ->label(__('filament-astart::role.name'))
                             ->required()
                             ->unique(column: 'name', ignoreRecord: true),
 
                         Toggle::make('status')
-                            ->label('Aktif')
+                            ->label(__('filament-astart::role.status'))
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
                             ->onColor('success')
                             ->offColor('danger')
                             ->inline(false)
                             ->default(true)
-                            ->formatStateUsing(fn($state) => $state === 'active' || $state === true)
-                            ->dehydrateStateUsing(fn($state) => $state ? 'active' : 'passive'),
+                            ->formatStateUsing(fn ($state) => $state === 'active' || $state === true)
+                            ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'passive'),
 
                     ])->columns(2),
 
-                Fieldset::make('Tür & Organizasyon')
+                Fieldset::make(__('filament-astart::role.type_organizations'))
                     ->schema([
                         Select::make('type')
-                            ->label('Tür')
+                            ->label(__('filament-astart::role.type'))
                             ->options([
-                                'system' => 'Sistem',
-                                'organization' => 'Organizasyon',
+                                'system' => __('filament-astart::role.type_system'),
+                                'organization' => __('filament-astart::role.type_organization'),
                             ])
                             ->native(false)
                             ->required()
                             ->reactive(),
 
                         Select::make('organization_scope_id')
-                            ->label('Organizasyon Kapsamı')
-                            ->placeholder('Bir kapsam seçin')
+                            ->label(__('filament-astart::role.organization_scope'))
+                            ->placeholder(__('filament-astart::role.placeholder_organization_scope'))
                             ->options(
-                                fn() => OrganizationScope::query()
+                                fn () => OrganizationScope::query()
                                     ->where('status', 'active')
                                     ->pluck('name', 'id')
                                     ->toArray()
                             )
                             ->searchable()
-                            ->visible(fn(Get $get) => $get('type') === 'organization')
-                            ->required(fn(Get $get) => $get('type') === 'organization')
+                            ->visible(fn (Get $get) => $get('type') === 'organization')
+                            ->required(fn (Get $get) => $get('type') === 'organization')
                             ->nullable(),
                     ])
                     ->columns(2),
@@ -110,8 +116,8 @@ class RoleResource extends Resource
                 Grid::make(1)
                     ->schema([
                         Toggle::make('select_all_permissions')
-                            ->label('Tüm İzinleri Seç / Kaldır')
-                            ->helperText('Bu role ait bütün izinleri topluca açıp kapatır.')
+                            ->label(__('filament-astart::role.select_all_permissions'))
+                            ->helperText(__('filament-astart::role.select_all_permissions_helper'))
                             ->reactive()
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
@@ -131,27 +137,27 @@ class RoleResource extends Resource
                 Tabs::make('Permissions')
                     ->tabs([
                         ...($resourceCount > 0 ? [
-                            Tabs\Tab::make('Resources')
+                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_resources'))
                                 ->badge($resourceCount)
-                                ->schema(static::buildPermissionGroups($permissionConfig['resource'] ?? [], 'resource'))
+                                ->schema(static::buildPermissionGroups($permissionConfig['resource'] ?? [], 'resource')),
                         ] : []),
 
                         ...($pagesCount > 0 ? [
-                            Tabs\Tab::make('Pages')
+                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_pages'))
                                 ->badge($pagesCount)
-                                ->schema(static::buildPermissionGroups($permissionConfig['pages'] ?? [], 'pages'))
+                                ->schema(static::buildPermissionGroups($permissionConfig['pages'] ?? [], 'pages')),
                         ] : []),
 
                         ...($widgetCount > 0 ? [
-                            Tabs\Tab::make('Widgets')
+                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_widgets'))
                                 ->badge($widgetCount)
-                                ->schema(static::buildPermissionGroups($permissionConfig[$widgetKey] ?? [], $widgetKey))
+                                ->schema(static::buildPermissionGroups($permissionConfig[$widgetKey] ?? [], $widgetKey)),
                         ] : []),
 
                         ...($customCount > 0 ? [
-                            Tabs\Tab::make('Custom Permissions')
+                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_custom'))
                                 ->badge($customCount)
-                                ->schema(static::buildPermissionGroups($permissionConfig['custom_permission'] ?? [], 'custom_permission'))
+                                ->schema(static::buildPermissionGroups($permissionConfig['custom_permission'] ?? [], 'custom_permission')),
                         ] : []),
                     ])
                     ->columnSpan('full'),
@@ -169,14 +175,13 @@ class RoleResource extends Resource
 
             $groupKey = "$type.$group";
 
-            $fields[] = Section::make($group)
-                ->description(Str::headline($group))
+            $fields[] = Section::make(__('filament-astart::permissions.'.Str::snake($group)))
                 ->collapsible()
                 ->schema([
                     Grid::make(2)
                         ->schema([
                             Toggle::make("select_all_$groupKey")
-                                ->label('Hepsini Seç / Kaldır')
+                                ->label(__('filament-astart::role.select_all_group'))
                                 ->reactive()
                                 ->onIcon('heroicon-s-check')
                                 ->offIcon('heroicon-s-x-mark')
@@ -194,9 +199,12 @@ class RoleResource extends Resource
                                     'md' => 2,
                                 ])
                                 ->schema(
-                                    collect($actions)->map(fn($action) => Checkbox::make("permissions.$groupKey.$action")
-                                        ->label(Str::headline($action))
-                                    )->toArray()
+                                    collect($actions)->map(function ($action) use ($group, $type) {
+                                        $code = Str::snake($group).'_'.Str::snake($action);
+
+                                        return Checkbox::make("permissions.$type.$group.$action")
+                                            ->label(__('filament-astart::permissions.'.$code));
+                                    })->toArray()
                                 ),
                         ]),
                 ]);

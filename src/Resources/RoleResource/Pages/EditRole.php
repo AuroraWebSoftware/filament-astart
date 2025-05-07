@@ -3,7 +3,9 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;
+use Filament\Pages\Page;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -13,17 +15,45 @@ class EditRole extends EditRecord
 
     protected array $permissionPayload = [];
 
+    public static function isPageBelongsToResource(string $pageClass): bool
+    {
+        if (! class_exists($pageClass)) {
+            return false;
+        }
+
+        $reflection = new \ReflectionClass($pageClass);
+
+        if ($reflection->hasProperty('resource')) {
+            $property = $reflection->getProperty('resource');
+            $property->setAccessible(true);
+            $value = $property->getValue();
+            if (! empty($value) && is_subclass_of($value, Resource::class)) {
+                return true;
+            }
+        }
+
+        if ($reflection->hasMethod('getResource')) {
+            $method = $reflection->getMethod('getResource');
+
+            return $method->getDeclaringClass()->getName() !== Page::class;
+        }
+
+        return false;
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        //        dd(self::isPageBelongsToResource(self::class));
+
         $assignedCodes = DB::table('role_permission')
             ->where('role_id', $this->record->id)
             ->pluck('permission')
             ->toArray();
 
-        $config      = config('aauth.permissions');
+        $config = config('astart-auth.permissions');
         $permissions = [];
         $groupToggles = [];
-        $allChecked   = true;
+        $allChecked = true;
 
         foreach ($config as $type => $list) {
 
@@ -32,7 +62,7 @@ class EditRole extends EditRecord
                     $groupAll = true;
 
                     foreach ($actions as $action) {
-                        $code    = Str::snake($resource).'_'.Str::snake($action);
+                        $code = Str::snake($resource).'_'.Str::snake($action);
                         $checked = in_array($code, $assignedCodes);
                         data_set($permissions, "$type.$resource.$action", $checked);
 
@@ -42,15 +72,14 @@ class EditRole extends EditRecord
                     $groupToggles["select_all_resource.$resource"] = $groupAll;
                     $allChecked = $allChecked && $groupAll;
                 }
-            }
-            else {
+            } else {
                 foreach ($list as $item => $maybeActions) {
 
                     if (! empty($maybeActions)) {
                         $groupAll = true;
 
                         foreach ($maybeActions as $action) {
-                            $code    = Str::snake($item).'_'.Str::snake($action);
+                            $code = Str::snake($item).'_'.Str::snake($action);
                             $checked = in_array($code, $assignedCodes);
                             data_set($permissions, "$type.$item.$action", $checked);
 
@@ -60,7 +89,7 @@ class EditRole extends EditRecord
                         $groupToggles["select_all_{$type}.$item"] = $groupAll;
                         $allChecked = $allChecked && $groupAll;
                     } else {
-                        $code    = Str::snake($item);
+                        $code = Str::snake($item);
                         $checked = in_array($code, $assignedCodes);
                         data_set($permissions, "$type.$item", $checked);
 
@@ -71,7 +100,7 @@ class EditRole extends EditRecord
             }
         }
 
-        $data['permissions']            = $permissions;
+        $data['permissions'] = $permissions;
         $data['select_all_permissions'] = $allChecked;
 
         foreach ($groupToggles as $key => $state) {
@@ -81,11 +110,12 @@ class EditRole extends EditRecord
         return $data;
     }
 
-
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        //        dd($data);
         $this->permissionPayload = $data['permissions'] ?? [];
         unset($data['permissions']);
+
         return $data;
     }
 
@@ -98,22 +128,22 @@ class EditRole extends EditRecord
     {
         DB::transaction(function () use ($roleId, $rawPermissions) {
 
-            $permissions = config('aauth.permissions');
+            $permissions = config('astart-auth.permissions');
 
             foreach ($permissions as $type => $list) {
                 if ($type === 'resource') {
                     foreach ($list as $resource => $actions) {
                         foreach ($actions as $action) {
-                            $code = Str::snake($resource) . '_' . Str::snake($action);
+                            $code = Str::snake($resource).'_'.Str::snake($action);
                             $checked = data_get($rawPermissions, "$type.$resource.$action") === true;
                             $this->upsertPivot($roleId, $code, $checked);
                         }
                     }
                 } else {
                     foreach ($list as $item => $maybeActions) {
-                        if (!empty($maybeActions)) {
+                        if (! empty($maybeActions)) {
                             foreach ($maybeActions as $action) {
-                                $code = Str::snake($item) . '_' . Str::snake($action);
+                                $code = Str::snake($item).'_'.Str::snake($action);
                                 $checked = data_get($rawPermissions, "$type.$item.$action") === true;
                                 $this->upsertPivot($roleId, $code, $checked);
                             }

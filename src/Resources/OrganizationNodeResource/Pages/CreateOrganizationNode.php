@@ -14,11 +14,11 @@ class CreateOrganizationNode extends CreateRecord
     {
         $parentPath = null;
 
-        if (!empty($data['parent_id'])) {
+        if (! empty($data['parent_id'])) {
             $parentPath = OrganizationNode::find($data['parent_id'])?->path;
         }
 
-        $data['path'] = trim($parentPath ? $parentPath . '/' : '') . 'temp';
+        $data['path'] = trim($parentPath ? $parentPath.'/' : '').'temp';
 
         return $data;
     }
@@ -29,8 +29,7 @@ class CreateOrganizationNode extends CreateRecord
         $record = $this->record;
         $parentPath = $record->parent?->path;
 
-        $record->path = trim($parentPath ? $parentPath . '/' : '') . $record->id;
+        $record->path = trim($parentPath ? $parentPath.'/' : '').$record->id;
         $record->save();
     }
 }
-

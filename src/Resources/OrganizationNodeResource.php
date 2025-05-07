@@ -6,6 +6,7 @@ use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\CreateOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\EditOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\ListOrganizationNodes;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrganizationNodeResource extends Resource
 {
+    use AStartResourceAccessPolicy;
+
     protected static ?string $model = OrganizationNode::class;
 
     protected static ?string $navigationGroup = 'AStart';
@@ -60,6 +63,7 @@ class OrganizationNodeResource extends Resource
 
                         if ($parentId) {
                             $node = OrganizationNode::find($parentId);
+
                             return $node?->availableScopes()?->pluck('name', 'id') ?? [];
                         }
 
@@ -88,12 +92,11 @@ class OrganizationNodeResource extends Resource
                     ->label(__('filament-astart::organization-node.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn($record) => "/admin/organization-nodes?parent_id={$record->id}"),
+                    ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
                 Tables\Actions\EditAction::make()
                     ->label(__('filament-astart::organization-node.edit_node')),
 
             ]);
-
 
     }
 

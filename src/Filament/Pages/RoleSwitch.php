@@ -2,18 +2,21 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Filament\Pages;
 
+use AuroraWebSoftware\AAuth\Models\Role;
 use Filament\Pages\Page;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use AuroraWebSoftware\AAuth\Models\Role;
 
 class RoleSwitch extends Page
 {
     protected static ?string $slug = 'role-switch';
+
     protected static string $view = 'filament-astart::pages.role-switch';
+
     protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = null;
+
     protected static ?string $title = '';
 
     public array $roles = [];

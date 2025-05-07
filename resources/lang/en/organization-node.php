@@ -19,4 +19,3 @@ return [
     'edit_node' => 'Edit',
     'add_node' => 'Add Node',
 ];
-

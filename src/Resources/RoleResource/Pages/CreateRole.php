@@ -15,8 +15,10 @@ class CreateRole extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // "permissions" form verisini ayrı olarak tut
         $this->permissionPayload = $data['permissions'] ?? [];
         unset($data['permissions']);
+
         return $data;
     }
 
@@ -28,46 +30,39 @@ class CreateRole extends CreateRecord
     private function syncRolePermissions(int $roleId, array $rawPermissions): void
     {
         DB::transaction(function () use ($roleId, $rawPermissions) {
-
             $permissions = config('aauth.permissions');
 
             foreach ($permissions as $type => $list) {
+                foreach ($list as $group => $actions) {
+                    if (! is_array($actions)) {
+                        // custom_permission gibi flat string listeleri destekle
+                        $code = Str::snake($group);
+                        $checked = data_get($rawPermissions, "$type.$group") === true;
+                        $this->upsertPivot($roleId, $code, $checked);
 
-                if ($type === 'resource') {
-                    foreach ($list as $resource => $actions) {
-                        foreach ($actions as $action) {
-                            $code    = Str::snake($resource).'_'.Str::snake($action);
-                            $checked = data_get($rawPermissions, "$type.$resource.$action") === true;
-                            $this->upsertPivot($roleId, $code, $checked);
-                        }
+                        continue;
                     }
-                } else {
-                    foreach ($list as $item => $maybeActions) {
 
-                        if (! empty($maybeActions)) {
-                            foreach ($maybeActions as $action) {
-                                $code    = Str::snake($item).'_'.Str::snake($action);
-                                $checked = data_get($rawPermissions, "$type.$item.$action") === true;
-                                $this->upsertPivot($roleId, $code, $checked);
-                            }
-                        } else {
-                            $code    = Str::snake($item);
-                            $checked = data_get($rawPermissions, "$type.$item") === true;
-                            $this->upsertPivot($roleId, $code, $checked);
-                        }
+                    foreach ($actions as $action) {
+                        $code = Str::snake($group).'_'.Str::snake($action); // Örn: user_view
+                        $checked = data_get($rawPermissions, "$type.$group.$action") === true;
+                        $this->upsertPivot($roleId, $code, $checked);
                     }
                 }
             }
         });
     }
+
     private function upsertPivot(int $roleId, string $code, bool $checked): void
     {
         if ($checked) {
-            DB::table('role_permission')
-                ->updateOrInsert(['role_id' => $roleId, 'permission' => $code]);
+            DB::table('role_permission')->updateOrInsert([
+                'role_id' => $roleId,
+                'permission' => $code,
+            ]);
         } else {
             DB::table('role_permission')
-                ->where('role_id',   $roleId)
+                ->where('role_id', $roleId)
                 ->where('permission', $code)
                 ->delete();
         }

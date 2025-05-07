@@ -2,11 +2,10 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages;
 
-use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use Filament\Actions\DeleteAction;
-use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
@@ -23,13 +22,15 @@ class EditOrganizationNode extends EditRecord
                 ->maxLength(255),
         ]);
     }
+
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make()
                 ->visible(function () {
                     $hasChildren = $this->record->children()->exists();
-                    return !$hasChildren ;
+
+                    return ! $hasChildren;
                 })
                 ->requiresConfirmation()
                 ->modalHeading(__('filament-astart::organization-node.delete_node'))
@@ -48,25 +49,24 @@ class EditOrganizationNode extends EditRecord
 
                         Notification::make()
                             ->title(__('filament-astart::organization-node.success'))
-                            ->body($recordName . __('filament-astart::organization-node.delete_success'))
+                            ->body($recordName.__('filament-astart::organization-node.delete_success'))
                             ->success()
                             ->send();
                         if ($parentId) {
                             return redirect("/admin/organization-nodes?parent_id={$parentId}");
                         } else {
-                            return redirect("/admin/organization-nodes");
+                            return redirect('/admin/organization-nodes');
                         }
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title(__('filament-astart::organization-node.error'))
-                            ->body(__('filament-astart::organization-node.delete_error') . $e->getMessage())
+                            ->body(__('filament-astart::organization-node.delete_error').$e->getMessage())
                             ->danger()
                             ->send();
 
                         $action->halt();
                     }
-                })
+                }),
         ];
     }
-
 }

@@ -2,10 +2,12 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources;
 
+use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\CreateOrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\EditOrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\ListOrganizationScopes;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,9 +16,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class OrganizationScopeResource extends Resource
 {
+    use AStartResourceAccessPolicy;
+
     protected static ?string $model = OrganizationScope::class;
 
     protected static ?string $navigationGroup = 'AStart';
@@ -72,6 +77,7 @@ class OrganizationScopeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                //                    ->authorize(AAuth::can('organization_scope_edit')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -95,4 +101,21 @@ class OrganizationScopeResource extends Resource
             'edit' => EditOrganizationScope::route('/{record}/edit'),
         ];
     }
+
+    //    public static function parseFilamentResourceName(string $class)
+    //    {
+    //        $classBase = class_basename($class);
+    //        $modelName = str_replace('Resource', '', $classBase);
+    //        return \Illuminate\Support\Str::snake($modelName);
+    //    }
+    //
+    //    public static function canEdit(Model $record): bool
+    //    {
+    //        $parsed = self::parseFilamentResourceName(self::class);
+    //        if (self::hasPage('edit')){
+    //            $page='edit';
+    //        }
+    //        return AAuth::can($parsed . '_' . $page);
+    //    }
+
 }

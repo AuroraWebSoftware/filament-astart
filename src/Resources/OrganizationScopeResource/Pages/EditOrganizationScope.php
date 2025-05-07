@@ -2,9 +2,9 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages;
 
+use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
-use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -50,8 +50,24 @@ class EditOrganizationScope extends EditRecord
 
                         $action->cancel();
                     }
-                })
+                }),
 
         ];
     }
+
+    //    public static function parseFilamentResourceName(string $class)
+    //    {
+    //        $classBase = class_basename($class);
+    //        $modelName = str_replace('Resource', '', $classBase);
+    //        return \Illuminate\Support\Str::snake($modelName);
+    //    }
+    //
+    //    public static function canAccess(array $parameters = []): bool
+    //    {
+    // //        dd(self::getResourcePageName());
+    // //        dd(self::getSlug());
+    //        $parsed = self::parseFilamentResourceName(self::getResource());
+    // //        dd($parsed);
+    //        return AAuth::can($parsed.'_'. self::getResourcePageName());
+    //    }
 }

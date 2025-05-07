@@ -21,31 +21,56 @@ class ViewUser extends ViewRecord
     {
         return [
             Action::make('assignRole')
-                ->label('Rol Ekle')
+                ->label(__('filament-astart::user.assign_role'))
                 ->icon('heroicon-o-user-plus')
                 ->form(function () {
                     $form = [];
 
                     $form[] = Select::make('type')
-                        ->label('Rol Türü')
+                        ->label(__('filament-astart::user.role_type'))
                         ->options([
-                            RoleType::system->value       => 'Sistem',
+                            RoleType::system->value => 'Sistem',
                             RoleType::organization->value => 'Organizasyon',
                         ])
+                        ->required()
                         ->live()
-                        ->reactive()
-                        ->required();
+                        ->reactive(); // Bu gerekli
 
                     $form[] = Select::make('role_id')
-                        ->label('Atanacak Rol')
-                        ->options(fn () => Role::query()
-                            ->where('type', RoleType::organization->value)
-                            ->where('status', 'active')
-                            ->pluck('name', 'id'))
-                        ->live()
+                        ->label(__('filament-astart::user.select_role'))
+                        ->options(function (Get $get) {
+                            $type = $get('type');
+
+                            if ($type === RoleType::system->value) {
+                                return Role::query()
+                                    ->where('type', RoleType::system->value)
+                                    ->where('status', 'active')
+                                    ->pluck('name', 'id');
+                            }
+
+                            if ($type === RoleType::organization->value) {
+                                return Role::query()
+                                    ->where('type', RoleType::organization->value)
+                                    ->where('status', 'active')
+                                    ->pluck('name', 'id');
+                            }
+
+                            return [];
+                        })
+                        ->required()
                         ->reactive()
-                        ->searchable()
-                        ->required();
+                        ->searchable();
+
+                    //                    ->afterStateUpdated(function (Forms\Components\Select $component, ?string $state) {
+                    //                        $amount = $component->getContainer()->getComponent(self::PAYMENT_LINK_AMOUNT);
+                    //
+                    //                        if ($state != AmountDeterminationMethod::FIXED->value) {
+                    //                            $amount->disabled();
+                    //                            $amount->state(0);
+                    //                        } else {
+                    //                            $amount->disabled(false);
+                    //                        }
+                    //                    })
 
                     $scopes = DB::table('organization_scopes')
                         ->where('status', 'active')
@@ -64,7 +89,9 @@ class ViewUser extends ViewRecord
 
                                 $previousScope = $scopes[$index - 1];
                                 $parentId = $get("org_level_{$previousScope->id}");
-                                if (!$parentId) return [];
+                                if (! $parentId) {
+                                    return [];
+                                }
 
                                 return DB::table('organization_nodes')
                                     ->where('parent_id', $parentId)
@@ -75,14 +102,16 @@ class ViewUser extends ViewRecord
                             ->reactive()
                             ->searchable()
                             ->hidden(function (Get $get) use ($scope) {
-                                if ($get('type') !== RoleType::organization->value) return true;
+                                if ($get('type') !== RoleType::organization->value) {
+                                    return true;
+                                }
 
                                 $roleScopeLevel = DB::table('roles')
                                     ->leftJoin('organization_scopes', 'organization_scopes.id', '=', 'roles.organization_scope_id')
                                     ->where('roles.id', $get('role_id'))
                                     ->value('organization_scopes.level');
 
-                                return !$roleScopeLevel || $roleScopeLevel < $scope->level;
+                                return ! $roleScopeLevel || $roleScopeLevel < $scope->level;
                             });
                     }
 
@@ -101,7 +130,7 @@ class ViewUser extends ViewRecord
 
                     foreach ($scopeIds as $scopeId) {
                         $key = "org_level_{$scopeId}";
-                        if (!empty($data[$key])) {
+                        if (! empty($data[$key])) {
                             $selectedOrgNodeId = $data[$key];
                             break;
                         }
