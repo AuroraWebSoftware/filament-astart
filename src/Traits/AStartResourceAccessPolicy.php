@@ -30,7 +30,6 @@ trait AStartResourceAccessPolicy
         return AAuthUtil::can(static::getPermissionSlug('view_any'));
     }
 
-
     public static function canCreate(): bool
     {
         return AAuth::can(static::getPermissionSlug('create'));

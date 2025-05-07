@@ -2,7 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Traits;
 
-use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
