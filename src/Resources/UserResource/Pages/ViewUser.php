@@ -132,6 +132,7 @@ class ViewUser extends ViewRecord
                         $key = "org_level_{$scopeId}";
                         if (! empty($data[$key])) {
                             $selectedOrgNodeId = $data[$key];
+
                             break;
                         }
                     }

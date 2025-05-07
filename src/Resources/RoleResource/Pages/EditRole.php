@@ -62,7 +62,7 @@ class EditRole extends EditRecord
                     $groupAll = true;
 
                     foreach ($actions as $action) {
-                        $code = Str::snake($resource).'_'.Str::snake($action);
+                        $code = Str::snake($resource) . '_' . Str::snake($action);
                         $checked = in_array($code, $assignedCodes);
                         data_set($permissions, "$type.$resource.$action", $checked);
 
@@ -79,7 +79,7 @@ class EditRole extends EditRecord
                         $groupAll = true;
 
                         foreach ($maybeActions as $action) {
-                            $code = Str::snake($item).'_'.Str::snake($action);
+                            $code = Str::snake($item) . '_' . Str::snake($action);
                             $checked = in_array($code, $assignedCodes);
                             data_set($permissions, "$type.$item.$action", $checked);
 
@@ -134,7 +134,7 @@ class EditRole extends EditRecord
                 if ($type === 'resource') {
                     foreach ($list as $resource => $actions) {
                         foreach ($actions as $action) {
-                            $code = Str::snake($resource).'_'.Str::snake($action);
+                            $code = Str::snake($resource) . '_' . Str::snake($action);
                             $checked = data_get($rawPermissions, "$type.$resource.$action") === true;
                             $this->upsertPivot($roleId, $code, $checked);
                         }
@@ -143,7 +143,7 @@ class EditRole extends EditRecord
                     foreach ($list as $item => $maybeActions) {
                         if (! empty($maybeActions)) {
                             foreach ($maybeActions as $action) {
-                                $code = Str::snake($item).'_'.Str::snake($action);
+                                $code = Str::snake($item) . '_' . Str::snake($action);
                                 $checked = data_get($rawPermissions, "$type.$item.$action") === true;
                                 $this->upsertPivot($roleId, $code, $checked);
                             }

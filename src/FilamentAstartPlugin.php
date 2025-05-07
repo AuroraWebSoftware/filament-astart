@@ -33,7 +33,8 @@ class FilamentAstartPlugin implements Plugin
                 Settings::class,
                 RoleSwitch::class,
                 Demo::class,
-            ]);
+            ]
+        );
         $panel->resources(
             [
                 OrganizationScopeResource::class,
