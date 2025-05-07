@@ -32,7 +32,8 @@ class UserRolesRelationManager extends RelationManager
                 ]),
                 Tables\Columns\TextColumn::make('pivot.organization_node_id')
                     ->label('Organizasyon Düğümü')
-                    ->formatStateUsing(fn ($state, $record) => $record->pivot->organization_node_id
+                    ->formatStateUsing(
+                        fn ($state, $record) => $record->pivot->organization_node_id
                         ? OrganizationNode::find($record->pivot->organization_node_id)?->name
                         : '—'
                     ),

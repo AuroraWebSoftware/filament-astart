@@ -175,7 +175,7 @@ class RoleResource extends Resource
 
             $groupKey = "$type.$group";
 
-            $fields[] = Section::make(__('filament-astart::permissions.'.Str::snake($group)))
+            $fields[] = Section::make(__('filament-astart::permissions.' . Str::snake($group)))
                 ->collapsible()
                 ->schema([
                     Grid::make(2)
@@ -200,10 +200,10 @@ class RoleResource extends Resource
                                 ])
                                 ->schema(
                                     collect($actions)->map(function ($action) use ($group, $type) {
-                                        $code = Str::snake($group).'_'.Str::snake($action);
+                                        $code = Str::snake($group) . '_' . Str::snake($action);
 
                                         return Checkbox::make("permissions.$type.$group.$action")
-                                            ->label(__('filament-astart::permissions.'.$code));
+                                            ->label(__('filament-astart::permissions.' . $code));
                                     })->toArray()
                                 ),
                         ]),

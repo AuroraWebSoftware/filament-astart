@@ -99,27 +99,27 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
+            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/filament-astart/{$file->getFilename()}"),
                 ], 'filament-astart-stubs');
             }
 
             $this->publishes([
-                __DIR__.'/../config/astart-auth.php' => config_path('astart-auth.php'),
+                __DIR__ . '/../config/astart-auth.php' => config_path('astart-auth.php'),
             ], 'filament-astart-config');
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => lang_path('vendor/filament-astart'),
+                __DIR__ . '/../resources/lang' => lang_path('vendor/filament-astart'),
             ], 'filament-astart-lang');
         }
 
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-astart');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-astart');
 
         // Testing
         Testable::mixin(new TestsFilamentAstart);
 
-        $this->loadViewsFrom(__DIR__.'/Resources/views', 'filament-astart');
+        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
 
     }
 
@@ -135,8 +135,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         return [
             // AlpineComponent::make('filament-astart', __DIR__ . '/../resources/dist/components/filament-astart.js'),
-            Css::make('filament-astart-styles', __DIR__.'/../resources/dist/filament-astart.css'),
-            Js::make('filament-astart-scripts', __DIR__.'/../resources/dist/filament-astart.js'),
+            Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
+            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
         ];
     }
 

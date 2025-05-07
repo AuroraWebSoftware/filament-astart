@@ -44,7 +44,7 @@ class CreateRole extends CreateRecord
                     }
 
                     foreach ($actions as $action) {
-                        $code = Str::snake($group).'_'.Str::snake($action); // Örn: user_view
+                        $code = Str::snake($group) . '_' . Str::snake($action); // Örn: user_view
                         $checked = data_get($rawPermissions, "$type.$group.$action") === true;
                         $this->upsertPivot($roleId, $code, $checked);
                     }
