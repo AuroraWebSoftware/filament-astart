@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class StateTransitionMessagebox extends Component
 {
-    public Model&StateableModelContract $model;
+    public Model & StateableModelContract $model;
 
     public ?string $heading = null;
 
@@ -28,7 +28,7 @@ class StateTransitionMessagebox extends Component
         $this->type = $type;
     }
 
-    public function render(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function render(): View | Application | Factory | \Illuminate\Contracts\Foundation\Application
     {
         return view('filament-astart::livewire.state-transition-messagebox');
     }

@@ -19,17 +19,16 @@ use Illuminate\Support\Facades\Lang;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-
 class StateTransitionListbox extends Component
 {
-    public Model&StateableModelContract $model;
+    public Model & StateableModelContract $model;
 
     public bool $onlyAllowedTransitionStates = true;
 
     /**
      * translation key prefix or translatable
      **/
-    public bool|string $translatable = true;
+    public bool | string $translatable = true;
 
     public string $textSize = 'base';
 
@@ -44,7 +43,7 @@ class StateTransitionListbox extends Component
 
     public function transitionTo(string $state): void
     {
-        $this->dispatch('arflow.transition-message-created.'.$this->model->getId().$this->model->getId());
+        $this->dispatch('arflow.transition-message-created.' . $this->model->getId() . $this->model->getId());
 
         try {
             if (Auth::check()) {
@@ -53,14 +52,14 @@ class StateTransitionListbox extends Component
                 $this->model->transitionTo($state);
             }
             $this->dispatch(
-                event: 'arflow.transition-message-created.'.$this->model->getId(),
+                event: 'arflow.transition-message-created.' . $this->model->getId(),
                 heading: __('arflow.state-transition-listbox.transition-success-heading'),
                 message: __('arflow.state-transition-listbox.transition-success-message'),
                 type: 'success'
             );
-        } catch (StateNotFoundException|TransitionActionException|TransitionNotFoundException|WorkflowNotAppliedException|WorkflowNotFoundException|WorkflowNotSupportedException $e) {
+        } catch (StateNotFoundException | TransitionActionException | TransitionNotFoundException | WorkflowNotAppliedException | WorkflowNotFoundException | WorkflowNotSupportedException $e) {
             $this->dispatch(
-                event: 'arflow.transition-message-created.'.$this->model->getId(),
+                event: 'arflow.transition-message-created.' . $this->model->getId(),
                 heading: __('arflow.state-transition-listbox.exception'),
                 message: $e->getMessage(),
                 type: 'error'
@@ -68,19 +67,19 @@ class StateTransitionListbox extends Component
         }
     }
 
-    public function placeholder(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function placeholder(): View | Application | Factory | \Illuminate\Contracts\Foundation\Application
     {
         return view('filament-astart::livewire.state-transition-listbox-placeholder');
     }
 
     public function getLocalizedState(string $state): string
     {
-//        $moduleData = Module::allEnabled();
-//        $module = count($moduleData) > 0 ? strtolower(array_values($moduleData)[0]->getName()) : null;
-//
-//        if ($module && Lang::has("$module::arflow.state.$state")) {
-//            return __("$module::arflow.state.$state");
-//        }
+        //        $moduleData = Module::allEnabled();
+        //        $module = count($moduleData) > 0 ? strtolower(array_values($moduleData)[0]->getName()) : null;
+        //
+        //        if ($module && Lang::has("$module::arflow.state.$state")) {
+        //            return __("$module::arflow.state.$state");
+        //        }
 
         if (Lang::has("arflow.state.$state")) {
             return __("arflow.state.$state");
@@ -91,12 +90,12 @@ class StateTransitionListbox extends Component
 
     public function getLocalizedStateListbox(string $state): string
     {
-//        $moduleData = Module::allEnabled();
-//        $module = count($moduleData) > 0 ? strtolower(array_values($moduleData)[0]->getName()) : null;
-//
-//        if ($module && Lang::has("$module::arflow.state.listbox.$state")) {
-//            return __("$module::arflow.state.listbox.$state");
-//        }
+        //        $moduleData = Module::allEnabled();
+        //        $module = count($moduleData) > 0 ? strtolower(array_values($moduleData)[0]->getName()) : null;
+        //
+        //        if ($module && Lang::has("$module::arflow.state.listbox.$state")) {
+        //            return __("$module::arflow.state.listbox.$state");
+        //        }
 
         if (Lang::has("arflow.state.listbox.$state")) {
             return __("arflow.state.listbox.$state");
@@ -105,9 +104,9 @@ class StateTransitionListbox extends Component
         return $state;
     }
 
-    public function render(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function render(): View | Application | Factory | \Illuminate\Contracts\Foundation\Application
     {
-        $bgColor = config('arflow.colors.'.$this->model->currentState()) ?? 'indigo';
+        $bgColor = config('arflow.colors.' . $this->model->currentState()) ?? 'indigo';
 
         return view('filament-astart::livewire.state-transition-listbox', ['bgColor' => $bgColor]);
     }

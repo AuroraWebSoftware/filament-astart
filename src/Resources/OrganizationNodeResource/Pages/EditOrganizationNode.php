@@ -49,7 +49,7 @@ class EditOrganizationNode extends EditRecord
 
                         Notification::make()
                             ->title(__('filament-astart::organization-node.success'))
-                            ->body($recordName.__('filament-astart::organization-node.delete_success'))
+                            ->body($recordName . __('filament-astart::organization-node.delete_success'))
                             ->success()
                             ->send();
                         if ($parentId) {
@@ -60,7 +60,7 @@ class EditOrganizationNode extends EditRecord
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title(__('filament-astart::organization-node.error'))
-                            ->body(__('filament-astart::organization-node.delete_error').$e->getMessage())
+                            ->body(__('filament-astart::organization-node.delete_error') . $e->getMessage())
                             ->danger()
                             ->send();
 
