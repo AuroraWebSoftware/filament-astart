@@ -13,6 +13,7 @@ class AAuthUtil
         } catch (\Exception $e) {
             redirect()->route('filament.admin.pages.role-switch');
         }
+
         return true;
     }
 }

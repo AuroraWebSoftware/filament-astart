@@ -16,6 +16,7 @@ class FilamentAstartCommand extends Command
             $this->call('migrate');
         } catch (\Throwable $e) {
             $this->error('❌ Migration Exception ' . $e->getMessage());
+
             return;
         }
 
@@ -29,13 +30,13 @@ class FilamentAstartCommand extends Command
             '--class' => 'SampleDataSeeder',
         ]);
 
-        //Arflow
+        // Arflow
         $this->call('vendor:publish', [
             '--tag' => 'arflow-config',
             '--force' => true,
         ]);
 
-        //AStart
+        // AStart
         $this->call('vendor:publish', [
             '--tag' => 'filament-astart-config',
             '--force' => true,
