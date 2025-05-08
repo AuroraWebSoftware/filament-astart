@@ -1,78 +1,92 @@
-# This is my package filament-astart
+# Filament Astart
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/aurorawebsoftware/filament-astart.svg?style=flat-square)](https://packagist.org/packages/aurorawebsoftware/filament-astart)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/aurorawebsoftware/filament-astart/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/aurorawebsoftware/filament-astart/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/aurorawebsoftware/filament-astart/fix-php-code-styling.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/aurorawebsoftware/filament-astart/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/aurorawebsoftware/filament-astart.svg?style=flat-square)](https://packagist.org/packages/aurorawebsoftware/filament-astart)
 
+**Filament Astart** is a powerful starter plugin for [FilamentPHP](https://filamentphp.com/), designed to kickstart Laravel admin panels with modular authentication, workflow logic, multilingual support, and prebuilt UI components.
+
+---
+
+## 📦 Included Dependencies
+
+This package relies on the following AuroraWebSoftware components:
+
+- 🛡️ [**AAuth**](https://github.com/AuroraWebSoftware/AAuth): Advanced authentication and role-permission management.
 
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+- 🔄 [**Arflow**](https://github.com/AuroraWebSoftware/Arflow): Workflow engine for dynamic state transitions.
 
-## Installation
 
-You can install the package via composer:
+---
 
-```bash
+## 🚀 Installation
+
+Install the package via Composer:
+
+```
 composer require aurorawebsoftware/filament-astart
 ```
 
-You can publish and run the migrations with:
+Then run the main install command:
 
-```bash
-php artisan vendor:publish --tag="filament-astart-migrations"
-php artisan migrate
+```
+php artisan filament-astart:install
 ```
 
-You can publish the config file with:
+This will:
 
-```bash
+- Run all necessary migrations
+- Publish configuration and language files
+- Publish seeders and stubs
+- Seed example roles and permissions
+- Setup AAuth and Arflow integrations
+
+---
+
+## ⚙️ Manual Publish Options
+
+You may publish each resource manually if needed:
+
+### Config File
+
+```
 php artisan vendor:publish --tag="filament-astart-config"
 ```
 
-Optionally, you can publish the views using
+### Language Files
 
-```bash
-php artisan vendor:publish --tag="filament-astart-views"
+```
+php artisan vendor:publish --tag="filament-astart-lang"
 ```
 
-This is the contents of the published config file:
 
-```php
-return [
-];
-```
+---
 
-## Usage
-
-```php
-$filamentAstart = new AuroraWebSoftware\FilamentAstart();
-echo $filamentAstart->echoPhrase('Hello, AuroraWebSoftware!');
-```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
+## 📘 Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
+---
 
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
+## 🤝 Contributing
 
-## Security Vulnerabilities
+Contributions are welcome! Please read the [CONTRIBUTING](.github/CONTRIBUTING.md) guide before submitting pull requests.
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+---
 
-## Credits
+## 🛡️ Security
+
+If you discover a security vulnerability, please review [our security policy](../../security/policy) for how to report it.
+
+---
+
+## 🙌 Credits
 
 - [AuroraWebSoftware](https://github.com/AuroraWebSoftware)
-- [All Contributors](../../contributors)
 
-## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+---
+
+## 📄 License
+
+The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.

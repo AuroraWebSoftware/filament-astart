@@ -6,14 +6,52 @@ use Illuminate\Console\Command;
 
 class FilamentAstartCommand extends Command
 {
-    public $signature = 'filament-astart';
+    public $signature = 'filament-astart:install';
 
-    public $description = 'My command';
+    public $description = 'Filament Astart Plugin Insallation Command';
 
-    public function handle(): int
+    public function handle(): void
     {
-        $this->comment('All done');
+        try {
+            $this->call('migrate');
+        } catch (\Throwable $e) {
+            $this->error('❌ Migration Exception ' . $e->getMessage());
+            return;
+        }
 
-        return self::SUCCESS;
+        // AAuth
+        $this->call('vendor:publish', [
+            '--tag' => 'aauth-seeders',
+            '--force' => true,
+        ]);
+
+        $this->call('db:seed', [
+            '--class' => 'SampleDataSeeder',
+        ]);
+
+        //Arflow
+        $this->call('vendor:publish', [
+            '--tag' => 'arflow-config',
+            '--force' => true,
+        ]);
+
+        //AStart
+        $this->call('vendor:publish', [
+            '--tag' => 'filament-astart-config',
+            '--force' => true,
+        ]);
+
+        $this->call('vendor:publish', [
+            '--tag' => 'filament-astart-lang',
+            '--force' => true,
+        ]);
+
+        $this->call('vendor:publish', [
+            '--tag' => 'filament-astart-stubs',
+            '--force' => true,
+        ]);
+
+        $this->call('migrate');
+
     }
 }
