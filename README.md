@@ -27,11 +27,18 @@ Install the package via Composer:
 composer require aurorawebsoftware/filament-astart
 ```
 
-Then run the main install command:
+Then run the main installation command:
 
 ```
 php artisan filament-astart:install
 ```
+
+> ⚠️ **Warning:** This is a first-time installation command.
+>
+> It will automatically **publish and overwrite** configuration, language, and stub files using the `--force` flag.
+>
+> Make sure to backup or version control your custom changes before running.
+
 
 This will:
 
@@ -40,6 +47,56 @@ This will:
 - Publish seeders and stubs
 - Seed example roles and permissions
 - Setup AAuth and Arflow integrations
+
+### 📥 Post-Installation Setup
+
+After running the installation command, make sure to complete the following steps:
+
+#### 1️⃣ Register the plugin in your Filament panel provider
+
+Open your Filament panel service provider (usually `AdminPanelProvider`) and register the plugin inside the `panel()` method:
+
+```php
+use AuroraWebSoftware\FilamentAstart\FilamentAstartPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->plugins([
+            FilamentAstartPlugin::make(),
+        ]);
+}
+```
+
+#### 2️⃣ Update your User model
+
+Your `User` model must implement the required contract and trait from the AAuth package:
+
+```php
+use AuroraWebSoftware\AAuth\Traits\AAuthUser;
+use AuroraWebSoftware\AAuth\Contracts\AAuthUserContract;
+
+class User extends Authenticatable implements AAuthUserContract
+{
+    use AAuthUser;
+
+    // Your user model logic...
+}
+```
+
+This ensures that AAuth can interact properly with your authenticated users.
+
+### 🔐 Default Credentials
+
+After installation, you can log in with the following default user credentials (if you seeded the sample data):
+
+```text
+Email:    user1@example.com
+Password: password
+```
+
+> ⚠️ **Important:** Be sure to change or delete this user in production environments.
+
 
 ---
 
@@ -57,6 +114,15 @@ php artisan vendor:publish --tag="filament-astart-config"
 
 ```
 php artisan vendor:publish --tag="filament-astart-lang"
+```
+### AAuth Seeders
+```
+php artisan vendor:publish --tag="aauth-seeders"
+php artisan db:seed --class=SampleDataSeeder
+```
+### Arflow Config
+```
+php artisan vendor:publish --tag=arflow-config
 ```
 
 

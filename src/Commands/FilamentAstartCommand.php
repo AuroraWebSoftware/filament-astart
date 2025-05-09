@@ -12,46 +12,31 @@ class FilamentAstartCommand extends Command
 
     public function handle(): void
     {
-        try {
-            $this->call('migrate');
-        } catch (\Throwable $e) {
-            $this->error('❌ Migration Exception ' . $e->getMessage());
+        $this->warn('⚠️  This installation will overwrite existing config, language, and stub files using --force.');
+
+        if (! $this->confirm('Do you want to continue?', false)) {
+            $this->info('❌ Installation cancelled by user.');
             return;
         }
 
-        // AAuth
-        $this->call('vendor:publish', [
-            '--tag' => 'aauth-seeders',
-            '--force' => true,
-        ]);
+        $this->info('📦 Publishing all config and migrations before anything else...');
 
-        $this->call('db:seed', [
-            '--class' => 'SampleDataSeeder',
-        ]);
+        // Publish configs & resources
+        $this->call('vendor:publish', ['--tag' => 'arflow-config', '--force' => true]);
+        $this->call('vendor:publish', ['--tag' => 'filament-astart-config', '--force' => true]);
+        $this->call('vendor:publish', ['--tag' => 'filament-astart-lang', '--force' => true]);
+        $this->call('vendor:publish', ['--tag' => 'filament-astart-stubs', '--force' => true]);
 
-        //Arflow
-        $this->call('vendor:publish', [
-            '--tag' => 'arflow-config',
-            '--force' => true,
-        ]);
+        // Publish AAuth seeders
+        $this->call('vendor:publish', ['--tag' => 'aauth-seeders', '--force' => true]);
 
-        //AStart
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-astart-config',
-            '--force' => true,
-        ]);
-
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-astart-lang',
-            '--force' => true,
-        ]);
-
-        $this->call('vendor:publish', [
-            '--tag' => 'filament-astart-stubs',
-            '--force' => true,
-        ]);
-
+        $this->info('🔁 Running migrations...');
         $this->call('migrate');
 
+        $this->info('🌱 Running SampleDataSeeder...');
+        $this->call('db:seed', ['--class' => 'SampleDataSeeder']);
+
+        $this->info('✅ Filament Astart installation completed successfully!');
     }
+
 }
