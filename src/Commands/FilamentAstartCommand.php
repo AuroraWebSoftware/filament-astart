@@ -16,6 +16,7 @@ class FilamentAstartCommand extends Command
 
         if (! $this->confirm('Do you want to continue?', false)) {
             $this->info('❌ Installation cancelled by user.');
+
             return;
         }
 
@@ -38,5 +39,4 @@ class FilamentAstartCommand extends Command
 
         $this->info('✅ Filament Astart installation completed successfully!');
     }
-
 }
