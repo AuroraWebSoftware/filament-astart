@@ -8,10 +8,11 @@ use Prism\Prism\Contracts\Message;
 
 class ChatState implements State
 {
-
     /** @var array<int, Message> */
     private array $messages = [];
+
     private ?string $threadId;
+
     private ?string $nextFlowStep;
 
     public function getMessages(): array
@@ -22,6 +23,7 @@ class ChatState implements State
     public function addMessage(Message $message): self
     {
         $this->messages[] = $message;
+
         return $this;
     }
 
@@ -30,7 +32,7 @@ class ChatState implements State
         foreach ($messages as $message) {
             $this->addMessage($message);
         }
+
         return $this;
     }
-
 }

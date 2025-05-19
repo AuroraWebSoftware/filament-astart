@@ -10,10 +10,12 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 class ChatFlow implements Flow
 {
     private State $state;
-    private Step $currentStep;
-    private int $timeout = -1;
-    private int $maxSteps = -1;
 
+    private Step $currentStep;
+
+    private int $timeout = -1;
+
+    private int $maxSteps = -1;
 
     public function __construct(Step $initialStep, int $timeout = -1, int $maxSteps = -1)
     {
@@ -36,5 +38,4 @@ class ChatFlow implements Flow
 
         return $nextStep;
     }
-
 }

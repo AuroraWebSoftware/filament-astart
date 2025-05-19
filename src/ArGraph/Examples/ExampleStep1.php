@@ -2,7 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\ArGraph\Examples;
 
-
 use AuroraWebSoftware\FilamentAstart\ArGraph\Chat\ChatState;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
@@ -15,17 +14,19 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 class ExampleStep1 implements Step
 {
     private string $prompt;
-    public function __construct(Step $previousStep = null)
-    {
-    }
+
+    public function __construct(?Step $previousStep = null) {}
+
     public function getSupportedState(): string
     {
         return ChatState::class;
     }
 
-    public function prompt(string $prompt) {
+    public function prompt(string $prompt)
+    {
         $this->prompt = $prompt;
     }
+
     public function run(State $state): Step
     {
         $firstMessage = new UserMessage($this->prompt);
@@ -37,7 +38,7 @@ class ExampleStep1 implements Step
             properties: [
                 new EnumSchema('duygu', 'userın duygusu', ['mutlu', 'sinirli']),
             ],
-            requiredFields: ['duygu',]
+            requiredFields: ['duygu']
         );
 
         $response = Prism::structured()
@@ -52,12 +53,9 @@ class ExampleStep1 implements Step
         $data = $response->structured;
 
         if ($data['duygu'] == 'mutlu') {
-            return (new ExampleStep2($this));
+            return new ExampleStep2($this);
         } else {
-            return (new ExampleStep1a($this));
+            return new ExampleStep1a($this);
         }
     }
-
-
-
 }

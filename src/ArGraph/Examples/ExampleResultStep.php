@@ -10,14 +10,13 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 
 class ExampleResultStep implements Step
 {
-    public function __construct(Step $previousStep = null)
-    {
-    }
+    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
-       return ChatState::class;
+        return ChatState::class;
     }
+
     public function run(State $state): Result
     {
         $array = $state->getMessages();
@@ -26,6 +25,4 @@ class ExampleResultStep implements Step
             end($array)->content
         );
     }
-
-
 }

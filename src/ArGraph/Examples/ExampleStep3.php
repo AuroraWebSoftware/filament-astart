@@ -11,17 +11,14 @@ use Prism\Prism\Prism;
 
 class ExampleStep3 implements Step
 {
-
-    public function __construct(Step $previousStep = null)
-    {
-    }
+    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
-       return ChatState::class;
+        return ChatState::class;
     }
 
-    public function run(State $state): Step|Result
+    public function run(State $state): Step | Result
     {
         $response = Prism::text()
             ->using(Provider::OpenAI, 'gpt-4o')
@@ -34,9 +31,6 @@ class ExampleStep3 implements Step
 
         $state->addMessages($response->responseMessages);
 
-        return (new ExampleResultStep($this));
+        return new ExampleResultStep($this);
     }
-
-
-
 }

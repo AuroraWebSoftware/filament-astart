@@ -14,17 +14,14 @@ use Prism\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class ExampleStep1a implements Step
 {
-
-    public function __construct(Step $previousStep = null)
-    {
-    }
+    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
         return ChatState::class;
     }
 
-    public function run(State $state): Step|Result
+    public function run(State $state): Step | Result
     {
         $tool1 = Tool::as('discount')
             ->for('müşteriye aldığı ürün kategorisine göre indirim oranı ver')
@@ -35,7 +32,8 @@ class ExampleStep1a implements Step
                 } elseif ($category == 'araba aksesuarı') {
                     return "$category için indirim oranı %20 ";
                 }
-                return "indirim oranı %50 ";
+
+                return 'indirim oranı %50 ';
             });
 
         $tool2 = Tool::as('contact')
@@ -47,7 +45,8 @@ class ExampleStep1a implements Step
                 } elseif ($category == 'araba aksesuarı') {
                     return "$category için yetkili Kemal Bey, 0555 666 777 999";
                 }
-                return "yetkili yok ";
+
+                return 'yetkili yok ';
             });
 
         $response = Prism::text()
@@ -58,14 +57,11 @@ class ExampleStep1a implements Step
             ->withToolChoice(ToolChoice::Auto)
             ->asText();
 
-
         $toolResultMessage = new ToolResultMessage($response->toolResults);
 
         $state->addMessages($response->responseMessages);
         $state->addMessage($toolResultMessage);
 
-        return (new ExampleStep3($this));
+        return new ExampleStep3($this);
     }
-
-
 }
