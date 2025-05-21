@@ -5,6 +5,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
@@ -22,9 +23,8 @@ use Illuminate\Support\Str;
 
 class RoleResource extends Resource
 {
-    /* ─────────────────────────────
-     |  Temel Ayarlar
-     ───────────────────────────── */
+    use AStartResourceAccessPolicy;
+
     protected static ?string $model = Role::class;
 
     protected static ?string $navigationGroup = 'AStart';

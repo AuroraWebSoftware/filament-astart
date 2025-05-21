@@ -3,7 +3,8 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/aurorawebsoftware/filament-astart.svg?style=flat-square)](https://packagist.org/packages/aurorawebsoftware/filament-astart)
 [![Total Downloads](https://img.shields.io/packagist/dt/aurorawebsoftware/filament-astart.svg?style=flat-square)](https://packagist.org/packages/aurorawebsoftware/filament-astart)
 
-**Filament Astart** is a powerful starter plugin for [FilamentPHP](https://filamentphp.com/), designed to kickstart Laravel admin panels with modular authentication, workflow logic, multilingual support, and prebuilt UI components.
+**Filament Astart** is a powerful starter plugin for [FilamentPHP](https://filamentphp.com/), designed to kickstart
+Laravel admin panels with modular authentication, workflow logic, multilingual support, and prebuilt UI components.
 
 ---
 
@@ -15,7 +16,6 @@ This package relies on the following AuroraWebSoftware components:
 
 
 - 🔄 [**Arflow**](https://github.com/AuroraWebSoftware/Arflow): Workflow engine for dynamic state transitions.
-
 
 ---
 
@@ -54,7 +54,8 @@ After running the installation command, make sure to complete the following step
 
 #### 1️⃣ Register the plugin in your Filament panel provider
 
-Open your Filament panel service provider (usually `AdminPanelProvider`) and register the plugin inside the `panel()` method:
+Open your Filament panel service provider (usually `AdminPanelProvider`) and register the plugin inside the `panel()`
+method:
 
 ```php
 use AuroraWebSoftware\FilamentAstart\FilamentAstartPlugin;
@@ -115,16 +116,19 @@ php artisan vendor:publish --tag="filament-astart-config"
 ```
 php artisan vendor:publish --tag="filament-astart-lang"
 ```
-### AAuth Seeders
+
+### Seeders
+
 ```
-php artisan vendor:publish --tag="aauth-seeders"
-php artisan db:seed --class=SampleDataSeeder
+php artisan vendor:publish --tag=filament-astart-seeders
+php artisan db:seed --class=SampleFilamentDataSeeder
 ```
+
 ### Arflow Config
+
 ```
 php artisan vendor:publish --tag=arflow-config
 ```
-
 
 ---
 
@@ -136,20 +140,21 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read the [CONTRIBUTING](.github/CONTRIBUTING.md) guide before submitting pull requests.
+Contributions are welcome! Please read the [CONTRIBUTING](.github/CONTRIBUTING.md) guide before submitting pull
+requests.
 
 ---
 
 ## 🛡️ Security
 
-If you discover a security vulnerability, please review [our security policy](../../security/policy) for how to report it.
+If you discover a security vulnerability, please review [our security policy](../../security/policy) for how to report
+it.
 
 ---
 
 ## 🙌 Credits
 
 - [AuroraWebSoftware](https://github.com/AuroraWebSoftware)
-
 
 ---
 
