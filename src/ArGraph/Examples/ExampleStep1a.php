@@ -7,25 +7,20 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Result;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 use Prism\Prism\Enums\Provider;
-use Prism\Prism\Enums\ToolChoice;
-use Prism\Prism\Facades\Tool;
 use Prism\Prism\Prism;
-use Prism\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class ExampleStep1a implements Step
 {
     private string $stopMessage;
 
-    public function __construct(?Step $previousStep = null)
-    {
-    }
+    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
         return ChatState::class;
     }
 
-    public function run(State $state): Step|Result
+    public function run(State $state): Step | Result
     {
         $response = Prism::text()
             ->using(Provider::OpenAI, 'gpt-4o')
@@ -35,22 +30,22 @@ class ExampleStep1a implements Step
 
         $state->addMessages($response->responseMessages);
 
-        return (new ExampleStep1b())->stop($response->text);
+        return (new ExampleStep1b)->stop($response->text);
     }
-
 
     public function stop(string $message): Step
     {
         $this->stopMessage = $message;
+
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;
         }
+
         return false;
     }
-
 }

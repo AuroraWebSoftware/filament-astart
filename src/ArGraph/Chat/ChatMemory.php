@@ -16,6 +16,7 @@ use Prism\Prism\ValueObjects\ToolResult;
 class ChatMemory implements Memory
 {
     private ?ChatflowState $state;
+
     private ?string $nextStep = null;
 
     /**
@@ -23,12 +24,11 @@ class ChatMemory implements Memory
      */
     private array $messages = [];
 
-
     public function __construct($thread)
     {
         $this->state = ChatflowState::where('thread', $thread)->first();
 
-        if (!$this->state) {
+        if (! $this->state) {
             $this->state = ChatflowState::create(
                 [
                     'thread' => $thread,
@@ -76,7 +76,6 @@ class ChatMemory implements Memory
                     );
                     $this->messages[] = $instance;
                 } elseif ($message->argraph_prism_class_type == 'ToolResultMessage') {
-
 
                     $toolResults = [];
 
@@ -156,7 +155,7 @@ class ChatMemory implements Memory
         ChatflowStateMessage::create([
             'argraph_chatflow_state_id' => $this->state->id,
             'argraph_prism_class_type' => 'ToolResultMessage',
-            'tool_results' => $message->toolResults
+            'tool_results' => $message->toolResults,
         ]);
         $this->messages[] = $message;
     }
@@ -171,5 +170,4 @@ class ChatMemory implements Memory
         ]);
         $this->messages[] = $message;
     }
-
 }

@@ -30,10 +30,9 @@ return new class extends Migration
         });
     }
 
-
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('argraph_chatflow_states');
         Schema::dropIfExists('argraph_chatflow_state_messages');
     }
-
 };
