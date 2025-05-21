@@ -2,10 +2,10 @@
 
 return [
 
-    'user'=>'Kulanıcılar',
-    'organization_scope'=>'Organizasyon Scope',
-    'organization_node'=>'Organizasyon Node',
-    'role'=>'Roller',
+    'user' => 'Kulanıcılar',
+    'organization_scope' => 'Organizasyon Scope',
+    'organization_node' => 'Organizasyon Node',
+    'role' => 'Roller',
 
     'user_view' => 'Kullanıcıları Görüntüle',
     'user_edit' => 'Kullanıcıları Düzenle',

@@ -5,8 +5,6 @@ namespace AuroraWebSoftware\FilamentAstart;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Filament\Pages\RoleSwitch;
 use AuroraWebSoftware\FilamentAstart\Http\Middleware\EnsureUserHasRoleSelected;
-use AuroraWebSoftware\FilamentAstart\Pages\Demo;
-use AuroraWebSoftware\FilamentAstart\Pages\Settings;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;

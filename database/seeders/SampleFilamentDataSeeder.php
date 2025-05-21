@@ -28,7 +28,7 @@ class SampleFilamentDataSeeder extends Seeder
             // loop through the tables
             foreach ($tables as $table) {
                 // if the table is not to be ignored then:
-                if (!in_array($table->table_name, $ignores)) {
+                if (! in_array($table->table_name, $ignores)) {
                     // Get the max id from that table and add 1 to it
                     $seq = DB::table($table->table_name)->max('id') + 1;
 
@@ -107,37 +107,36 @@ class SampleFilamentDataSeeder extends Seeder
             'status' => 'active',
         ]);
 
-
         DB::table('user_role_organization_node')->insert([
             'user_id' => $user1->id,
             'role_id' => $role1->id,
         ]);
 
         $permissions = [
-            "user_view",
-            "user_edit",
-            "user_delete",
-            "user_create",
-            "user_update",
-            "user_view_any",
-            "organization_scope_view",
-            "organization_scope_edit",
-            "organization_scope_delete",
-            "organization_scope_create",
-            "organization_scope_update",
-            "organization_scope_view_any",
-            "organization_node_view",
-            "organization_node_edit",
-            "organization_node_delete",
-            "organization_node_create",
-            "organization_node_update",
-            "organization_node_view_any",
-            "role_view",
-            "role_edit",
-            "role_delete",
-            "role_create",
-            "role_update",
-            "role_view_any"
+            'user_view',
+            'user_edit',
+            'user_delete',
+            'user_create',
+            'user_update',
+            'user_view_any',
+            'organization_scope_view',
+            'organization_scope_edit',
+            'organization_scope_delete',
+            'organization_scope_create',
+            'organization_scope_update',
+            'organization_scope_view_any',
+            'organization_node_view',
+            'organization_node_edit',
+            'organization_node_delete',
+            'organization_node_create',
+            'organization_node_update',
+            'organization_node_view_any',
+            'role_view',
+            'role_edit',
+            'role_delete',
+            'role_create',
+            'role_update',
+            'role_view_any',
         ];
 
         foreach ($permissions as $permission) {
@@ -146,7 +145,6 @@ class SampleFilamentDataSeeder extends Seeder
                 'permission' => $permission,
             ]);
         }
-
 
         if (config('database.default') == 'pgsql') {
             $tables = DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\' ORDER BY table_name;');
@@ -157,7 +155,7 @@ class SampleFilamentDataSeeder extends Seeder
             // loop through the tables
             foreach ($tables as $table) {
                 // if the table is not to be ignored then:
-                if (!in_array($table->table_name, $ignores)) {
+                if (! in_array($table->table_name, $ignores)) {
                     // Get the max id from that table and add 1 to it
                     $seq = DB::table($table->table_name)->max('id') + 1;
 
