@@ -34,7 +34,7 @@ class ViewUser extends ViewRecord
                         ])
                         ->required()
                         ->live()
-                        ->reactive(); // Bu gerekli
+                        ->reactive();
 
                     $form[] = Select::make('role_id')
                         ->label(__('filament-astart::user.select_role'))

@@ -124,6 +124,10 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
 
+        $this->publishes([
+            __DIR__ . '/../database/seeders/SampleFilamentDataSeeder.php' => database_path('seeders/SampleFilamentDataSeeder.php'),
+        ], 'filament-astart-seeders');
+
     }
 
     protected function getAssetPackageName(): ?string

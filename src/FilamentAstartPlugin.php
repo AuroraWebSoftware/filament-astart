@@ -29,9 +29,7 @@ class FilamentAstartPlugin implements Plugin
     {
         $panel->pages(
             [
-                Settings::class,
                 RoleSwitch::class,
-                Demo::class,
             ]
         );
         $panel->resources(
