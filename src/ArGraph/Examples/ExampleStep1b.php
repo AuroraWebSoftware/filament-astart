@@ -61,26 +61,25 @@ class ExampleStep1b implements Step
 
         $toolResultMessage = new ToolResultMessage($response->toolResults);
 
-
         $state->addMessages($response->responseMessages);
         $state->addMessage($toolResultMessage);
 
         return new ExampleStep3($this);
     }
 
-
     public function stop(string $message): Step
     {
         $this->stopMessage = $message;
+
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;
         }
+
         return false;
     }
-
 }

@@ -33,7 +33,7 @@ class ExampleResultStep implements Step
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         return false;
     }

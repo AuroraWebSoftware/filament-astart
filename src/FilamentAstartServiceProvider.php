@@ -97,8 +97,6 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             $this->getAssetPackageName()
         );
 
-
-
         // Icon Registration
         FilamentIcon::register($this->getIcons());
 
@@ -189,7 +187,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         return [
             'create_filament-astart_table',
             'create_astart_examples_table',
-            '2025_05_17_143421_create_argraph_tables'
+            '2025_05_17_143421_create_argraph_tables',
         ];
     }
 

@@ -9,7 +9,6 @@ use Prism\Prism\Enums\Provider;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class ExampleStep1 implements Step
 {
@@ -51,18 +50,19 @@ class ExampleStep1 implements Step
         }
     }
 
-
     public function stop(string $message): Step
     {
         $this->stopMessage = $message;
+
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;
         }
+
         return false;
     }
 }

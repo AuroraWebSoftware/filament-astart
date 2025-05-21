@@ -12,7 +12,6 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class ChatState implements State
 {
-
     private ChatMemory $chatMemory;
 
     public function __construct(ChatMemory $chatMemory)
@@ -32,7 +31,6 @@ class ChatState implements State
     {
         return $this->messages;
     }
-
 
     public function getChatMemory(): ChatMemory
     {
@@ -55,6 +53,7 @@ class ChatState implements State
         }
 
         $this->messages[] = $message;
+
         return $this;
     }
 

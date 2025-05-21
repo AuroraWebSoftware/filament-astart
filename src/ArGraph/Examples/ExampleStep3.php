@@ -36,18 +36,19 @@ class ExampleStep3 implements Step
         return new ExampleResultStep($this);
     }
 
-
     public function stop(string $message): Step
     {
         $this->stopMessage = $message;
+
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;
         }
+
         return false;
     }
 }
