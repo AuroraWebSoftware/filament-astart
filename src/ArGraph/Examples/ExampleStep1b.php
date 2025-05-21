@@ -72,7 +72,7 @@ class ExampleStep1b implements Step
         $r = $response->structured;
 
         if (! $r['name_known']) {
-            return (new ExampleStep1a());
+            return new ExampleStep1a;
         }
 
         $response = Prism::text()
