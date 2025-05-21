@@ -21,8 +21,20 @@ class ExampleResultStep implements Step
     {
         $array = $state->getMessages();
 
+        dump($array);
+
         return new ChatResult(
             end($array)->content
         );
+    }
+
+    public function stop(string $message): Step
+    {
+        return $this;
+    }
+
+    public function requiresHumanInteraction(): false|string
+    {
+        return false;
     }
 }

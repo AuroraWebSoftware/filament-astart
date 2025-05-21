@@ -12,6 +12,8 @@ interface Step
      * @return class-string
      */
     public function getSupportedState(): string;
+    public function run(State $state): Step|Result;
+    public function stop(string $message): self;
+    public function requiresHumanInteraction(): false|string;
 
-    public function run(State $state): Step | Result;
 }

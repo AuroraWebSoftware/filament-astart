@@ -11,7 +11,7 @@ class ChatFlow implements Flow
 {
     private State $state;
 
-    private Step $currentStep;
+    private Step $nextStep;
 
     private int $timeout = -1;
 
@@ -19,23 +19,42 @@ class ChatFlow implements Flow
 
     public function __construct(Step $initialStep, int $timeout = -1, int $maxSteps = -1)
     {
-        $this->currentStep = $initialStep;
+        $this->nextStep = $initialStep;
         $this->timeout = $timeout;
         $this->maxSteps = $maxSteps;
-
         return $this;
     }
 
-    public function run(State $state): Result
+    public function run(State|ChatState $state): Result
     {
         $this->state = $state;
 
-        $nextStep = $this->currentStep->run($this->state);
+        if (!$this->state->getChatMemory()->getNextStep() == null) {
+            $nextStepClassName = $this->state->getChatMemory()->getNextStep();
+            $this->nextStep = new $nextStepClassName();
+        }
+
+        echo $this->nextStep::class . "(0) <br>";
+        $nextStep = $this->nextStep->run($this->state);
+        echo $nextStep::class . " (1) <br>  ";
+        $this->state->getChatMemory()->storeNextStep($nextStep::class);
 
         while ($nextStep instanceof Step) {
             $nextStep = $nextStep->run($this->state);
-        }
+            // echo $nextStep::class . " (2) <br>";
+            $this->state->getChatMemory()->storeNextStep($nextStep::class);
 
+            if ($nextStep instanceof Result) {
+                $this->state->getChatMemory()->storeNextStep(null);
+            } else {
+                if ($nextStep->requiresHumanInteraction()) {
+                    return new ChatResult(
+                        $nextStep->requiresHumanInteraction()
+                    );
+                    break;
+                }
+            }
+        }
         return $nextStep;
     }
 }

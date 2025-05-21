@@ -13,7 +13,7 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class ExampleStep1 implements Step
 {
-    private string $prompt;
+    private string $stopMessage;
 
     public function __construct(?Step $previousStep = null) {}
 
@@ -22,16 +22,8 @@ class ExampleStep1 implements Step
         return ChatState::class;
     }
 
-    public function prompt(string $prompt)
-    {
-        $this->prompt = $prompt;
-    }
-
     public function run(State $state): Step
     {
-        $firstMessage = new UserMessage($this->prompt);
-        $state->addMessage($firstMessage);
-
         $schema = new ObjectSchema(
             name: 'duygu',
             description: 'duygu analizi',
@@ -44,7 +36,7 @@ class ExampleStep1 implements Step
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'o4-mini')
             ->withSchema($schema)
-            ->withPrompt($this->prompt)
+            ->withMessages($state->getMessages())
             ->withSystemPrompt('sen bir duygu analistisin, user sana cümle yazacak sen de onu segmente edeceksin')
             ->asStructured();
 
@@ -57,5 +49,20 @@ class ExampleStep1 implements Step
         } else {
             return new ExampleStep1a($this);
         }
+    }
+
+
+    public function stop(string $message): Step
+    {
+        $this->stopMessage = $message;
+        return $this;
+    }
+
+    public function requiresHumanInteraction(): false|string
+    {
+        if ($this->stopMessage) {
+            return $this->stopMessage;
+        }
+        return false;
     }
 }
