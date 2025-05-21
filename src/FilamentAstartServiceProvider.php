@@ -37,13 +37,13 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
          */
         $package->name(static::$name)
             ->hasCommands($this->getCommands());
-//            ->hasInstallCommand(function (InstallCommand $command) {
-//                $command
-//                    ->publishConfigFile()
-//                    ->publishMigrations()
-//                    ->askToRunMigrations()
-//                    ->askToStarRepoOnGitHub('aurorawebsoftware/filament-astart');
-//            });
+        //            ->hasInstallCommand(function (InstallCommand $command) {
+        //                $command
+        //                    ->publishConfigFile()
+        //                    ->publishMigrations()
+        //                    ->askToRunMigrations()
+        //                    ->askToStarRepoOnGitHub('aurorawebsoftware/filament-astart');
+        //            });
 
         $configFileName = $package->shortName();
 
