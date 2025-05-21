@@ -29,7 +29,7 @@ class ExampleStep1a implements Step
     {
         $response = Prism::text()
             ->using(Provider::OpenAI, 'gpt-4o')
-            ->withSystemPrompt('sen bir müşteri asiatanısısn. kızgın müşteriye hitap etmek için ismini öğreneceksin, uygun şekilde sor.')
+            ->withSystemPrompt('sen bir müşteri asiatanısısn. kızgın müşteriye hitap etmek için ismini öğreneceksin, uygun şekilde sor. ismini mutlaka öğrenmeye çalış')
             ->withMessages($state->getMessages())
             ->asText();
 

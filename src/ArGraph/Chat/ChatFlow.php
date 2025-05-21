@@ -17,18 +17,17 @@ class ChatFlow implements Flow
 
     private int $maxSteps = -1;
 
-    public function __construct(Step $initialStep, int $timeout = -1, int $maxSteps = -1)
+    public function __construct(Step $initialStep, State|ChatState $state, int $timeout = -1, int $maxSteps = -1)
     {
         $this->nextStep = $initialStep;
+        $this->state = $state;
         $this->timeout = $timeout;
         $this->maxSteps = $maxSteps;
         return $this;
     }
 
-    public function run(State|ChatState $state): Result
+    public function run(): Result
     {
-        $this->state = $state;
-
         if (!$this->state->getChatMemory()->getNextStep() == null) {
             $nextStepClassName = $this->state->getChatMemory()->getNextStep();
             $this->nextStep = new $nextStepClassName();

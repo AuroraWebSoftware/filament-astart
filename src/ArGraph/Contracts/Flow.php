@@ -4,5 +4,5 @@ namespace AuroraWebSoftware\FilamentAstart\ArGraph\Contracts;
 
 interface Flow
 {
-    public function run(State $state);
+    public function run();
 }
