@@ -109,6 +109,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
                 ], 'filament-astart-stubs');
             }
 
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
             $this->publishes([
                 __DIR__ . '/../config/astart-auth.php' => config_path('astart-auth.php'),
             ], 'filament-astart-config');
@@ -190,6 +192,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         return [
             'create_filament-astart_table',
             'create_astart_examples_table',
+            '2025_05_17_143421_create_argraph_tables',
         ];
     }
 

@@ -11,6 +11,8 @@ use Prism\Prism\Prism;
 
 class ExampleStep2 implements Step
 {
+    private string $stopMessage;
+
     public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
@@ -32,5 +34,21 @@ class ExampleStep2 implements Step
         $state->addMessages($response->responseMessages);
 
         return new ExampleResultStep($this);
+    }
+
+    public function stop(string $message): Step
+    {
+        $this->stopMessage = $message;
+
+        return $this;
+    }
+
+    public function requiresHumanInteraction(): false | string
+    {
+        if ($this->stopMessage) {
+            return $this->stopMessage;
+        }
+
+        return false;
     }
 }
