@@ -36,14 +36,14 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package->name(static::$name)
-            ->hasCommands($this->getCommands())
-            ->hasInstallCommand(function (InstallCommand $command) {
-                $command
-                    ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('aurorawebsoftware/filament-astart');
-            });
+            ->hasCommands($this->getCommands());
+        //            ->hasInstallCommand(function (InstallCommand $command) {
+        //                $command
+        //                    ->publishConfigFile()
+        //                    ->publishMigrations()
+        //                    ->askToRunMigrations()
+        //                    ->askToStarRepoOnGitHub('aurorawebsoftware/filament-astart');
+        //            });
 
         $configFileName = $package->shortName();
 
@@ -77,6 +77,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Livewire::component('arflow-state-transition-listbox', StateTransitionListbox::class);
+
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['en', 'tr']);
@@ -115,6 +116,11 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             $this->publishes([
                 __DIR__ . '/../resources/lang' => lang_path('vendor/filament-astart'),
             ], 'filament-astart-lang');
+
+            $this->publishes([
+                __DIR__ . '/../database/seeders/SampleFilamentDataSeeder.php' => database_path('seeders/SampleFilamentDataSeeder.php'),
+            ], 'filament-astart-seeders');
+
         }
 
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-astart');
@@ -123,11 +129,6 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         Testable::mixin(new TestsFilamentAstart);
 
         $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
-
-        $this->publishes([
-            __DIR__ . '/../database/seeders/SampleFilamentDataSeeder.php' => database_path('seeders/SampleFilamentDataSeeder.php'),
-        ], 'filament-astart-seeders');
-
     }
 
     protected function getAssetPackageName(): ?string

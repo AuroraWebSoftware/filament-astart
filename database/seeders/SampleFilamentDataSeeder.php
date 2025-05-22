@@ -1,6 +1,6 @@
 <?php
 
-namespace AuroraWebSoftware\FilamentAstart\Database\seeders;
+namespace Database\Seeders;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationNode;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
