@@ -12,31 +12,52 @@ class FilamentAstartCommand extends Command
 
     public function handle(): void
     {
-        $this->warn('⚠️  This installation will overwrite existing config, language, and stub files using --force.');
+        if ($this->confirm('Would you like to publish all config, language, stub, and seeder files?', true)) {
+            $this->info('📦 Publishing all config and migrations before anything else...');
 
-        if (! $this->confirm('Do you want to continue?', false)) {
-            $this->info('❌ Installation cancelled by user.');
+            try {
+                $this->call('vendor:publish', ['--tag' => 'arflow-config']);
+                $this->call('vendor:publish', ['--tag' => 'filament-astart-config']);
+                $this->call('vendor:publish', ['--tag' => 'filament-astart-lang']);
+                $this->call('vendor:publish', ['--tag' => 'filament-astart-stubs']);
+                $this->call('vendor:publish', ['--tag' => 'filament-astart-seeders']);
+            } catch (\Throwable $e) {
+                $this->error('❌ An error occurred while publishing files: ' . $e->getMessage());
 
-            return;
+                return;
+            }
+        } else {
+            $this->info('Publishing config, language, stub, and seeder files was skipped.');
         }
 
-        $this->info('📦 Publishing all config and migrations before anything else...');
+        if ($this->confirm('Would you like to run migrations now?', true)) {
+            $this->info('🔁 Running migrations...');
 
-        // Publish configs & resources
-        $this->call('vendor:publish', ['--tag' => 'arflow-config', '--force' => true]);
-        $this->call('vendor:publish', ['--tag' => 'filament-astart-config', '--force' => true]);
-        $this->call('vendor:publish', ['--tag' => 'filament-astart-lang', '--force' => true]);
-        $this->call('vendor:publish', ['--tag' => 'filament-astart-stubs', '--force' => true]);
+            try {
+                $this->call('migrate');
+            } catch (\Throwable $e) {
+                $this->error('❌ An error occurred while running migrations: ' . $e->getMessage());
 
-        // Publish AAuth seeders
-        $this->call('vendor:publish', ['--tag' => 'aauth-seeders', '--force' => true]);
+                return;
+            }
+        } else {
+            $this->info('Migration step was skipped.');
+        }
 
-        $this->info('🔁 Running migrations...');
-        $this->call('migrate');
+        if ($this->confirm('Would you like to run the SampleFilamentDataSeeder now?', true)) {
+            $this->info('🌱 Running SampleFilamentDataSeeder...');
 
-        $this->info('🌱 Running SampleDataSeeder...');
-        $this->call('db:seed', ['--class' => 'SampleDataSeeder']);
+            try {
+                $this->call('db:seed', ['--class' => 'SampleFilamentDataSeeder']);
+            } catch (\Throwable $e) {
+                $this->error('❌ An error occurred while running the seeder: ' . $e->getMessage());
 
-        $this->info('✅ Filament Astart installation completed successfully!');
+                return;
+            }
+        } else {
+            $this->info('Seeder step was skipped.');
+        }
+
+        $this->info('✅ Filament Astart installation process completed!');
     }
 }
