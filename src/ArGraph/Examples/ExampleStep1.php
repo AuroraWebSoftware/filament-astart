@@ -6,6 +6,7 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Chat\ChatState;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Enums\StructuredMode;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ObjectSchema;
@@ -14,7 +15,6 @@ class ExampleStep1 implements Step
 {
     private string $stopMessage;
 
-    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
@@ -33,7 +33,7 @@ class ExampleStep1 implements Step
         );
 
         $response = Prism::structured()
-            ->using(Provider::OpenAI, 'o4-mini')
+            ->using(Provider::OpenAI, 'gpt-4o')
             ->withSchema($schema)
             ->withMessages($state->getMessages())
             ->withSystemPrompt('sen bir duygu analistisin, user sana cümle yazacak sen de onu segmente edeceksin')

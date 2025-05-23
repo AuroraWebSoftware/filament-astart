@@ -28,7 +28,7 @@ class ChatMemory implements Memory
     {
         $this->state = ChatflowState::where('thread', $thread)->first();
 
-        if (! $this->state) {
+        if (!$this->state) {
             $this->state = ChatflowState::create(
                 [
                     'thread' => $thread,
@@ -124,19 +124,21 @@ class ChatMemory implements Memory
         return $this->messages;
     }
 
-    public function storeUserMessage(UserMessage $message): void
+    public function storeUserMessage(UserMessage $message, string $step = null, string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
             'argraph_chatflow_state_id' => $this->state->id,
             'argraph_prism_class_type' => 'UserMessage',
             'content' => $message->content,
+            'step' => $step,
+            'tag' => $tag,
         ]);
 
         $this->messages[] = $message;
     }
 
-    public function storeAssistantMessage(AssistantMessage $message): void
+    public function storeAssistantMessage(AssistantMessage $message, string $step = null, string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
@@ -145,29 +147,55 @@ class ChatMemory implements Memory
             'content' => $message->content,
             'tool_calls' => $message->toolCalls,
             'additional_content' => $message->additionalContent,
+            'step' => $step,
+            'tag' => $tag,
         ]);
         $this->messages[] = $message;
     }
 
-    public function storeToolResultMessage(ToolResultMessage $message): void
+    public function storeToolResultMessage(ToolResultMessage $message, string $step = null, string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
             'argraph_chatflow_state_id' => $this->state->id,
             'argraph_prism_class_type' => 'ToolResultMessage',
             'tool_results' => $message->toolResults,
+            'step' => $step,
+            'tag' => $tag
         ]);
         $this->messages[] = $message;
     }
 
-    public function storeToolSystemMessage(SystemMessage $message): void
+    public function storeToolSystemMessage(SystemMessage $message, string $step = null, string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
             'argraph_chatflow_state_id' => $this->state->id,
             'argraph_prism_class_type' => 'SystemMessage',
             'content' => $message->content,
+            'step' => $step,
+            'tag' => $tag
         ]);
         $this->messages[] = $message;
+    }
+
+    public function getParametricMemories(): array
+    {
+        return $this->state->parametric_memory;
+    }
+
+    public function getParametricMemory($key)
+    {
+        return $this->state->parametric_memory[$key];
+    }
+
+    public function setParametricMemory(string $key, $value): void
+    {
+        $this->state->update([
+            'parametric_memory' => array_merge(
+                $this->state->parametric_memory ?? [],
+                [$key => $value]
+            )
+        ]);
     }
 }

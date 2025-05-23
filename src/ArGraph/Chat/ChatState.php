@@ -20,6 +20,11 @@ class ChatState implements State
         $this->messages = $this->chatMemory->getMessages();
     }
 
+    public static function getParametricMemoryScheme(): array
+    {
+        return ['name'];
+    }
+
     /** @var array<int, Message> */
     private array $messages = [];
 
@@ -37,18 +42,18 @@ class ChatState implements State
         return $this->chatMemory;
     }
 
-    public function addMessage(Message $message, bool $store = true): self
+    public function addMessage(Message $message, string $step = null, string $tag = null, bool $store = true): self
     {
 
         if ($store) {
             if ($message instanceof UserMessage) {
-                $this->chatMemory->storeUserMessage($message);
+                $this->chatMemory->storeUserMessage($message, $step, $tag);
             } elseif ($message instanceof AssistantMessage) {
-                $this->chatMemory->storeAssistantMessage($message);
+                $this->chatMemory->storeAssistantMessage($message, $step, $tag);
             } elseif ($message instanceof ToolResultMessage) {
-                $this->chatMemory->storeToolResultMessage($message);
+                $this->chatMemory->storeToolResultMessage($message, $step, $tag);
             } elseif ($message instanceof SystemMessage) {
-                $this->chatMemory->storeToolSystemMessage($message);
+                $this->chatMemory->storeToolSystemMessage($message, $step, $tag);
             }
         }
 
@@ -57,10 +62,10 @@ class ChatState implements State
         return $this;
     }
 
-    public function addMessages(Collection $messages): self
+    public function addMessages(Collection $messages, string $step = null, string $tag = null): self
     {
         foreach ($messages as $message) {
-            $this->addMessage($message);
+            $this->addMessage($message, $step, $tag);
         }
 
         return $this;

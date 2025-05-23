@@ -13,7 +13,6 @@ class ExampleStep1a implements Step
 {
     private string $stopMessage;
 
-    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {

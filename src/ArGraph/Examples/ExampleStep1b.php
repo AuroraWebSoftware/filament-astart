@@ -7,25 +7,26 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Result;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Enums\StructuredMode;
 use Prism\Prism\Enums\ToolChoice;
 use Prism\Prism\Facades\Tool;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\BooleanSchema;
 use Prism\Prism\Schema\ObjectSchema;
+use Prism\Prism\Schema\StringSchema;
 use Prism\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class ExampleStep1b implements Step
 {
     private string $stopMessage;
 
-    public function __construct(?Step $previousStep = null) {}
 
     public function getSupportedState(): string
     {
         return ChatState::class;
     }
 
-    public function run(State $state): Step | Result
+    public function run(State|ChatState $state): Step|Result
     {
         $tool1 = Tool::as('discount')
             ->for('müşteriye aldığı ürün kategorisine göre indirim oranı ver, müşteriye ismiyle hitap et')
@@ -58,22 +59,30 @@ class ExampleStep1b implements Step
             description: 'users name is given before.',
             properties: [
                 new BooleanSchema('name_known', 'true if users name is known, false otherwise'),
+                new StringSchema('name', 'name of the user if known, otherwise empty string')
             ],
             requiredFields: ['name_known']
         );
 
+
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
+            ->usingStructuredMode(StructuredMode::Auto)
             ->withSchema($schema)
             ->withMessages($state->getMessages())
             ->withSystemPrompt('user ile konuşma geçmişini inceleyip adını bilip bilmediğine göre dönüş yap')
             ->asStructured();
 
+        $state->addMessages($response->responseMessages, 'ExampleStep1b', 'name_known');
+
         $r = $response->structured;
 
-        if (! $r['name_known']) {
+
+        if (!$r['name_known']) {
             return new ExampleStep1a;
         }
+
+        $state->getChatMemory()->setParametricMemory('name', $r['name']);
 
         $response = Prism::text()
             ->using(Provider::OpenAI, 'gpt-4o')
@@ -85,8 +94,8 @@ class ExampleStep1b implements Step
 
         $toolResultMessage = new ToolResultMessage($response->toolResults);
 
-        $state->addMessages($response->responseMessages);
-        $state->addMessage($toolResultMessage);
+        $state->addMessages($response->responseMessages, 'ExampleStep1b', 'discount');
+        $state->addMessage($toolResultMessage, 'ExampleStep1b', 'discount result');;;
 
         return new ExampleStep3($this);
     }
@@ -98,7 +107,7 @@ class ExampleStep1b implements Step
         return $this;
     }
 
-    public function requiresHumanInteraction(): false | string
+    public function requiresHumanInteraction(): false|string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;

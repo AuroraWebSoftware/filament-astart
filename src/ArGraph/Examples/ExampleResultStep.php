@@ -21,8 +21,6 @@ class ExampleResultStep implements Step
     {
         $array = $state->getMessages();
 
-        dump($array);
-
         return new ChatResult(
             end($array)->content
         );
