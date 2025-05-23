@@ -20,7 +20,7 @@ return new class extends Migration
         Schema::create('argraph_chatflow_state_messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('argraph_chatflow_state_id')->constrained();
-            $table->string('step')->nullable();;
+            $table->string('step')->nullable();
             $table->string('tag')->nullable();
             $table->string('argraph_prism_class_type'); // UserMessage, AssistantMessage, ToolResultMessage, SystemMessage
             $table->text('content')->nullable(); // gelen giden  text veri

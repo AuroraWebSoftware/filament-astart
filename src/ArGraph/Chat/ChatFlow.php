@@ -4,17 +4,17 @@ namespace AuroraWebSoftware\FilamentAstart\ArGraph\Chat;
 
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Flow;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Result;
-use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 
 class ChatFlow implements Flow
 {
     private ChatState $state;
+
     private Step $nextStep;
 
     // todo eklenecek
-    //private int $timeout = -1;
-    //private int $maxSteps = -1;
+    // private int $timeout = -1;
+    // private int $maxSteps = -1;
 
     public function __construct(Step $initialStep, ChatState $state)
     {
@@ -26,7 +26,7 @@ class ChatFlow implements Flow
 
     public function run(): Result
     {
-        if (!$this->state->getChatMemory()->getNextStep() == null) {
+        if (! $this->state->getChatMemory()->getNextStep() == null) {
             $nextStepClassName = $this->state->getChatMemory()->getNextStep();
             $this->nextStep = new $nextStepClassName;
         }
@@ -49,6 +49,7 @@ class ChatFlow implements Flow
                 }
             }
         }
+
         return $nextStep;
     }
 }

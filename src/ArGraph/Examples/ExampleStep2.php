@@ -13,7 +13,6 @@ class ExampleStep2 implements Step
 {
     private string $stopMessage;
 
-
     public function getSupportedState(): string
     {
         return ChatState::class;
