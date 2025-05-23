@@ -42,7 +42,7 @@ class ChatState implements State
         return $this->chatMemory;
     }
 
-    public function addMessage(Message $message, string $step = null, string $tag = null, bool $store = true): self
+    public function addMessage(Message $message, ?string $step = null, ?string $tag = null, bool $store = true): self
     {
 
         if ($store) {
@@ -62,7 +62,7 @@ class ChatState implements State
         return $this;
     }
 
-    public function addMessages(Collection $messages, string $step = null, string $tag = null): self
+    public function addMessages(Collection $messages, ?string $step = null, ?string $tag = null): self
     {
         foreach ($messages as $message) {
             $this->addMessage($message, $step, $tag);

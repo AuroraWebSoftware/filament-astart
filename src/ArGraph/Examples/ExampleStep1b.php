@@ -20,13 +20,12 @@ class ExampleStep1b implements Step
 {
     private string $stopMessage;
 
-
     public function getSupportedState(): string
     {
         return ChatState::class;
     }
 
-    public function run(State|ChatState $state): Step|Result
+    public function run(State | ChatState $state): Step | Result
     {
         $tool1 = Tool::as('discount')
             ->for('müşteriye aldığı ürün kategorisine göre indirim oranı ver, müşteriye ismiyle hitap et')
@@ -59,11 +58,10 @@ class ExampleStep1b implements Step
             description: 'users name is given before.',
             properties: [
                 new BooleanSchema('name_known', 'true if users name is known, false otherwise'),
-                new StringSchema('name', 'name of the user if known, otherwise empty string')
+                new StringSchema('name', 'name of the user if known, otherwise empty string'),
             ],
             requiredFields: ['name_known']
         );
-
 
         $response = Prism::structured()
             ->using(Provider::OpenAI, 'gpt-4o')
@@ -77,8 +75,7 @@ class ExampleStep1b implements Step
 
         $r = $response->structured;
 
-
-        if (!$r['name_known']) {
+        if (! $r['name_known']) {
             return new ExampleStep1a;
         }
 
@@ -95,7 +92,7 @@ class ExampleStep1b implements Step
         $toolResultMessage = new ToolResultMessage($response->toolResults);
 
         $state->addMessages($response->responseMessages, 'ExampleStep1b', 'discount');
-        $state->addMessage($toolResultMessage, 'ExampleStep1b', 'discount result');;;
+        $state->addMessage($toolResultMessage, 'ExampleStep1b', 'discount result');
 
         return new ExampleStep3($this);
     }
@@ -107,7 +104,7 @@ class ExampleStep1b implements Step
         return $this;
     }
 
-    public function requiresHumanInteraction(): false|string
+    public function requiresHumanInteraction(): false | string
     {
         if ($this->stopMessage) {
             return $this->stopMessage;
