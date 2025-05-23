@@ -4,8 +4,6 @@ namespace AuroraWebSoftware\FilamentAstart\ArGraph\Contracts;
 
 interface Step
 {
-    public function __construct(?Step $previousStep = null);
-
     /**
      *  bu step hangi state'i almak zorunda kalacak?
      *

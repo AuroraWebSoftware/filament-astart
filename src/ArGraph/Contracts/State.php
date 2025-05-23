@@ -2,4 +2,9 @@
 
 namespace AuroraWebSoftware\FilamentAstart\ArGraph\Contracts;
 
-interface State {}
+interface State
+{
+
+    public static function getParametricMemoryScheme(): array;
+
+}
