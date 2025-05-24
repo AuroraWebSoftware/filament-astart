@@ -28,7 +28,7 @@ class ChatMemory implements Memory
     {
         $this->state = ChatflowState::where('thread', $thread)->first();
 
-        if (!$this->state) {
+        if (! $this->state) {
             $this->state = ChatflowState::create(
                 [
                     'thread' => $thread,
@@ -42,16 +42,14 @@ class ChatMemory implements Memory
 
     }
 
-
     public function prepareMessages(
-        array  $steps = [],
-        array  $tags = [],
-        int    $limit = 100,
-        int    $offset = 0,
+        array $steps = [],
+        array $tags = [],
+        int $limit = 100,
+        int $offset = 0,
         string $order = 'DESC',
-        string $fromTag = null,
-    ): void
-    {
+        ?string $fromTag = null,
+    ): void {
 
         $latestTag = null;
         if ($fromTag) {
@@ -151,17 +149,18 @@ class ChatMemory implements Memory
     public function getMessages(): array
     {
         $this->prepareMessages();
+
         return $this->messages;
     }
 
     public function getPreparedMessages(
-        array  $steps = [],
-        array  $tags = [],
-        int    $limit = 100,
-        int    $offset = 0,
+        array $steps = [],
+        array $tags = [],
+        int $limit = 100,
+        int $offset = 0,
         string $order = 'DESC',
-        string $fromTag = null): array
-    {
+        ?string $fromTag = null
+    ): array {
         $this->getPreparedMessages(
             $steps,
             $tags,
@@ -175,18 +174,14 @@ class ChatMemory implements Memory
     }
 
     public function getMessagesByFilter(
-        array  $steps = [],
-        array  $tagsContains = [],
-        int    $limit = 100,
-        int    $offset = 0,
+        array $steps = [],
+        array $tagsContains = [],
+        int $limit = 100,
+        int $offset = 0,
         string $order = 'DESC',
-    ): array
-    {
+    ): array {}
 
-
-    }
-
-    public function storeUserMessage(UserMessage $message, string $step = null, string $tag = null): void
+    public function storeUserMessage(UserMessage $message, ?string $step = null, ?string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
@@ -200,7 +195,7 @@ class ChatMemory implements Memory
         $this->messages[] = $message;
     }
 
-    public function storeAssistantMessage(AssistantMessage $message, string $step = null, string $tag = null): void
+    public function storeAssistantMessage(AssistantMessage $message, ?string $step = null, ?string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
@@ -215,7 +210,7 @@ class ChatMemory implements Memory
         $this->messages[] = $message;
     }
 
-    public function storeToolResultMessage(ToolResultMessage $message, string $step = null, string $tag = null): void
+    public function storeToolResultMessage(ToolResultMessage $message, ?string $step = null, ?string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
@@ -223,12 +218,12 @@ class ChatMemory implements Memory
             'argraph_prism_class_type' => 'ToolResultMessage',
             'tool_results' => $message->toolResults,
             'step' => $step,
-            'tag' => $tag
+            'tag' => $tag,
         ]);
         $this->messages[] = $message;
     }
 
-    public function storeToolSystemMessage(SystemMessage $message, string $step = null, string $tag = null): void
+    public function storeToolSystemMessage(SystemMessage $message, ?string $step = null, ?string $tag = null): void
     {
         // save to db
         ChatflowStateMessage::create([
@@ -236,7 +231,7 @@ class ChatMemory implements Memory
             'argraph_prism_class_type' => 'SystemMessage',
             'content' => $message->content,
             'step' => $step,
-            'tag' => $tag
+            'tag' => $tag,
         ]);
         $this->messages[] = $message;
     }
@@ -257,7 +252,7 @@ class ChatMemory implements Memory
             'parametric_memory' => array_merge(
                 $this->state->parametric_memory ?? [],
                 [$key => $value]
-            )
+            ),
         ]);
     }
 }
