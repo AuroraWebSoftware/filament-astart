@@ -40,9 +40,39 @@ class ChatMemory implements Memory
             $this->nextStep = $this->state->next_step;
         }
 
-        $messages = ChatflowStateMessage::where('argraph_chatflow_state_id', $this->state->id)->get();
+    }
+
+
+    public function prepareMessages(
+        array  $steps = [],
+        array  $tags = [],
+        int    $limit = 100,
+        int    $offset = 0,
+        string $order = 'DESC',
+        string $fromTag = null,
+    ): void
+    {
+
+        $latestTag = null;
+        if ($fromTag) {
+            $latestTag = ChatflowStateMessage::where('tag', $fromTag)->latest()->first();
+        }
 
         // todo burda reducer logic leri olmalı
+        $messages = ChatflowStateMessage::where('argraph_chatflow_state_id', $this->state->id)
+            ->when($steps, function ($query, $steps) {
+                return $query->whereIn('step', $steps);
+            })
+            ->when($tags, function ($query, $tags) {
+                return $query->whereIn('tag', $tags);
+            })
+            ->when($latestTag, function ($query, $latestTag) {
+                return $query->where('id', '>=', $latestTag->id);
+            })
+            ->orderBy('created_at', $order)
+            ->limit($limit)
+            ->offset($offset)
+            ->get();
 
         if (count($messages) > 0) {
 
@@ -80,7 +110,6 @@ class ChatMemory implements Memory
                     $toolResults = [];
 
                     if (count($message->tool_results) > 0) {
-
                         foreach ($message->tool_results as $t) {
                             $toolResults[] = new ToolResult(
                                 $t['toolCallId'],
@@ -121,7 +150,40 @@ class ChatMemory implements Memory
 
     public function getMessages(): array
     {
+        $this->prepareMessages();
         return $this->messages;
+    }
+
+    public function getPreparedMessages(
+        array  $steps = [],
+        array  $tags = [],
+        int    $limit = 100,
+        int    $offset = 0,
+        string $order = 'DESC',
+        string $fromTag = null): array
+    {
+        $this->getPreparedMessages(
+            $steps,
+            $tags,
+            $limit,
+            $offset,
+            $order,
+            $fromTag
+        );
+
+        return $this->messages;
+    }
+
+    public function getMessagesByFilter(
+        array  $steps = [],
+        array  $tagsContains = [],
+        int    $limit = 100,
+        int    $offset = 0,
+        string $order = 'DESC',
+    ): array
+    {
+
+
     }
 
     public function storeUserMessage(UserMessage $message, string $step = null, string $tag = null): void
