@@ -159,7 +159,7 @@ class ChatMemory implements Memory
         int $offset = 0,
         ?string $fromTag = null
     ): array {
-        $this->getPreparedMessages(
+        $this->prepareMessages(
             $steps,
             $tags,
             $limit,
