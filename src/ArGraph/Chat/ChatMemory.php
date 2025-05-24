@@ -73,6 +73,7 @@ class ChatMemory implements Memory
 
         if (count($messages) > 0) {
 
+            $this->messages = [];
             foreach ($messages as $message) {
                 if ($message->argraph_prism_class_type == 'UserMessage') {
                     $instance = new UserMessage(
@@ -159,7 +160,7 @@ class ChatMemory implements Memory
         int $offset = 0,
         ?string $fromTag = null
     ): array {
-        $this->getPreparedMessages(
+        $this->prepareMessages(
             $steps,
             $tags,
             $limit,
