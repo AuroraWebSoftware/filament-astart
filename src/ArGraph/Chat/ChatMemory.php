@@ -73,6 +73,7 @@ class ChatMemory implements Memory
 
         if (count($messages) > 0) {
 
+            $this->messages = [];
             foreach ($messages as $message) {
                 if ($message->argraph_prism_class_type == 'UserMessage') {
                     $instance = new UserMessage(
