@@ -6,7 +6,6 @@ use AuroraWebSoftware\FilamentAstart\ArGraph\Chat\ChatState;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\State;
 use AuroraWebSoftware\FilamentAstart\ArGraph\Contracts\Step;
 use Prism\Prism\Enums\Provider;
-use Prism\Prism\Enums\StructuredMode;
 use Prism\Prism\Prism;
 use Prism\Prism\Schema\EnumSchema;
 use Prism\Prism\Schema\ObjectSchema;
@@ -14,7 +13,6 @@ use Prism\Prism\Schema\ObjectSchema;
 class ExampleStep1 implements Step
 {
     private string $stopMessage;
-
 
     public function getSupportedState(): string
     {
