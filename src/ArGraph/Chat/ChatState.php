@@ -13,6 +13,7 @@ use Prism\Prism\ValueObjects\Messages\UserMessage;
 class ChatState implements State
 {
     private ChatMemory $chatMemory;
+
     private ChatReducer $chatReducer;
 
     public function __construct(ChatMemory $chatMemory)
