@@ -26,7 +26,7 @@ class ChatFlow implements Flow
 
     public function run(): Result
     {
-        if (! $this->state->getChatMemory()->getNextStep() == null) {
+        if ($this->state->getChatMemory()->getNextStep() != null) {
             $nextStepClassName = $this->state->getChatMemory()->getNextStep();
             $this->nextStep = new $nextStepClassName;
         }
@@ -35,9 +35,6 @@ class ChatFlow implements Flow
         $this->state->getChatMemory()->storeNextStep($nextStep::class);
 
         while ($nextStep instanceof Step) {
-            $nextStep = $nextStep->run($this->state);
-
-            $this->state->getChatMemory()->storeNextStep($nextStep::class);
 
             if ($nextStep instanceof Result) {
                 $this->state->getChatMemory()->storeNextStep(null);
@@ -46,6 +43,14 @@ class ChatFlow implements Flow
                     return new ChatResult(
                         $nextStep->requiresHumanInteraction()
                     );
+                } else {
+                    $nextStep = $nextStep->run($this->state);
+
+                    if ($nextStep instanceof Result) {
+                        $this->state->getChatMemory()->storeNextStep(null);
+                    } else {
+                        $this->state->getChatMemory()->storeNextStep($nextStep::class);
+                    }
                 }
             }
         }
