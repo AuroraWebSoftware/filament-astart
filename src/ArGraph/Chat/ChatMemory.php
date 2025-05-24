@@ -47,7 +47,6 @@ class ChatMemory implements Memory
         array $tags = [],
         int $limit = 100,
         int $offset = 0,
-        string $order = 'DESC',
         ?string $fromTag = null,
     ): void {
 
@@ -67,7 +66,7 @@ class ChatMemory implements Memory
             ->when($latestTag, function ($query, $latestTag) {
                 return $query->where('id', '>=', $latestTag->id);
             })
-            ->orderBy('created_at', $order)
+            ->orderBy('created_at', 'ASC')
             ->limit($limit)
             ->offset($offset)
             ->get();
@@ -158,7 +157,6 @@ class ChatMemory implements Memory
         array $tags = [],
         int $limit = 100,
         int $offset = 0,
-        string $order = 'DESC',
         ?string $fromTag = null
     ): array {
         $this->getPreparedMessages(
@@ -166,20 +164,11 @@ class ChatMemory implements Memory
             $tags,
             $limit,
             $offset,
-            $order,
             $fromTag
         );
 
         return $this->messages;
     }
-
-    public function getMessagesByFilter(
-        array $steps = [],
-        array $tagsContains = [],
-        int $limit = 100,
-        int $offset = 0,
-        string $order = 'DESC',
-    ): array {}
 
     public function storeUserMessage(UserMessage $message, ?string $step = null, ?string $tag = null): void
     {
