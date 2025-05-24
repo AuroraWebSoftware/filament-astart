@@ -24,11 +24,11 @@ class SampleFilamentDataSeeder extends Seeder
 
             $ignores = [
                 'admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets',
-                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'
+                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens',
             ];
 
             foreach ($tables as $table) {
-                if (!in_array($table->table_name, $ignores)) {
+                if (! in_array($table->table_name, $ignores)) {
                     $column = DB::selectOne("
                 SELECT data_type FROM information_schema.columns
                 WHERE table_name = '{$table->table_name}' AND column_name = 'id'
@@ -155,11 +155,11 @@ class SampleFilamentDataSeeder extends Seeder
 
             $ignores = [
                 'admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets',
-                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'
+                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens',
             ];
 
             foreach ($tables as $table) {
-                if (!in_array($table->table_name, $ignores)) {
+                if (! in_array($table->table_name, $ignores)) {
                     $column = DB::selectOne("
                 SELECT data_type FROM information_schema.columns
                 WHERE table_name = '{$table->table_name}' AND column_name = 'id'
