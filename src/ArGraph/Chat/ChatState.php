@@ -14,7 +14,6 @@ class ChatState implements State
 {
     private ChatMemory $chatMemory;
 
-
     public function __construct(ChatMemory $chatMemory)
     {
         $this->chatMemory = $chatMemory;
