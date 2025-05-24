@@ -17,7 +17,7 @@ class ChatState implements State
     public function __construct(ChatMemory $chatMemory)
     {
         $this->chatMemory = $chatMemory;
-        //$this->messages = $this->chatMemory->getMessages();
+        // $this->messages = $this->chatMemory->getMessages();
     }
 
     public static function getParametricMemoryScheme(): array
