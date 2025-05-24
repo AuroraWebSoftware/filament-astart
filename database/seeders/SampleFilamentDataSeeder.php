@@ -22,18 +22,22 @@ class SampleFilamentDataSeeder extends Seeder
         if (config('database.default') == 'pgsql') {
             $tables = DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\' ORDER BY table_name;');
 
-            // Set the tables in the database you would like to ignore
-            $ignores = ['admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets', 'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'];
+            $ignores = [
+                'admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets',
+                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'
+            ];
 
-            // loop through the tables
             foreach ($tables as $table) {
-                // if the table is not to be ignored then:
-                if (! in_array($table->table_name, $ignores)) {
-                    // Get the max id from that table and add 1 to it
-                    $seq = DB::table($table->table_name)->max('id') + 1;
+                if (!in_array($table->table_name, $ignores)) {
+                    $column = DB::selectOne("
+                SELECT data_type FROM information_schema.columns
+                WHERE table_name = '{$table->table_name}' AND column_name = 'id'
+            ");
 
-                    // alter the sequence to now RESTART WITH the new sequence index from above
-                    DB::select('ALTER SEQUENCE ' . $table->table_name . '_id_seq RESTART WITH ' . $seq);
+                    if ($column && in_array($column->data_type, ['integer', 'bigint'])) {
+                        $seq = DB::table($table->table_name)->max('id') + 1;
+                        DB::select('ALTER SEQUENCE ' . $table->table_name . '_id_seq RESTART WITH ' . $seq);
+                    }
                 }
             }
         }
@@ -149,18 +153,22 @@ class SampleFilamentDataSeeder extends Seeder
         if (config('database.default') == 'pgsql') {
             $tables = DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\' ORDER BY table_name;');
 
-            // Set the tables in the database you would like to ignore
-            $ignores = ['admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets', 'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'];
+            $ignores = [
+                'admin_setting', 'model_has_permissions', 'model_has_roles', 'password_resets',
+                'role_has_permissions', 'sessions', 'cache', 'cache_locks', 'job_batches', 'password_reset_tokens'
+            ];
 
-            // loop through the tables
             foreach ($tables as $table) {
-                // if the table is not to be ignored then:
-                if (! in_array($table->table_name, $ignores)) {
-                    // Get the max id from that table and add 1 to it
-                    $seq = DB::table($table->table_name)->max('id') + 1;
+                if (!in_array($table->table_name, $ignores)) {
+                    $column = DB::selectOne("
+                SELECT data_type FROM information_schema.columns
+                WHERE table_name = '{$table->table_name}' AND column_name = 'id'
+            ");
 
-                    // alter the sequence to now RESTART WITH the new sequence index from above
-                    DB::select('ALTER SEQUENCE ' . $table->table_name . '_id_seq RESTART WITH ' . $seq);
+                    if ($column && in_array($column->data_type, ['integer', 'bigint'])) {
+                        $seq = DB::table($table->table_name)->max('id') + 1;
+                        DB::select('ALTER SEQUENCE ' . $table->table_name . '_id_seq RESTART WITH ' . $seq);
+                    }
                 }
             }
         }
