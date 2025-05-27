@@ -226,7 +226,7 @@ class ChatMemory implements Memory
         $this->messages[] = $message;
     }
 
-    public function getParametricMemories(): array
+    public function getParametricMemories(): ?array
     {
         return $this->state->parametric_memory;
     }
