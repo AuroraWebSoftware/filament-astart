@@ -15,7 +15,12 @@ class EnsureUserHasRoleSelected
         if (
             $request->routeIs('filament.admin.pages.role-switch') ||
             $request->routeIs('filament.admin.auth.login') ||
-            $request->routeIs('filament.admin.auth.*')
+            $request->routeIs('filament.admin.auth.*') ||
+            $request->routeIs('fortify.*') ||
+            $request->routeIs('login') ||
+            $request->routeIs('two-factor.*') ||
+            $request->routeIs('password.*') ||
+            $request->routeIs('register')
         ) {
             return $next($request);
         }
