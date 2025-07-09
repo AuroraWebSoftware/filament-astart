@@ -43,8 +43,6 @@ class EditRole extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        //        dd(self::isPageBelongsToResource(self::class));
-
         $assignedCodes = DB::table('role_permission')
             ->where('role_id', $this->record->id)
             ->pluck('permission')
@@ -56,47 +54,17 @@ class EditRole extends EditRecord
         $allChecked = true;
 
         foreach ($config as $type => $list) {
+            foreach ($list as $group => $actions) {
+                $groupAll = true;
+                foreach ($actions as $action) {
+                    $code = Str::snake($group) . '_' . Str::snake($action);
+                    $checked = in_array($code, $assignedCodes);
+                    data_set($permissions, "$type.$group.$action", $checked);
 
-            if ($type === 'resource') {
-                foreach ($list as $resource => $actions) {
-                    $groupAll = true;
-
-                    foreach ($actions as $action) {
-                        $code = Str::snake($resource) . '_' . Str::snake($action);
-                        $checked = in_array($code, $assignedCodes);
-                        data_set($permissions, "$type.$resource.$action", $checked);
-
-                        $groupAll = $groupAll && $checked;
-                    }
-
-                    $groupToggles["select_all_resource.$resource"] = $groupAll;
-                    $allChecked = $allChecked && $groupAll;
+                    $groupAll = $groupAll && $checked;
                 }
-            } else {
-                foreach ($list as $item => $maybeActions) {
-
-                    if (! empty($maybeActions)) {
-                        $groupAll = true;
-
-                        foreach ($maybeActions as $action) {
-                            $code = Str::snake($item) . '_' . Str::snake($action);
-                            $checked = in_array($code, $assignedCodes);
-                            data_set($permissions, "$type.$item.$action", $checked);
-
-                            $groupAll = $groupAll && $checked;
-                        }
-
-                        $groupToggles["select_all_{$type}.$item"] = $groupAll;
-                        $allChecked = $allChecked && $groupAll;
-                    } else {
-                        $code = Str::snake($item);
-                        $checked = in_array($code, $assignedCodes);
-                        data_set($permissions, "$type.$item", $checked);
-
-                        $groupToggles["select_all_{$type}.$item"] = $checked;
-                        $allChecked = $allChecked && $checked;
-                    }
-                }
+                $groupToggles["select_all_{$type}_{$group}"] = $groupAll;
+                $allChecked = $allChecked && $groupAll;
             }
         }
 
@@ -113,9 +81,8 @@ class EditRole extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         //        dd($data);
-        $this->permissionPayload = $data['permissions'] ?? [];
+        $this->permissionPayload = $this->patchPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
-
         return $data;
     }
 
@@ -127,36 +94,20 @@ class EditRole extends EditRecord
     private function syncRolePermissions(int $roleId, array $rawPermissions): void
     {
         DB::transaction(function () use ($roleId, $rawPermissions) {
-
             $permissions = config('astart-auth.permissions');
 
             foreach ($permissions as $type => $list) {
-                if ($type === 'resource') {
-                    foreach ($list as $resource => $actions) {
-                        foreach ($actions as $action) {
-                            $code = Str::snake($resource) . '_' . Str::snake($action);
-                            $checked = data_get($rawPermissions, "$type.$resource.$action") === true;
-                            $this->upsertPivot($roleId, $code, $checked);
-                        }
-                    }
-                } else {
-                    foreach ($list as $item => $maybeActions) {
-                        if (! empty($maybeActions)) {
-                            foreach ($maybeActions as $action) {
-                                $code = Str::snake($item) . '_' . Str::snake($action);
-                                $checked = data_get($rawPermissions, "$type.$item.$action") === true;
-                                $this->upsertPivot($roleId, $code, $checked);
-                            }
-                        } else {
-                            $code = Str::snake($item);
-                            $checked = data_get($rawPermissions, "$type.$item") === true;
-                            $this->upsertPivot($roleId, $code, $checked);
-                        }
+                foreach ($list as $group => $actions) {
+                    foreach ($actions as $action) {
+                        $code = Str::snake($group) . '_' . Str::snake($action);
+                        $checked = data_get($rawPermissions, "$type.$group.$action") === true;
+                        $this->upsertPivot($roleId, $code, $checked);
                     }
                 }
             }
         });
     }
+
 
     private function upsertPivot(int $roleId, string $code, bool $checked): void
     {
@@ -170,4 +121,22 @@ class EditRole extends EditRecord
                 ->delete();
         }
     }
+    private function patchPermissionsForSave(array $rawPermissions): array
+    {
+        $permissions = config('astart-auth.permissions');
+        $patched = $rawPermissions;
+
+        foreach ($permissions as $type => $list) {
+            foreach ($list as $group => $actions) {
+                foreach ($actions as $action) {
+                    if (!isset($patched[$type][$group][$action])) {
+                        $patched[$type][$group][$action] = false;
+                    }
+                }
+            }
+        }
+
+        return $patched;
+    }
+
 }
