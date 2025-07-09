@@ -48,20 +48,20 @@ class RoleResource extends Resource
         $permissionConfig = config('astart-auth.permissions');
 
         $resourceCount = collect($permissionConfig['resource'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $pagesCount = collect($permissionConfig['pages'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $widgetKey = isset($permissionConfig['widget']) ? 'widget' : 'widgets';
         $widgetCount = collect($permissionConfig[$widgetKey] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         $customCount = collect($permissionConfig['custom_permission'] ?? [])
-            ->filter(fn($actions) => !empty($actions))
+            ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
         return $form
@@ -80,8 +80,8 @@ class RoleResource extends Resource
                             ->offIcon('heroicon-s-x-mark')
                             ->inline(false)
                             ->default(true)
-                            ->formatStateUsing(fn($state) => $state === 'active' || $state === true)
-                            ->dehydrateStateUsing(fn($state) => $state ? 'active' : 'passive'),
+                            ->formatStateUsing(fn ($state) => $state === 'active' || $state === true)
+                            ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'passive'),
 
                     ])->columns(2),
 
@@ -101,14 +101,14 @@ class RoleResource extends Resource
                             ->label(__('filament-astart::role.organization_scope'))
                             ->placeholder(__('filament-astart::role.placeholder_organization_scope'))
                             ->options(
-                                fn() => OrganizationScope::query()
+                                fn () => OrganizationScope::query()
                                     ->where('status', 'active')
                                     ->pluck('name', 'id')
                                     ->toArray()
                             )
                             ->searchable()
-                            ->visible(fn(Get $get) => $get('type') === 'organization')
-                            ->required(fn(Get $get) => $get('type') === 'organization')
+                            ->visible(fn (Get $get) => $get('type') === 'organization')
+                            ->required(fn (Get $get) => $get('type') === 'organization')
                             ->nullable(),
                     ])
                     ->columns(2),
@@ -167,7 +167,9 @@ class RoleResource extends Resource
     {
         $fields = [];
         foreach ($groups as $group => $actions) {
-            if (empty($actions)) continue;
+            if (empty($actions)) {
+                continue;
+            }
 
             $fields[] = Section::make(__('filament-astart::permissions.' . Str::snake($group)))
                 ->collapsible()
@@ -190,6 +192,7 @@ class RoleResource extends Resource
                                 ->schema(
                                     collect($actions)->map(function ($action) use ($group, $type) {
                                         $code = Str::snake($group) . '_' . Str::snake($action);
+
                                         return Checkbox::make("permissions.$type.$group.$action")
                                             ->label(__('filament-astart::permissions.' . $code));
                                     })->toArray()
@@ -197,6 +200,7 @@ class RoleResource extends Resource
                         ]),
                 ]);
         }
+
         return $fields;
     }
 
@@ -214,10 +218,11 @@ class RoleResource extends Resource
                 Tables\Columns\TextColumn::make('organization_scope_id')
                     ->label('Scope')
                     ->formatStateUsing(function ($state) {
-                        if (!$state) {
+                        if (! $state) {
                             return '-';
                         }
                         $name = DB::table('organization_scopes')->where('id', $state)->value('name');
+
                         return $name ?? ' ';
                     })
                     ->sortable(),
@@ -262,6 +267,7 @@ class RoleResource extends Resource
                                 ->title(__('filament-astart::permissions.cannot_delete_role_assigned_to_user'))
                                 ->danger()
                                 ->send();
+
                             return;
                         }
 
