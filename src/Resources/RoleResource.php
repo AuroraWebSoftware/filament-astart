@@ -16,9 +16,11 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class RoleResource extends Resource
@@ -76,8 +78,6 @@ class RoleResource extends Resource
                             ->label(__('filament-astart::role.status'))
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
-                            ->onColor('success')
-                            ->offColor('danger')
                             ->inline(false)
                             ->default(true)
                             ->formatStateUsing(fn ($state) => $state === 'active' || $state === true)
@@ -117,18 +117,17 @@ class RoleResource extends Resource
                     ->schema([
                         Toggle::make('select_all_permissions')
                             ->label(__('filament-astart::role.select_all_permissions'))
-                            ->helperText(__('filament-astart::role.select_all_permissions_helper'))
                             ->reactive()
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
-                            ->onColor('success')
-                            ->offColor('gray')
-                            ->afterStateUpdated(function ($state, Forms\Set $set) use ($permissionConfig) {
-                                foreach (['resource', 'pages', 'widgets', 'custom_permission'] as $type) {
-                                    foreach ($permissionConfig[$type] ?? [] as $group => $actions) {
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                $permissionConfig = config('astart-auth.permissions');
+                                foreach ($permissionConfig as $type => $list) {
+                                    foreach ($list as $group => $actions) {
                                         foreach ($actions as $action) {
                                             $set("permissions.$type.$group.$action", $state);
                                         }
+                                        $set("select_all_{$type}_$group", $state);
                                     }
                                 }
                             }),
@@ -167,32 +166,24 @@ class RoleResource extends Resource
     protected static function buildPermissionGroups(array $groups, string $type): array
     {
         $fields = [];
-
         foreach ($groups as $group => $actions) {
             if (empty($actions)) {
                 continue;
             }
-
-            $groupKey = "$type.$group";
 
             $fields[] = Section::make(__('filament-astart::permissions.' . Str::snake($group)))
                 ->collapsible()
                 ->schema([
                     Grid::make(2)
                         ->schema([
-                            Toggle::make("select_all_$groupKey")
+                            Toggle::make("select_all_{$type}_$group")
                                 ->label(__('filament-astart::role.select_all_group'))
                                 ->reactive()
-                                ->onIcon('heroicon-s-check')
-                                ->offIcon('heroicon-s-x-mark')
-                                ->onColor('success')
-                                ->offColor('gray')
-                                ->afterStateUpdated(function ($state, Forms\Set $set) use ($actions, $groupKey) {
+                                ->afterStateUpdated(function ($state, Forms\Set $set) use ($actions, $type, $group) {
                                     foreach ($actions as $action) {
-                                        $set("permissions.$groupKey.$action", $state);
+                                        $set("permissions.$type.$group.$action", $state);
                                     }
                                 }),
-
                             Grid::make()
                                 ->columns([
                                     'default' => 1,
@@ -224,6 +215,18 @@ class RoleResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('organization_scope_id')
+                    ->label('Scope')
+                    ->formatStateUsing(function ($state) {
+                        if (! $state) {
+                            return '-';
+                        }
+                        $name = DB::table('organization_scopes')->where('id', $state)->value('name');
+
+                        return $name ?? ' ';
+                    })
+                    ->sortable(),
+
                 Tables\Columns\BadgeColumn::make('type')
                     ->colors([
                         'primary',
@@ -253,12 +256,35 @@ class RoleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteAction::make()
+                    ->action(function ($record) {
+                        $exists = DB::table('user_role_organization_node')
+                            ->where('role_id', $record->id)
+                            ->exists();
+
+                        if ($exists) {
+                            Notification::make()
+                                ->title(__('filament-astart::permissions.cannot_delete_role_assigned_to_user'))
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        DB::table('role_permission')->where('role_id', $record->id)->delete();
+                        DB::table('roles')->where('id', $record->id)->delete();
+
+                        Notification::make()
+                            ->title(__('filament-astart::permissions.role_deleted_successfully'))
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading(__('filament-astart::permissions.delete_role'))
+                    ->modalDescription(__('filament-astart::permissions.delete_role_description'))
+                    ->modalButton(__('filament-astart::permissions.confirm_delete_button')),
             ]);
+
     }
 
     public static function getRelations(): array

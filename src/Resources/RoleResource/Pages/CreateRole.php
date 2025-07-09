@@ -15,8 +15,7 @@ class CreateRole extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // "permissions" form verisini ayrı olarak tut
-        $this->permissionPayload = $data['permissions'] ?? [];
+        $this->permissionPayload = $this->patchPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
 
         return $data;
@@ -30,21 +29,12 @@ class CreateRole extends CreateRecord
     private function syncRolePermissions(int $roleId, array $rawPermissions): void
     {
         DB::transaction(function () use ($roleId, $rawPermissions) {
-            $permissions = config('aauth.permissions');
+            $permissions = config('astart-auth.permissions');
 
             foreach ($permissions as $type => $list) {
                 foreach ($list as $group => $actions) {
-                    if (! is_array($actions)) {
-                        // custom_permission gibi flat string listeleri destekle
-                        $code = Str::snake($group);
-                        $checked = data_get($rawPermissions, "$type.$group") === true;
-                        $this->upsertPivot($roleId, $code, $checked);
-
-                        continue;
-                    }
-
                     foreach ($actions as $action) {
-                        $code = Str::snake($group) . '_' . Str::snake($action); // Örn: user_view
+                        $code = Str::snake($group) . '_' . Str::snake($action);
                         $checked = data_get($rawPermissions, "$type.$group.$action") === true;
                         $this->upsertPivot($roleId, $code, $checked);
                     }
@@ -66,5 +56,23 @@ class CreateRole extends CreateRecord
                 ->where('permission', $code)
                 ->delete();
         }
+    }
+
+    private function patchPermissionsForSave(array $rawPermissions): array
+    {
+        $permissions = config('astart-auth.permissions');
+        $patched = $rawPermissions;
+
+        foreach ($permissions as $type => $list) {
+            foreach ($list as $group => $actions) {
+                foreach ($actions as $action) {
+                    if (! isset($patched[$type][$group][$action])) {
+                        $patched[$type][$group][$action] = false;
+                    }
+                }
+            }
+        }
+
+        return $patched;
     }
 }

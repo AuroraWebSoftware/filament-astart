@@ -39,7 +39,6 @@ class UserRolesRelationManager extends RelationManager
                     ),
             ])
             ->actions([
-                /* ---------- Sil / Kaldır ---------- */
                 Tables\Actions\Action::make('delete')
                     ->label('Sil')
                     ->icon('heroicon-o-trash')

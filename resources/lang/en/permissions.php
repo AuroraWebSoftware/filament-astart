@@ -6,6 +6,12 @@ return [
     'organization_node' => 'Organizasyon Node',
     'role' => 'Roles',
 
+    'cannot_delete_role_assigned_to_user' => 'This role has been assigned to one or more users. It cannot be deleted!',
+    'role_deleted_successfully' => 'Role deleted successfully.',
+    'delete_role' => 'Delete Role',
+    'delete_role_description' => 'You are about to delete this role. If it is assigned to any user, it cannot be deleted.',
+    'confirm_delete_button' => 'Yes, Delete',
+
     'user_view' => 'View Users',
     'user_view_any' => 'View Users Menu',
     'user_edit' => 'Edit Users',

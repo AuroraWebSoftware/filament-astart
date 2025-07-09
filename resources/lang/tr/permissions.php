@@ -7,6 +7,12 @@ return [
     'organization_node' => 'Organizasyon Node',
     'role' => 'Roller',
 
+    'cannot_delete_role_assigned_to_user' => 'Bu rol bir veya birden fazla kullanıcıya atanmış. Silinemez!',
+    'role_deleted_successfully' => 'Rol başarıyla silindi.',
+    'delete_role' => 'Rolü Sil',
+    'delete_role_description' => 'Bu rolü silmek üzeresiniz. Eğer herhangi bir kullanıcıya atanmışsa silinemez.',
+    'confirm_delete_button' => 'Evet, Sil',
+
     'user_view' => 'Kullanıcıları Görüntüle',
     'user_edit' => 'Kullanıcıları Düzenle',
     'user_delete' => 'Kullanıcıları Sil',

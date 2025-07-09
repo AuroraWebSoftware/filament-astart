@@ -131,6 +131,10 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         Testable::mixin(new TestsFilamentAstart);
 
         $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
+
+        FilamentAsset::register([
+            Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
+        ], 'aurorawebsoftware/filament-astart');
     }
 
     protected function getAssetPackageName(): ?string
