@@ -6,6 +6,7 @@ return [
     'name' => 'Ad',
     'email' => 'E-posta',
     'password' => 'Şifre',
+    'phone_number'=>'Telefon Numarası',
     'created_at' => 'Oluşturulma',
     'assign_role' => 'Rol Ata',
     'role_type' => 'Rol Türü',

@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class UserResource extends Resource
 {
@@ -53,6 +54,13 @@ class UserResource extends Resource
                 ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                 ->dehydrated(fn ($state) => filled($state))
                 ->visible(fn (string $context): bool => in_array($context, ['create', 'edit'])),
+
+            PhoneInput::make('phone_number')
+                ->label(__('filament-astart::user.phone_number'))
+                ->initialCountry('tr')
+                ->countryOrder(['tr'])
+                ->strictMode()
+                ->required(),
         ]);
     }
 
