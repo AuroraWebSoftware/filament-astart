@@ -83,6 +83,7 @@ class EditRole extends EditRecord
         //        dd($data);
         $this->permissionPayload = $this->patchPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
+
         return $data;
     }
 
@@ -108,7 +109,6 @@ class EditRole extends EditRecord
         });
     }
 
-
     private function upsertPivot(int $roleId, string $code, bool $checked): void
     {
         if ($checked) {
@@ -121,6 +121,7 @@ class EditRole extends EditRecord
                 ->delete();
         }
     }
+
     private function patchPermissionsForSave(array $rawPermissions): array
     {
         $permissions = config('astart-auth.permissions');
@@ -129,7 +130,7 @@ class EditRole extends EditRecord
         foreach ($permissions as $type => $list) {
             foreach ($list as $group => $actions) {
                 foreach ($actions as $action) {
-                    if (!isset($patched[$type][$group][$action])) {
+                    if (! isset($patched[$type][$group][$action])) {
                         $patched[$type][$group][$action] = false;
                     }
                 }
@@ -138,5 +139,4 @@ class EditRole extends EditRecord
 
         return $patched;
     }
-
 }

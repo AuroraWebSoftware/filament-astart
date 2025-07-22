@@ -17,6 +17,7 @@ class CreateRole extends CreateRecord
     {
         $this->permissionPayload = $this->patchPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
+
         return $data;
     }
 
@@ -65,7 +66,7 @@ class CreateRole extends CreateRecord
         foreach ($permissions as $type => $list) {
             foreach ($list as $group => $actions) {
                 foreach ($actions as $action) {
-                    if (!isset($patched[$type][$group][$action])) {
+                    if (! isset($patched[$type][$group][$action])) {
                         $patched[$type][$group][$action] = false;
                     }
                 }
@@ -74,5 +75,4 @@ class CreateRole extends CreateRecord
 
         return $patched;
     }
-
 }

@@ -6,7 +6,7 @@ return [
     'name' => 'Name',
     'email' => 'Email',
     'password' => 'Password',
-    'phone_number'=>'Phone Number',
+    'phone_number' => 'Phone Number',
     'created_at' => 'Created At',
     'assign_role' => 'Assign Role',
     'role_type' => 'Role Type',
