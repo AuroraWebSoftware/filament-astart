@@ -14,4 +14,5 @@ return [
     'organization' => 'Organizasyon',
     'select_role' => 'Atanacak Rol',
     'role_added_success' => 'Rol başarıyla eklendi',
+    'is_active' => 'Aktif mi?',
 ];
