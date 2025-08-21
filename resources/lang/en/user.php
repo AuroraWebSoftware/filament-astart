@@ -14,4 +14,5 @@ return [
     'organization' => 'Organization',
     'select_role' => 'Select Role',
     'role_added_success' => 'Role successfully assigned',
+    'is_active' => 'Active?',
 ];
