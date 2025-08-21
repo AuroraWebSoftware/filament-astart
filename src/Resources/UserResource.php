@@ -42,54 +42,53 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                ->columns(2)
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label(__('filament-astart::user.name'))
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpan(1),
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('filament-astart::user.name'))
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(1),
 
-                    Forms\Components\TextInput::make('email')
-                        ->label(__('filament-astart::user.email'))
-                        ->email()
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpan(1),
+                        Forms\Components\TextInput::make('email')
+                            ->label(__('filament-astart::user.email'))
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(1),
 
-                    Forms\Components\TextInput::make('password')
-                        ->label(__('filament-astart::user.password'))
-                        ->password()
-                        ->required(fn(string $context) => $context === 'create')
-                        ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
-                        ->dehydrated(fn($state) => filled($state))
-                        ->visible(fn(string $context): bool => in_array($context, ['create', 'edit']))
-                        ->columnSpan(1),
+                        Forms\Components\TextInput::make('password')
+                            ->label(__('filament-astart::user.password'))
+                            ->password()
+                            ->required(fn (string $context) => $context === 'create')
+                            ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->visible(fn (string $context): bool => in_array($context, ['create', 'edit']))
+                            ->columnSpan(1),
 
-                    PhoneInput::make('phone_number')
-                        ->label(__('filament-astart::user.phone_number'))
-                        ->initialCountry('tr')
-                        ->countryOrder(['tr'])
-                        ->strictMode()
-                        ->required()
-                        ->autoPlaceholder($auto)
-                        ->columnSpan(1),
+                        PhoneInput::make('phone_number')
+                            ->label(__('filament-astart::user.phone_number'))
+                            ->initialCountry('tr')
+                            ->countryOrder(['tr'])
+                            ->strictMode()
+                            ->required()
+                            ->autoPlaceholder($auto)
+                            ->columnSpan(1),
 
-                    Forms\Components\Toggle::make('is_active')
-                        ->label(__('filament-astart::user.is_active'))
-                        ->default(true)
-                        ->inline(false)
-                        ->onIcon('heroicon-m-check')
-                        ->offIcon('heroicon-m-x-mark')
-                        ->onColor('success')
-                        ->offColor('danger')
-                        ->disabled(fn(string $context) => $context === 'view')
-                        ->visible(fn() => Schema::hasColumn((new User)->getTable(), 'is_active'))
-                        ->columnSpan(1),
-                ]),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label(__('filament-astart::user.is_active'))
+                            ->default(true)
+                            ->inline(false)
+                            ->onIcon('heroicon-m-check')
+                            ->offIcon('heroicon-m-x-mark')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->disabled(fn (string $context) => $context === 'view')
+                            ->visible(fn () => Schema::hasColumn((new User)->getTable(), 'is_active'))
+                            ->columnSpan(1),
+                    ]),
             ]);
     }
-
 
     public static function table(Table $table): Table
     {
@@ -101,7 +100,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->dateTime('d.m.Y H:i')->sortable()->label(__('filament-astart::user.created_at')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->url(fn($record) => route('filament.admin.resources.users.view', ['record' => $record])),
+                Tables\Actions\ViewAction::make()->url(fn ($record) => route('filament.admin.resources.users.view', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
 
