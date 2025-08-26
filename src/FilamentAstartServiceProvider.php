@@ -130,7 +130,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         // Testing
         Testable::mixin(new TestsFilamentAstart);
 
-        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'filament-astart');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-astart');
 
         FilamentAsset::register([
             Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
