@@ -57,7 +57,6 @@ class UserResource extends Resource
                                 'spellcheck' => 'false',
                             ]),
 
-
                         Forms\Components\TextInput::make('email')
                             ->label(__('filament-astart::user.email'))
                             ->email()
@@ -84,12 +83,12 @@ class UserResource extends Resource
                                     ->symbols()
                                     ->uncompromised(),
                             ])
-                            ->required(fn(string $context) => $context === 'create')
-                            ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
-                            ->dehydrated(fn($state) => filled($state))
-                            ->visible(fn(string $context): bool => in_array($context, ['create', 'edit']))
+                            ->required(fn (string $context) => $context === 'create')
+                            ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->visible(fn (string $context): bool => in_array($context, ['create', 'edit']))
                             ->columnSpan(1)
-                            ->autocomplete(fn(string $context) => $context === 'create' ? 'new-password' : 'current-password')
+                            ->autocomplete(fn (string $context) => $context === 'create' ? 'new-password' : 'current-password')
                             ->revealable(),
 
                         PhoneInput::make('phone_number')
@@ -109,13 +108,12 @@ class UserResource extends Resource
                             ->offIcon('heroicon-m-x-mark')
                             ->onColor('success')
                             ->offColor('danger')
-                            ->disabled(fn(string $context) => $context === 'view')
-                            ->visible(fn() => Schema::hasColumn((new User)->getTable(), 'is_active'))
+                            ->disabled(fn (string $context) => $context === 'view')
+                            ->visible(fn () => Schema::hasColumn((new User)->getTable(), 'is_active'))
                             ->columnSpan(1),
                     ]),
             ]);
     }
-
 
     public static function table(Table $table): Table
     {
@@ -127,7 +125,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->dateTime('d.m.Y H:i')->sortable()->label(__('filament-astart::user.created_at')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->url(fn($record) => route('filament.admin.resources.users.view', ['record' => $record])),
+                Tables\Actions\ViewAction::make()->url(fn ($record) => route('filament.admin.resources.users.view', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
 
