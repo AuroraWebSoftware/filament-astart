@@ -88,7 +88,8 @@ class UserResource extends Resource
                             ->dehydrated(fn ($state) => filled($state))
                             ->visible(fn (string $context): bool => in_array($context, ['create', 'edit']))
                             ->columnSpan(1)
-                            ->autocomplete(fn (string $context) => $context === 'create' ? 'new-password' : 'current-password'),
+                            ->autocomplete(fn (string $context) => $context === 'create' ? 'new-password' : 'current-password')
+                            ->revealable(),
 
                         PhoneInput::make('phone_number')
                             ->label(__('filament-astart::user.phone_number'))
