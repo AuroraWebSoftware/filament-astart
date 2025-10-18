@@ -53,15 +53,15 @@ class FilamentAstartPlugin implements Plugin
                 ->icon('heroicon-o-arrow-path'),
         ]);
 
-//        $panel->plugin(ThemesPlugin::make())->middleware([
-//
-//            \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
-//        ])
-//            // or in `tenantMiddleware` if you're using multi-tenancy
-//            ->tenantMiddleware([
-//
-//                \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
-//            ]);
+        //        $panel->plugin(ThemesPlugin::make())->middleware([
+        //
+        //            \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
+        //        ])
+        //            // or in `tenantMiddleware` if you're using multi-tenancy
+        //            ->tenantMiddleware([
+        //
+        //                \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
+        //            ]);
 
     }
 
@@ -72,9 +72,10 @@ class FilamentAstartPlugin implements Plugin
             function (): string {
                 $roleName = Role::find(session('roleId'))?->name;
 
-                if (!$roleName) {
+                if (! $roleName) {
                     return '';
                 }
+
                 return $roleName;
             }
         );

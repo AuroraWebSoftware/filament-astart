@@ -24,10 +24,9 @@ class OrganizationNodeResource extends Resource
 
     protected static ?string $model = OrganizationNode::class;
 
-    protected static null|string|\UnitEnum $navigationGroup = 'AStart';
+    protected static null | string | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getEloquentQuery(): Builder
     {
@@ -65,13 +64,14 @@ class OrganizationNodeResource extends Resource
 
                         if ($parentId) {
                             $node = OrganizationNode::find($parentId);
+
                             return $node?->availableScopes()?->pluck('name', 'id') ?? [];
                         }
 
                         return [];
                     })
-                    ->visible(fn(string $context) => $context === 'create')
-                    ->required()
+                    ->visible(fn (string $context) => $context === 'create')
+                    ->required(),
             ]);
     }
 
@@ -94,7 +94,7 @@ class OrganizationNodeResource extends Resource
                     ->label(__('filament-astart::organization-node.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn($record) => "/admin/organization-nodes?parent_id={$record->id}"),
+                    ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
                 EditAction::make()
                     ->label(__('filament-astart::organization-node.edit_node')),
 

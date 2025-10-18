@@ -16,7 +16,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Form;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -27,11 +26,11 @@ class OrganizationScopeResource extends Resource
 
     protected static ?string $model = OrganizationScope::class;
 
-    protected static null|string|\UnitEnum $navigationGroup = 'AStart';
+    protected static null | string | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->schema([

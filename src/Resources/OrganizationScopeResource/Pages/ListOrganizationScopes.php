@@ -3,7 +3,6 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
-use Filament\Actions;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
