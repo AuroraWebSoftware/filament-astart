@@ -8,12 +8,14 @@ use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\C
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\EditOrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\ListOrganizationScopes;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Form;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -24,13 +26,13 @@ class OrganizationScopeResource extends Resource
 
     protected static ?string $model = OrganizationScope::class;
 
-    protected static ?string $navigationGroup = 'AStart';
+    protected static null | string | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
-        return $form
+        return $schema
             ->schema([
                 TextInput::make('name')
                     ->label(__('filament-astart::organization-scope.name'))
@@ -76,12 +78,12 @@ class OrganizationScopeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
                 //                    ->authorize(AAuth::can('organization_scope_edit')),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

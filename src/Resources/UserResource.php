@@ -6,12 +6,16 @@ use App\Models\User;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers\UserRolesRelationManager;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules\Password;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -21,9 +25,9 @@ class UserResource extends Resource
 
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationGroup = 'AStart';
+    protected static string | null | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-user';
 
     public static function getNavigationLabel(): string
     {
@@ -35,18 +39,19 @@ class UserResource extends Resource
         return __('filament-astart::user.user');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $op = $form->getOperation();
+        $op = $schema->getOperation();
         $auto = $op === 'view' ? 'none' : 'polite';
 
-        return $form
+        return $schema
             ->extraAttributes(['autocomplete' => 'off'])
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->columns(2)
+                    ->columnSpanFull()
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('filament-astart::user.name'))
                             ->required()
                             ->maxLength(255)
@@ -57,7 +62,7 @@ class UserResource extends Resource
                                 'spellcheck' => 'false',
                             ]),
 
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->label(__('filament-astart::user.email'))
                             ->email()
                             ->required()
@@ -70,7 +75,7 @@ class UserResource extends Resource
                                 'spellcheck' => 'false',
                             ]),
 
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->label(__('filament-astart::user.password'))
                             ->password()
                             ->rules([
@@ -86,7 +91,7 @@ class UserResource extends Resource
                             ->required(fn (string $context) => $context === 'create')
                             ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                             ->dehydrated(fn ($state) => filled($state))
-                            ->visible(fn (string $context): bool => in_array($context, ['create', 'edit']))
+                            ->visible(fn (string $context): bool => $context === 'create')
                             ->columnSpan(1)
                             ->autocomplete(fn (string $context) => $context === 'create' ? 'new-password' : 'current-password')
                             ->revealable(),
@@ -100,7 +105,7 @@ class UserResource extends Resource
                             ->autoPlaceholder($auto)
                             ->columnSpan(1),
 
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label(__('filament-astart::user.is_active'))
                             ->default(true)
                             ->inline(false)
@@ -109,7 +114,7 @@ class UserResource extends Resource
                             ->onColor('success')
                             ->offColor('danger')
                             ->disabled(fn (string $context) => $context === 'view')
-                            ->visible(fn () => Schema::hasColumn((new User)->getTable(), 'is_active'))
+                            ->visible(fn () => \Illuminate\Support\Facades\Schema::hasColumn((new User)->getTable(), 'is_active'))
                             ->columnSpan(1),
                     ]),
             ]);
@@ -125,9 +130,9 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->dateTime('d.m.Y H:i')->sortable()->label(__('filament-astart::user.created_at')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->url(fn ($record) => route('filament.admin.resources.users.view', ['record' => $record])),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ViewAction::make()->url(fn ($record) => route('filament.admin.resources.users.view', ['record' => $record])),
+                EditAction::make(),
+                DeleteAction::make(),
 
             ]);
     }

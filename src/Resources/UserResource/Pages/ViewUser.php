@@ -8,9 +8,9 @@ use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Facades\DB;
 
 class ViewUser extends ViewRecord

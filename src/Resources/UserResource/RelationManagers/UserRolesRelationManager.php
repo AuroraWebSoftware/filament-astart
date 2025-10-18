@@ -3,7 +3,7 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationNode;
-use Filament\Forms;
+use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Illuminate\Support\Facades\DB;
@@ -16,9 +16,9 @@ class UserRolesRelationManager extends RelationManager
 
     protected static ?string $title = 'Tanımlı Roller';
 
-    public function form(Forms\Form $form): Forms\Form
+    public function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
-        return $form;
+        return $schema;
     }
 
     public function table(Tables\Table $table): Tables\Table
@@ -39,12 +39,12 @@ class UserRolesRelationManager extends RelationManager
                     ),
             ])
             ->actions([
-                Tables\Actions\Action::make('delete')
+                Action::make('delete')
                     ->label('Sil')
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(function ($record, Tables\Actions\Action $action) {
+                    ->action(function ($record, Action $action) {
 
                         $userId = $this->ownerRecord->id;
                         $roleId = $record->id;
