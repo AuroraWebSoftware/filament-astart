@@ -7,12 +7,13 @@ use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\Cr
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\EditOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\ListOrganizationNodes;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,9 +24,10 @@ class OrganizationNodeResource extends Resource
 
     protected static ?string $model = OrganizationNode::class;
 
-    protected static ?string $navigationGroup = 'AStart';
+    protected static null|string|\UnitEnum $navigationGroup = 'AStart';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+
 
     public static function getEloquentQuery(): Builder
     {
@@ -44,9 +46,9 @@ class OrganizationNodeResource extends Resource
         return $query;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Hidden::make('parent_id')
                     ->default(request()->get('parent_id')),
@@ -58,18 +60,18 @@ class OrganizationNodeResource extends Resource
 
                 Select::make('organization_scope_id')
                     ->label(__('filament-astart::organization-node.organization_scope'))
-                    ->options(function () {
-                        $parentId = request()->get('parent_id');
+                    ->options(function (callable $get) {
+                        $parentId = $get('parent_id');
 
                         if ($parentId) {
                             $node = OrganizationNode::find($parentId);
-
                             return $node?->availableScopes()?->pluck('name', 'id') ?? [];
                         }
 
                         return [];
                     })
-                    ->required(),
+                    ->visible(fn(string $context) => $context === 'create')
+                    ->required()
             ]);
     }
 
@@ -88,12 +90,12 @@ class OrganizationNodeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('Alt Node')
+                Action::make('Alt Node')
                     ->label(__('filament-astart::organization-node.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
-                Tables\Actions\EditAction::make()
+                    ->url(fn($record) => "/admin/organization-nodes?parent_id={$record->id}"),
+                EditAction::make()
                     ->label(__('filament-astart::organization-node.edit_node')),
 
             ]);

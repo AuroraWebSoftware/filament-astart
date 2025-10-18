@@ -6,18 +6,21 @@ use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +32,9 @@ class RoleResource extends Resource
 
     protected static ?string $model = Role::class;
 
-    protected static ?string $navigationGroup = 'AStart';
+    protected static string|null|\UnitEnum $navigationGroup = 'AStart';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {
@@ -43,7 +46,7 @@ class RoleResource extends Resource
         return __('filament-astart::role.model_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         $permissionConfig = config('astart-auth.permissions');
 
@@ -64,7 +67,7 @@ class RoleResource extends Resource
             ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
-        return $form
+        return $schema
             ->schema([
                 Fieldset::make(__('filament-astart::role.resource_label'))
                     ->schema([
@@ -120,7 +123,7 @@ class RoleResource extends Resource
                             ->reactive()
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                            ->afterStateUpdated(function ($state, Set $set) {
                                 $permissionConfig = config('astart-auth.permissions');
                                 foreach ($permissionConfig as $type => $list) {
                                     foreach ($list as $group => $actions) {
@@ -179,7 +182,7 @@ class RoleResource extends Resource
                             Toggle::make("select_all_{$type}_$group")
                                 ->label(__('filament-astart::role.select_all_group'))
                                 ->reactive()
-                                ->afterStateUpdated(function ($state, Forms\Set $set) use ($actions, $type, $group) {
+                                ->afterStateUpdated(function ($state, Set $set) use ($actions, $type, $group) {
                                     foreach ($actions as $action) {
                                         $set("permissions.$type.$group.$action", $state);
                                     }
@@ -255,8 +258,8 @@ class RoleResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make(),
+                DeleteAction::make()
                     ->action(function ($record) {
                         $exists = DB::table('user_role_organization_node')
                             ->where('role_id', $record->id)

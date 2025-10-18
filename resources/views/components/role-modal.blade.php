@@ -1,7 +1,7 @@
 <x-filament::modal
     id="role-select-modal"
     width="md"
-    display-classes="block z-[9999]"
+    display-classes="block z-9999"
     :persistent="true"
     heading="Rol Seçimi"
 >

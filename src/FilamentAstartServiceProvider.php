@@ -5,7 +5,7 @@ namespace AuroraWebSoftware\FilamentAstart;
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
 use AuroraWebSoftware\FilamentAstart\Http\Livewire\StateTransitionListbox;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
-use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
