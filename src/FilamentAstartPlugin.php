@@ -14,7 +14,6 @@ use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
-use Hasnayeen\Themes\ThemesPlugin;
 
 class FilamentAstartPlugin implements Plugin
 {
@@ -48,16 +47,6 @@ class FilamentAstartPlugin implements Plugin
                 ->url('/admin/role-switch')
                 ->icon('heroicon-o-arrow-path'),
         ]);
-
-        $panel->plugin(ThemesPlugin::make())->middleware([
-
-            \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
-        ])
-            // or in `tenantMiddleware` if you're using multi-tenancy
-            ->tenantMiddleware([
-
-                \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
-            ]);
 
     }
 
