@@ -25,9 +25,9 @@ class UserResource extends Resource
 
     protected static ?string $model = User::class;
 
-    protected static string|null|\UnitEnum $navigationGroup = 'AStart';
+    protected static string | null | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-user';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-user';
 
     public static function getNavigationLabel(): string
     {

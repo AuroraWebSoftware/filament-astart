@@ -29,8 +29,8 @@ class EditOrganizationNode extends EditRecord
                 ->visible(fn () => ! $this->record->children()->exists())
                 ->requiresConfirmation()
                 ->modalHeading(__('filament-astart::organization-node.delete_node'))
-                ->modalDescription(fn () =>
-                $this->record->children()->exists()
+                ->modalDescription(
+                    fn () => $this->record->children()->exists()
                     ? __('filament-astart::organization-node.cannot_delete_with_children')
                     : __('filament-astart::organization-node.delete_confirm')
                 )

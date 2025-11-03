@@ -32,9 +32,9 @@ class RoleResource extends Resource
 
     protected static ?string $model = Role::class;
 
-    protected static string|null|\UnitEnum $navigationGroup = 'AStart';
+    protected static string | null | \UnitEnum $navigationGroup = 'AStart';
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {
@@ -46,7 +46,7 @@ class RoleResource extends Resource
         return __('filament-astart::role.model_label');
     }
 
-    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         $permissionConfig = config('astart-auth.permissions');
 

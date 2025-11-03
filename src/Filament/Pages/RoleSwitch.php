@@ -15,7 +15,7 @@ class RoleSwitch extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static string|null|\BackedEnum $navigationIcon = null;
+    protected static string | null | \BackedEnum $navigationIcon = null;
 
     protected static ?string $title = '';
 
@@ -26,7 +26,7 @@ class RoleSwitch extends Page
         return 'filament-astart::layouts.guest';
     }
 
-    public static function getRouteName(string|\Filament\Panel|null $panel = null): string
+    public static function getRouteName(string | \Filament\Panel | null $panel = null): string
     {
         return 'filament.admin.pages.role-switch';
     }
