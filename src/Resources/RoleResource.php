@@ -121,6 +121,7 @@ class RoleResource extends Resource
                         Toggle::make('select_all_permissions')
                             ->label(__('filament-astart::role.select_all_permissions'))
                             ->reactive()
+                            ->dehydrated(false)
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
                             ->afterStateUpdated(function ($state, Set $set) {
@@ -182,6 +183,7 @@ class RoleResource extends Resource
                             Toggle::make("select_all_{$type}_$group")
                                 ->label(__('filament-astart::role.select_all_group'))
                                 ->reactive()
+                                ->dehydrated(false)
                                 ->afterStateUpdated(function ($state, Set $set) use ($actions, $type, $group) {
                                     foreach ($actions as $action) {
                                         $set("permissions.$type.$group.$action", $state);
