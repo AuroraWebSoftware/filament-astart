@@ -44,7 +44,7 @@ class UserResource extends Resource
 
     protected static ?string $resourceKey = 'user';
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-user';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-user';
 
     public static function getNavigationLabel(): string
     {

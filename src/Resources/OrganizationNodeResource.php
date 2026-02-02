@@ -28,7 +28,7 @@ class OrganizationNodeResource extends Resource
 
     protected static ?string $resourceKey = 'organization_node';
 
-    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {
