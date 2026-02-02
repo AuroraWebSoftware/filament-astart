@@ -7,7 +7,7 @@
         "build:styles": "tailwindcss -i resources/css/index.css -o resources/dist/filament-astart.css --minify",
         "build:scripts": "node bin/build.js",
         "dev": "tailwindcss -i resources/css/index.css -o resources/dist/filament-astart.css --watch",
-        "build": "tailwindcss -i resources/css/index.css -o resources/dist/filament-astart.css --minify"
+        "build": "tailwindcss -i resources/css/index.css -o resources/dist/filament-astart.css --content \"./resources/views/**/*.blade.php,./src/**/*.php\" --minify"
     },
     "devDependencies": {
         "@tailwindcss/cli": "^4.1.14",

@@ -21,4 +21,9 @@ class OrganizationNode extends \AuroraWebSoftware\AAuth\Models\OrganizationNode
     {
         return $this->hasMany(OrganizationNode::class, 'parent_id');
     }
+
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive', 'organizationScope');
+    }
 }

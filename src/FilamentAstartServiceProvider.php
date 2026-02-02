@@ -68,10 +68,15 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         parent::packageRegistered();
 
+        // Config dosyasını yükle (merge)
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/filament-astart.php',
+            'filament-astart'
+        );
+
         $this->app->scoped('filament-astart', function (): FilamentAstart {
             return new FilamentAstart;
         });
-
     }
 
     public function packageBooted(): void
@@ -112,6 +117,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
             $this->publishes([
+                __DIR__ . '/../config/filament-astart.php' => config_path('filament-astart.php'),
                 __DIR__ . '/../config/astart-auth.php' => config_path('astart-auth.php'),
             ], 'filament-astart-config');
 
@@ -131,10 +137,6 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
         Testable::mixin(new TestsFilamentAstart);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-astart');
-
-        FilamentAsset::register([
-            Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
-        ], 'aurorawebsoftware/filament-astart');
     }
 
     protected function getAssetPackageName(): ?string

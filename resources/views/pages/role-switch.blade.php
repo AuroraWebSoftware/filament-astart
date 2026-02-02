@@ -3,10 +3,10 @@
         <div class="w-full max-w-2xl">
             <div class="mb-10 text-center">
                 <h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-                    {{ __('filament-astart::role-switch.select_role_title') }}
+                    {{ __('filament-astart::filament-astart.role_switch.select_role_title') }}
                 </h1>
                 <p class="text-gray-600 dark:text-gray-300">
-                    {{ __('filament-astart::role-switch.select_role_description') }}
+                    {{ __('filament-astart::filament-astart.role_switch.select_role_description') }}
                 </p>
             </div>
 
@@ -56,7 +56,7 @@
 
             <div class="mt-10 text-center">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('filament-astart::role-switch.switch_role_footer') }}
+                    {{ __('filament-astart::filament-astart.role_switch.switch_role_footer') }}
                 </p>
             </div>
         </div>
@@ -71,7 +71,7 @@
                     icon="heroicon-m-arrow-left-on-rectangle"
                     type="submit"
                 >
-                    {{ __('filament-astart::role-switch.logout') }}
+                    {{ __('filament-astart::filament-astart.role_switch.logout') }}
                 </x-filament::button>
             </form>
         @endif

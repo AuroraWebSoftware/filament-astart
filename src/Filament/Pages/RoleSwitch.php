@@ -3,8 +3,9 @@
 namespace AuroraWebSoftware\FilamentAstart\Filament\Pages;
 
 use AuroraWebSoftware\AAuth\Models\Role;
+use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RoleSwitch extends Page
@@ -26,15 +27,21 @@ class RoleSwitch extends Page
         return 'filament-astart::layouts.guest';
     }
 
-    public static function getRouteName(string | \Filament\Panel | null $panel = null): string
-    {
-        return 'filament.admin.pages.role-switch';
-    }
-
     public function mount(): void
     {
+        // Super admin kontrolü - rol seçmeden direkt dashboard'a yönlendir
+        if (AAuthUtil::isSuperAdmin()) {
+            $panelId = Filament::getCurrentPanel()?->getId() ?? 'admin';
+            $this->redirect(route("filament.{$panelId}.pages.dashboard"));
+
+            return;
+        }
+
+        $user = Filament::auth()->user();
+        $userId = $user?->getAuthIdentifier();
+
         $this->roles = DB::table('user_role_organization_node')
-            ->where('user_role_organization_node.user_id', Auth::id())
+            ->where('user_role_organization_node.user_id', $userId)
             ->leftJoin('organization_nodes', 'organization_nodes.id', '=', 'user_role_organization_node.organization_node_id')
             ->leftJoin('roles', 'roles.id', '=', 'user_role_organization_node.role_id')
             ->select(
@@ -53,7 +60,10 @@ class RoleSwitch extends Page
 
     public function switchRole(int $roleId)
     {
-        $role = Role::where('uro.user_id', '=', Auth::id())
+        $user = Filament::auth()->user();
+        $userId = $user?->getAuthIdentifier();
+
+        $role = Role::where('uro.user_id', '=', $userId)
             ->where('roles.id', '=', $roleId)
             ->leftJoin('user_role_organization_node as uro', 'uro.role_id', '=', 'roles.id')
             ->first(['roles.id']);
@@ -64,6 +74,8 @@ class RoleSwitch extends Page
 
         session(['roleId' => $role->id]);
 
-        return redirect()->route('filament.admin.pages.dashboard');
+        $panelId = Filament::getCurrentPanel()?->getId() ?? 'admin';
+
+        return redirect()->route("filament.{$panelId}.pages.dashboard");
     }
 }

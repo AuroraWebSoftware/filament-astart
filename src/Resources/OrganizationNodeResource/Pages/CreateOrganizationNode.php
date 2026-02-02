@@ -4,11 +4,18 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pa
 
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateOrganizationNode extends CreateRecord
 {
+    use AStartPageLabels;
+
     protected static string $resource = OrganizationNodeResource::class;
+
+    protected static ?string $resourceKey = 'organization_node';
+
+    protected static ?string $pageType = 'create';
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

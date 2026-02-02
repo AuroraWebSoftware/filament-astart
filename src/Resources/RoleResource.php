@@ -5,12 +5,15 @@ namespace AuroraWebSoftware\FilamentAstart\Resources;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -28,25 +31,31 @@ use Illuminate\Support\Str;
 
 class RoleResource extends Resource
 {
+    use AStartNavigationGroup;
     use AStartResourceAccessPolicy;
 
     protected static ?string $model = Role::class;
 
-    protected static string | null | \UnitEnum $navigationGroup = 'AStart';
+    protected static ?string $resourceKey = 'role';
 
-    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-shield-check';
 
     public static function getNavigationLabel(): string
     {
-        return __('filament-astart::role.model_label');
+        return __('filament-astart::filament-astart.resources.role.navigation');
     }
 
     public static function getModelLabel(): string
     {
-        return __('filament-astart::role.model_label');
+        return __('filament-astart::filament-astart.resources.role.label');
     }
 
-    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.role.plural');
+    }
+
+    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         $permissionConfig = config('astart-auth.permissions');
 
@@ -69,40 +78,28 @@ class RoleResource extends Resource
 
         return $schema
             ->schema([
-                Fieldset::make(__('filament-astart::role.resource_label'))
+                Fieldset::make(__('filament-astart::filament-astart.resources.role.plural'))
                     ->schema([
-
                         Forms\Components\TextInput::make('name')
-                            ->label(__('filament-astart::role.name'))
+                            ->label(__('filament-astart::filament-astart.resources.role.fields.name'))
                             ->required()
                             ->unique(column: 'name', ignoreRecord: true),
 
                         Toggle::make('status')
-                            ->label(__('filament-astart::role.status'))
+                            ->label(__('filament-astart::filament-astart.resources.role.fields.status'))
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
                             ->inline(false)
                             ->default(true)
                             ->formatStateUsing(fn ($state) => $state === 'active' || $state === true)
                             ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'passive'),
-
                     ])->columns(2),
 
-                Fieldset::make(__('filament-astart::role.type_organizations'))
+                Fieldset::make(__('filament-astart::filament-astart.resources.role.form.organization_settings'))
                     ->schema([
-                        Select::make('type')
-                            ->label(__('filament-astart::role.type'))
-                            ->options([
-                                'system' => __('filament-astart::role.type_system'),
-                                'organization' => __('filament-astart::role.type_organization'),
-                            ])
-                            ->native(false)
-                            ->required()
-                            ->reactive(),
-
                         Select::make('organization_scope_id')
-                            ->label(__('filament-astart::role.organization_scope'))
-                            ->placeholder(__('filament-astart::role.placeholder_organization_scope'))
+                            ->label(__('filament-astart::filament-astart.resources.role.fields.organization_scope'))
+                            ->placeholder(__('filament-astart::filament-astart.resources.role.form.placeholder_organization_scope_optional'))
                             ->options(
                                 fn () => OrganizationScope::query()
                                     ->where('status', 'active')
@@ -110,26 +107,25 @@ class RoleResource extends Resource
                                     ->toArray()
                             )
                             ->searchable()
-                            ->visible(fn (Get $get) => $get('type') === 'organization')
-                            ->required(fn (Get $get) => $get('type') === 'organization')
                             ->nullable(),
                     ])
-                    ->columns(2),
+                    ->columns(1),
 
                 Grid::make(1)
                     ->schema([
                         Toggle::make('select_all_permissions')
-                            ->label(__('filament-astart::role.select_all_permissions'))
-                            ->reactive()
+                            ->label(__('filament-astart::filament-astart.resources.role.form.select_all_permissions'))
+                            ->live()
                             ->dehydrated(false)
                             ->onIcon('heroicon-s-check')
                             ->offIcon('heroicon-s-x-mark')
                             ->afterStateUpdated(function ($state, Set $set) {
                                 $permissionConfig = config('astart-auth.permissions');
-                                foreach ($permissionConfig as $type => $list) {
-                                    foreach ($list as $group => $actions) {
-                                        foreach ($actions as $action) {
-                                            $set("permissions.$type.$group.$action", $state);
+                                foreach ($permissionConfig as $type => $groups) {
+                                    foreach ($groups as $group => $actions) {
+                                        foreach ($actions as $key => $value) {
+                                            $actionKey = is_string($value) ? $value : $key;
+                                            $set("permissions.$type.$group.$actionKey.enabled", $state);
                                         }
                                         $set("select_all_{$type}_$group", $state);
                                     }
@@ -140,25 +136,25 @@ class RoleResource extends Resource
                 Tabs::make('Permissions')
                     ->tabs([
                         ...($resourceCount > 0 ? [
-                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_resources'))
+                            Tabs\Tab::make(__('filament-astart::filament-astart.resources.role.tabs.resources'))
                                 ->badge($resourceCount)
                                 ->schema(static::buildPermissionGroups($permissionConfig['resource'] ?? [], 'resource')),
                         ] : []),
 
                         ...($pagesCount > 0 ? [
-                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_pages'))
+                            Tabs\Tab::make(__('filament-astart::filament-astart.resources.role.tabs.pages'))
                                 ->badge($pagesCount)
                                 ->schema(static::buildPermissionGroups($permissionConfig['pages'] ?? [], 'pages')),
                         ] : []),
 
                         ...($widgetCount > 0 ? [
-                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_widgets'))
+                            Tabs\Tab::make(__('filament-astart::filament-astart.resources.role.tabs.widgets'))
                                 ->badge($widgetCount)
                                 ->schema(static::buildPermissionGroups($permissionConfig[$widgetKey] ?? [], $widgetKey)),
                         ] : []),
 
                         ...($customCount > 0 ? [
-                            Tabs\Tab::make(__('filament-astart::role.permissions_tab_custom'))
+                            Tabs\Tab::make(__('filament-astart::filament-astart.resources.role.tabs.custom'))
                                 ->badge($customCount)
                                 ->schema(static::buildPermissionGroups($permissionConfig['custom_permission'] ?? [], 'custom_permission')),
                         ] : []),
@@ -175,38 +171,184 @@ class RoleResource extends Resource
                 continue;
             }
 
-            $fields[] = Section::make(__('filament-astart::permissions.' . Str::snake($group)))
-                ->collapsible()
-                ->schema([
-                    Grid::make(2)
-                        ->schema([
-                            Toggle::make("select_all_{$type}_$group")
-                                ->label(__('filament-astart::role.select_all_group'))
-                                ->reactive()
-                                ->dehydrated(false)
-                                ->afterStateUpdated(function ($state, Set $set) use ($actions, $type, $group) {
-                                    foreach ($actions as $action) {
-                                        $set("permissions.$type.$group.$action", $state);
-                                    }
-                                }),
-                            Grid::make()
-                                ->columns([
-                                    'default' => 1,
-                                    'md' => 2,
-                                ])
-                                ->schema(
-                                    collect($actions)->map(function ($action) use ($group, $type) {
-                                        $code = Str::snake($group) . '_' . Str::snake($action);
+            $groupDescriptionKey = 'filament-astart::permissions.'.Str::snake($group).'_description';
+            $groupDescription = __($groupDescriptionKey);
 
-                                        return Checkbox::make("permissions.$type.$group.$action")
-                                            ->label(__('filament-astart::permissions.' . $code));
-                                    })->toArray()
-                                ),
-                        ]),
-                ]);
+            // Description yoksa veya key dönüyorsa null yap
+            if ($groupDescription === $groupDescriptionKey) {
+                $groupDescription = null;
+            }
+
+            $section = Section::make(__('filament-astart::permissions.'.Str::snake($group)))
+                ->collapsible();
+
+            if ($groupDescription) {
+                $section = $section->description($groupDescription);
+            }
+
+            $fields[] = $section->schema([
+                Toggle::make("select_all_{$type}_$group")
+                    ->label(__('filament-astart::filament-astart.resources.role.form.select_all_group'))
+                    ->live()
+                    ->dehydrated(false)
+                    ->afterStateUpdated(function ($state, Set $set) use ($actions, $type, $group) {
+                        foreach ($actions as $key => $value) {
+                            $actionKey = is_string($value) ? $value : $key;
+                            $set("permissions.$type.$group.$actionKey.enabled", $state);
+                        }
+                    }),
+                Grid::make()
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                    ])
+                    ->schema(
+                        static::buildPermissionFields($actions, $group, $type)
+                    ),
+            ]);
         }
 
         return $fields;
+    }
+
+    protected static function buildPermissionFields(array $actions, string $group, string $type): array
+    {
+        $fields = [];
+
+        foreach ($actions as $key => $value) {
+            // Geriye uyumluluk: string ise parametresiz, array ise parametreli
+            if (is_string($value)) {
+                $actionKey = $value;
+                $parameters = [];
+            } else {
+                $actionKey = $key;
+                $parameters = $value['parameters'] ?? [];
+            }
+
+            $code = Str::snake($group).'_'.Str::snake($actionKey);
+            $label = __('filament-astart::permissions.'.$code);
+            $description = __('filament-astart::permissions.'.$code.'_description');
+
+            // Description yoksa veya key dönüyorsa boş bırak
+            if ($description === 'filament-astart::permissions.'.$code.'_description') {
+                $description = null;
+            }
+
+            $checkboxField = Checkbox::make("permissions.$type.$group.$actionKey.enabled")
+                ->label($label)
+                ->live()
+                ->afterStateUpdated(function ($state, Set $set, Get $get) use ($type, $group, $actions) {
+                    // Group toggle'ı güncelle
+                    $allChecked = true;
+                    foreach ($actions as $k => $v) {
+                        $aKey = is_string($v) ? $v : $k;
+                        if (! $get("permissions.$type.$group.$aKey.enabled")) {
+                            $allChecked = false;
+                            break;
+                        }
+                    }
+                    $set("select_all_{$type}_{$group}", $allChecked);
+
+                    // Ana toggle'ı güncelle
+                    $permissionConfig = config('astart-auth.permissions');
+                    $allPermissionsChecked = true;
+                    foreach ($permissionConfig as $t => $groups) {
+                        foreach ($groups as $g => $acts) {
+                            foreach ($acts as $ak => $av) {
+                                $aKey = is_string($av) ? $av : $ak;
+                                if (! $get("permissions.$t.$g.$aKey.enabled")) {
+                                    $allPermissionsChecked = false;
+                                    break 3;
+                                }
+                            }
+                        }
+                    }
+                    $set('select_all_permissions', $allPermissionsChecked);
+                });
+
+            // Description varsa hintAction ile tooltip göster
+            if ($description) {
+                $checkboxField = $checkboxField->hintAction(
+                    Action::make('info_'.$code)
+                        ->label('')
+                        ->icon('heroicon-o-information-circle')
+                        ->tooltip($description)
+                );
+            }
+
+            // Parametreler varsa checkbox ve parametreleri aynı sütunda alt alta göster
+            if (! empty($parameters)) {
+                $groupSchema = [$checkboxField];
+                foreach ($parameters as $paramName => $paramConfig) {
+                    $paramField = static::buildParameterField(
+                        $type,
+                        $group,
+                        $actionKey,
+                        $paramName,
+                        $paramConfig
+                    );
+                    if ($paramField) {
+                        $groupSchema[] = $paramField;
+                    }
+                }
+
+                $fields[] = Grid::make(1)
+                    ->schema($groupSchema);
+            } else {
+                // Parametresiz checkbox
+                $fields[] = $checkboxField;
+            }
+        }
+
+        return $fields;
+    }
+
+    protected static function buildParameterField(
+        string $type,
+        string $group,
+        string $actionKey,
+        string $paramName,
+        array $paramConfig
+    ): mixed {
+        $fieldName = "permissions.$type.$group.$actionKey.params.$paramName";
+        $paramType = $paramConfig['type'] ?? 'string';
+        $default = $paramConfig['default'] ?? null;
+        $paramDescription = $paramConfig['description'] ?? $paramName;
+
+        // Translation'dan description almayı dene
+        $translationKey = 'filament-astart::permissions.'.Str::snake($group).'_'.Str::snake($actionKey).'_param_'.Str::snake($paramName);
+        $translatedDescription = __($translationKey);
+        if ($translatedDescription !== $translationKey) {
+            $paramDescription = $translatedDescription;
+        }
+
+        $checkboxPath = "permissions.$type.$group.$actionKey.enabled";
+
+        $field = match ($paramType) {
+            'integer' => TextInput::make($fieldName)
+                ->label($paramDescription)
+                ->numeric()
+                ->default($default)
+                ->visible(fn (Get $get): bool => (bool) $get($checkboxPath)),
+
+            'boolean' => Toggle::make($fieldName)
+                ->label($paramDescription)
+                ->default($default ?? false)
+                ->inline(false)
+                ->visible(fn (Get $get): bool => (bool) $get($checkboxPath)),
+
+            'array' => Forms\Components\TagsInput::make($fieldName)
+                ->label($paramDescription)
+                ->default($default ?? [])
+                ->visible(fn (Get $get): bool => (bool) $get($checkboxPath)),
+
+            default => TextInput::make($fieldName)
+                ->label($paramDescription)
+                ->default($default)
+                ->visible(fn (Get $get): bool => (bool) $get($checkboxPath)),
+        };
+
+        return $field;
     }
 
     public static function table(Table $table): Table
@@ -217,29 +359,24 @@ class RoleResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('filament-astart::filament-astart.resources.role.fields.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('organization_scope_id')
-                    ->label('Scope')
+                    ->label(__('filament-astart::filament-astart.resources.role.fields.organization_scope'))
                     ->formatStateUsing(function ($state) {
                         if (! $state) {
                             return '-';
                         }
                         $name = DB::table('organization_scopes')->where('id', $state)->value('name');
 
-                        return $name ?? ' ';
+                        return $name ?? '-';
                     })
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors([
-                        'primary',
-                        'warning' => 'organization',
-                    ])
-                    ->sortable(),
-
                 Tables\Columns\BadgeColumn::make('status')
+                    ->label(__('filament-astart::filament-astart.resources.role.fields.status'))
                     ->colors([
                         'success' => 'active',
                         'danger' => 'passive',
@@ -247,16 +384,11 @@ class RoleResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->label('Tür')
-                    ->options([
-
-                    ]),
-
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Durum')
+                    ->label(__('filament-astart::filament-astart.resources.role.fields.status'))
                     ->options([
-
+                        'active' => __('filament-astart::filament-astart.resources.role.fields.status_active'),
+                        'passive' => __('filament-astart::filament-astart.resources.role.fields.status_passive'),
                     ]),
             ])
             ->actions([
@@ -289,7 +421,6 @@ class RoleResource extends Resource
                     ->modalDescription(__('filament-astart::permissions.delete_role_description'))
                     ->modalButton(__('filament-astart::permissions.confirm_delete_button')),
             ]);
-
     }
 
     public static function getRelations(): array

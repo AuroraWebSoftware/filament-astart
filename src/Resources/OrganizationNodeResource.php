@@ -6,6 +6,7 @@ use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\CreateOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\EditOrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages\ListOrganizationNodes;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -20,13 +21,29 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrganizationNodeResource extends Resource
 {
+    use AStartNavigationGroup;
     use AStartResourceAccessPolicy;
 
     protected static ?string $model = OrganizationNode::class;
 
-    protected static null | string | \UnitEnum $navigationGroup = 'AStart';
+    protected static ?string $resourceKey = 'organization_node';
 
-    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_node.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_node.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_node.plural');
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -53,12 +70,12 @@ class OrganizationNodeResource extends Resource
                     ->default(request()->get('parent_id')),
 
                 TextInput::make('name')
-                    ->label(__('filament-astart::organization-node.node_name'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_node.fields.node_name'))
                     ->required()
                     ->maxLength(255),
 
                 Select::make('organization_scope_id')
-                    ->label(__('filament-astart::organization-node.organization_scope'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_node.fields.organization_scope'))
                     ->options(function (callable $get) {
                         $parentId = $get('parent_id');
 
@@ -79,24 +96,24 @@ class OrganizationNodeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label(__('filament-astart::organization-node.node_name')),
-                TextColumn::make('organization_scope.name')->label('Organization Scope'),
-                TextColumn::make('model_type')->label(__('filament-astart::organization-node.model_type')),
-                TextColumn::make('model_id')->label(__('filament-astart::organization-node.model_id')),
-                TextColumn::make('path')->label(__('filament-astart::organization-node.path')),
-                TextColumn::make('parent.name')->label(__('filament-astart::organization-node.parent')),
+                TextColumn::make('name')->label(__('filament-astart::filament-astart.resources.organization_node.fields.node_name')),
+                TextColumn::make('organization_scope.name')->label(__('filament-astart::filament-astart.resources.organization_node.fields.organization_scope')),
+                TextColumn::make('model_type')->label(__('filament-astart::filament-astart.resources.organization_node.fields.model_type')),
+                TextColumn::make('model_id')->label(__('filament-astart::filament-astart.resources.organization_node.fields.model_id')),
+                TextColumn::make('path')->label(__('filament-astart::filament-astart.resources.organization_node.fields.path')),
+                TextColumn::make('parent.name')->label(__('filament-astart::filament-astart.resources.organization_node.fields.parent')),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Action::make('Alt Node')
-                    ->label(__('filament-astart::organization-node.child_node'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_node.actions.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
                     ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
                 EditAction::make()
-                    ->label(__('filament-astart::organization-node.edit_node')),
+                    ->label(__('filament-astart::filament-astart.resources.organization_node.actions.edit_node')),
 
             ]);
 
