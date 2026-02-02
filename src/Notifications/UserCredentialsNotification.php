@@ -28,8 +28,8 @@ class UserCredentialsNotification extends Notification
             ->subject(__('filament-astart::filament-astart.resources.user.emails.credentials_subject', ['app' => $appName]))
             ->greeting(__('filament-astart::filament-astart.resources.user.emails.greeting', ['name' => $notifiable->name]))
             ->line(__('filament-astart::filament-astart.resources.user.emails.account_created'))
-            ->line(__('filament-astart::filament-astart.resources.user.emails.email_label').' **'.$notifiable->email.'**')
-            ->line(__('filament-astart::filament-astart.resources.user.emails.password_label').' **'.$this->password.'**')
+            ->line(__('filament-astart::filament-astart.resources.user.emails.email_label') . ' **' . $notifiable->email . '**')
+            ->line(__('filament-astart::filament-astart.resources.user.emails.password_label') . ' **' . $this->password . '**')
             ->action(__('filament-astart::filament-astart.resources.user.emails.login_button'), $this->loginUrl)
             ->line(__('filament-astart::filament-astart.resources.user.emails.security_warning'));
     }

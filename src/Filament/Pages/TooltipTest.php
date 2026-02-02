@@ -15,9 +15,9 @@ class TooltipTest extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-beaker';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-beaker';
 
-    protected static string|null|\UnitEnum $navigationGroup = 'AStart';
+    protected static string | null | \UnitEnum $navigationGroup = 'AStart';
 
     protected static ?string $navigationLabel = 'Tooltip Test';
 
@@ -49,7 +49,7 @@ class TooltipTest extends Page implements HasForms
                             ->label('Kullanıcıları Düzenleyebilir')
                             ->hintAction(
                                 Action::make('x')
-                                ->label('')
+                                    ->label('')
                                     ->icon('heroicon-o-information-circle')
                                     ->tooltip('Bu yetki kullanıcıların sistemde düzenleme yapmasına izin verir')
                             ),
