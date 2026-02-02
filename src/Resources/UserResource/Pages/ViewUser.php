@@ -683,6 +683,7 @@ class ViewUser extends ViewRecord
                                 $selectedId = $get("org_level_{$prevScope->id}");
                                 if ($selectedId) {
                                     $parentId = $selectedId;
+
                                     break;
                                 }
                             }

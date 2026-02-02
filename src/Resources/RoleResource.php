@@ -38,7 +38,7 @@ class RoleResource extends Resource
 
     protected static ?string $resourceKey = 'role';
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-shield-check';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-shield-check';
 
     public static function getNavigationLabel(): string
     {
@@ -55,7 +55,7 @@ class RoleResource extends Resource
         return __('filament-astart::filament-astart.resources.role.plural');
     }
 
-    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         $permissionConfig = config('astart-auth.permissions');
 
@@ -171,7 +171,7 @@ class RoleResource extends Resource
                 continue;
             }
 
-            $groupDescriptionKey = 'filament-astart::permissions.'.Str::snake($group).'_description';
+            $groupDescriptionKey = 'filament-astart::permissions.' . Str::snake($group) . '_description';
             $groupDescription = __($groupDescriptionKey);
 
             // Description yoksa veya key dönüyorsa null yap
@@ -179,7 +179,7 @@ class RoleResource extends Resource
                 $groupDescription = null;
             }
 
-            $section = Section::make(__('filament-astart::permissions.'.Str::snake($group)))
+            $section = Section::make(__('filament-astart::permissions.' . Str::snake($group)))
                 ->collapsible();
 
             if ($groupDescription) {
@@ -225,12 +225,12 @@ class RoleResource extends Resource
                 $parameters = $value['parameters'] ?? [];
             }
 
-            $code = Str::snake($group).'_'.Str::snake($actionKey);
-            $label = __('filament-astart::permissions.'.$code);
-            $description = __('filament-astart::permissions.'.$code.'_description');
+            $code = Str::snake($group) . '_' . Str::snake($actionKey);
+            $label = __('filament-astart::permissions.' . $code);
+            $description = __('filament-astart::permissions.' . $code . '_description');
 
             // Description yoksa veya key dönüyorsa boş bırak
-            if ($description === 'filament-astart::permissions.'.$code.'_description') {
+            if ($description === 'filament-astart::permissions.' . $code . '_description') {
                 $description = null;
             }
 
@@ -244,6 +244,7 @@ class RoleResource extends Resource
                         $aKey = is_string($v) ? $v : $k;
                         if (! $get("permissions.$type.$group.$aKey.enabled")) {
                             $allChecked = false;
+
                             break;
                         }
                     }
@@ -258,6 +259,7 @@ class RoleResource extends Resource
                                 $aKey = is_string($av) ? $av : $ak;
                                 if (! $get("permissions.$t.$g.$aKey.enabled")) {
                                     $allPermissionsChecked = false;
+
                                     break 3;
                                 }
                             }
@@ -269,7 +271,7 @@ class RoleResource extends Resource
             // Description varsa hintAction ile tooltip göster
             if ($description) {
                 $checkboxField = $checkboxField->hintAction(
-                    Action::make('info_'.$code)
+                    Action::make('info_' . $code)
                         ->label('')
                         ->icon('heroicon-o-information-circle')
                         ->tooltip($description)
@@ -316,7 +318,7 @@ class RoleResource extends Resource
         $paramDescription = $paramConfig['description'] ?? $paramName;
 
         // Translation'dan description almayı dene
-        $translationKey = 'filament-astart::permissions.'.Str::snake($group).'_'.Str::snake($actionKey).'_param_'.Str::snake($paramName);
+        $translationKey = 'filament-astart::permissions.' . Str::snake($group) . '_' . Str::snake($actionKey) . '_param_' . Str::snake($paramName);
         $translatedDescription = __($translationKey);
         if ($translatedDescription !== $translationKey) {
             $paramDescription = $translatedDescription;

@@ -30,7 +30,7 @@ class OrganizationScopeResource extends Resource
 
     protected static ?string $resourceKey = 'organization_scope';
 
-    protected static null|string|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {
@@ -47,7 +47,7 @@ class OrganizationScopeResource extends Resource
         return __('filament-astart::filament-astart.resources.organization_scope.plural');
     }
 
-    public static function form(Form|\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->schema([
