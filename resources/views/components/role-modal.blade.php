@@ -27,7 +27,7 @@
                 class="mb-2"
             >
                 {{ $role->role_name }}
-                <span class="text-xs text-gray-500 block">{{ $role->node_name }}</span>
+                <span class="text-xs fi-color-gray block">{{ $role->node_name }}</span>
             </x-filament::button>
         @endforeach
     </div>

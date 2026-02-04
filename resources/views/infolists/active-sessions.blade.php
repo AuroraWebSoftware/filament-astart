@@ -6,7 +6,7 @@
     @else
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($getState() as $session)
-                <div class="fi-section rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 p-4 {{ $session->is_current ? 'ring-2 ring-primary-500 dark:ring-primary-400' : '' }}">
+                <div class="fi-section rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 p-4">
                     <div class="flex items-start justify-between">
                         <div class="flex items-center gap-3">
                             {{-- Device Icon --}}
@@ -20,13 +20,8 @@
                                 @endif
                             </div>
                             <div>
-                                <div class="font-medium text-gray-950 dark:text-white text-sm flex items-center gap-1.5">
+                                <div class="font-medium text-gray-950 dark:text-white text-sm">
                                     {{ $session->browser ?? 'Unknown Browser' }}
-                                    @if($session->is_current)
-                                        <x-filament::badge color="primary" size="xs">
-                                            {{ __('filament-astart::filament-astart.resources.user.infolists.current') }}
-                                        </x-filament::badge>
-                                    @endif
                                 </div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ $session->platform ?? 'Unknown OS' }}

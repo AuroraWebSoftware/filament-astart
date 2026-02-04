@@ -35,7 +35,7 @@ return [
                 'update',
                 'view_any',
             ],
-            'RoleV2' => [
+            'OrganizationTree' => [
                 'view',
                 'edit',
                 'delete',

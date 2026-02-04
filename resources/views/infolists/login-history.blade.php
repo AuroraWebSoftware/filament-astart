@@ -1,53 +1,53 @@
 <div>
     @if(empty($getState()) || $getState()->isEmpty())
-        <div class="text-center py-6">
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+        <div class="fi-ta-empty-state text-center py-6">
+            <p class="text-sm fi-color-gray">
                 {{ __('filament-astart::filament-astart.resources.user.infolists.no_login_history') }}
             </p>
         </div>
     @else
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="fi-ta-table w-full text-sm">
                 <thead>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                        <th class="px-3 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+                    <tr class="astart-table-header">
+                        <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">
                             {{ __('filament-astart::filament-astart.resources.user.infolists.date') }}
                         </th>
-                        <th class="px-3 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+                        <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">
                             {{ __('filament-astart::filament-astart.resources.user.infolists.method') }}
                         </th>
-                        <th class="px-3 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+                        <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">
                             {{ __('filament-astart::filament-astart.resources.user.infolists.ip_address') }}
                         </th>
-                        <th class="px-3 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+                        <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">
                             {{ __('filament-astart::filament-astart.resources.user.infolists.location') }}
                         </th>
-                        <th class="px-3 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+                        <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">
                             {{ __('filament-astart::filament-astart.resources.user.infolists.status') }}
                         </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody class="astart-table-body">
                     @foreach($getState() as $attempt)
-                        <tr>
-                            <td class="px-3 py-3 text-sm text-gray-700 dark:text-gray-300">
+                        <tr class="fi-ta-row">
+                            <td class="fi-ta-cell px-3 py-3 text-sm fi-color-text">
                                 {{ $attempt->created_at?->format('d.m.Y H:i') }}
                             </td>
-                            <td class="px-3 py-3">
+                            <td class="fi-ta-cell px-3 py-3">
                                 <x-filament::badge color="gray">
                                     {{ ucfirst($attempt->method ?? 'email') }}
                                 </x-filament::badge>
                             </td>
-                            <td class="px-3 py-3 font-mono text-xs text-gray-700 dark:text-gray-300">
+                            <td class="fi-ta-cell px-3 py-3 font-mono text-xs fi-color-text">
                                 {{ $attempt->ip_address ?? '-' }}
                             </td>
-                            <td class="px-3 py-3 text-sm text-gray-700 dark:text-gray-300">
+                            <td class="fi-ta-cell px-3 py-3 text-sm fi-color-text">
                                 @php
                                     $location = array_filter([$attempt->city, $attempt->country]);
                                 @endphp
                                 {{ implode(', ', $location) ?: '-' }}
                             </td>
-                            <td class="px-3 py-3">
+                            <td class="fi-ta-cell px-3 py-3">
                                 @if($attempt->is_success)
                                     <x-filament::badge color="success" icon="heroicon-o-check-circle">
                                         {{ __('filament-astart::filament-astart.resources.user.infolists.success') }}

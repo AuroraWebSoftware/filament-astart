@@ -6,11 +6,13 @@ use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Filament\Pages\RoleSwitch;
 use AuroraWebSoftware\FilamentAstart\Http\Middleware\EnsureUserHasRoleSelected;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
+use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\MenuItem;
 use Filament\Panel;
@@ -47,7 +49,7 @@ class FilamentAstartPlugin implements Plugin
             $resources[] = OrganizationNodeResource::class;
         }
         if (config('filament-astart.resources.organization_tree', true)) {
-            $resources[] = OrganizationNodeV2Resource::class;
+            $resources[] = OrganizationTreeResource::class;
         }
 
         $panel->resources($resources);
@@ -64,7 +66,7 @@ class FilamentAstartPlugin implements Plugin
         // User Menu - Switch Role
         $panel->userMenuItems([
             MenuItem::make()
-                ->label(__('filament-astart::filament-astart.role_switch.switch_role'))
+                ->label(fn () => __('filament-astart::filament-astart.role_switch.switch_role'))
                 ->url(fn () => route("filament.{$panel->getId()}.pages.role-switch"))
                 ->icon('heroicon-o-arrow-path')
                 ->visible(fn () => ! AAuthUtil::isSuperAdmin()),
@@ -73,6 +75,46 @@ class FilamentAstartPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
+        // Language Switch Configuration
+        $languageSwitchConfig = config('filament-astart.features.language_switch', []);
+        if (($languageSwitchConfig['enabled'] ?? false) && class_exists(LanguageSwitch::class)) {
+            LanguageSwitch::configureUsing(function (LanguageSwitch $switch) use ($languageSwitchConfig) {
+                $switch->locales($languageSwitchConfig['locales'] ?? ['en']);
+
+                if ($languageSwitchConfig['flags'] ?? false) {
+                    $switch->flags();
+                }
+
+                if ($languageSwitchConfig['circular'] ?? false) {
+                    $switch->circular();
+                }
+            });
+        }
+
+        // Panel Switch Configuration
+        if (class_exists(PanelSwitch::class)) {
+            $panelSwitchConfig = config('filament-astart.features.panel_switch', []);
+            $isEnabled = $panelSwitchConfig['enabled'] ?? false;
+
+            PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) use ($panelSwitchConfig, $isEnabled) {
+                // Disabled ise gizle
+                if (! $isEnabled) {
+                    $panelSwitch->visible(false);
+
+                    return;
+                }
+
+                if ($heading = ($panelSwitchConfig['modal_heading'] ?? null)) {
+                    $panelSwitch->modalHeading($heading);
+                }
+
+                if (isset($panelSwitchConfig['visible'])) {
+                    $panelSwitch->visible($panelSwitchConfig['visible']);
+                }
+            });
+        }
+
+        // User Menu - Role Display
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_BEFORE,
             function (): string {

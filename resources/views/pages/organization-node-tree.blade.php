@@ -1,25 +1,25 @@
 <x-filament-panels::page>
     <div class="space-y-3 sm:space-y-4">
         {{-- Toolbar --}}
-        <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 p-3 sm:p-4">
+        <div class="fi-section rounded-xl p-3 sm:p-4">
             <div class="flex flex-col gap-3">
                 {{-- Top Row: Search & Stats --}}
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
                     {{-- Search --}}
                     <div class="relative flex-1 max-w-md">
                         <div class="relative">
-                            <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 fi-color-gray" />
                             <input
                                 type="text"
                                 wire:model.live.debounce.300ms="search"
                                 placeholder="{{ __('filament-astart::filament-astart.resources.organization_tree.tree.search_placeholder') }}"
-                                class="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                class="astart-search-input"
                             />
                             @if($search)
                                 <button
                                     type="button"
                                     wire:click="$set('search', '')"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 fi-color-gray hover:text-gray-600"
                                 >
                                     <x-heroicon-o-x-mark class="w-4 h-4" />
                                 </button>
@@ -29,9 +29,9 @@
                         {{-- Search Results Dropdown --}}
                         @if(strlen($search) >= 2)
                             @php $searchResults = $this->getSearchResults(); @endphp
-                            <div class="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-gray-950/5 dark:ring-white/10 max-h-64 overflow-y-auto">
+                            <div class="astart-search-dropdown">
                                 @if($searchResults->isEmpty())
-                                    <div class="p-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                    <div class="p-3 text-sm fi-color-gray text-center">
                                         {{ __('filament-astart::filament-astart.resources.organization_tree.tree.no_results') }}
                                     </div>
                                 @else
@@ -39,17 +39,17 @@
                                         <button
                                             type="button"
                                             wire:click="goToNode({{ $result->id }})"
-                                            class="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                                            class="astart-dropdown-item"
                                         >
-                                            <x-heroicon-o-folder class="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                            <x-heroicon-o-folder class="w-4 h-4 fi-color-gray flex-shrink-0" />
                                             <div class="flex-1 min-w-0">
-                                                <div class="font-medium text-gray-900 dark:text-white truncate">{{ $result->name }}</div>
+                                                <div class="font-medium fi-color-text truncate">{{ $result->name }}</div>
                                                 @if($result->parent)
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $result->parent->name }}</div>
+                                                    <div class="text-xs fi-color-gray truncate">{{ $result->parent->name }}</div>
                                                 @endif
                                             </div>
                                             @if($result->organizationScope)
-                                                <span class="text-xs px-1.5 py-0.5 rounded bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 flex-shrink-0">
+                                                <span class="fi-badge fi-badge-size-sm fi-color-primary flex-shrink-0">
                                                     {{ $result->organizationScope->name }}
                                                 </span>
                                             @endif
@@ -61,9 +61,9 @@
                     </div>
 
                     {{-- Stats --}}
-                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center gap-2 text-sm fi-color-gray">
                         <x-heroicon-o-chart-bar class="w-4 h-4" />
-                        <span>{{ __('filament-astart::filament-astart.resources.organization_tree.tree.total_nodes') }}: <strong class="text-gray-700 dark:text-gray-300">{{ $this->getTotalNodeCount() }}</strong></span>
+                        <span>{{ __('filament-astart::filament-astart.resources.organization_tree.tree.total_nodes') }}: <strong class="fi-color-text">{{ $this->getTotalNodeCount() }}</strong></span>
                     </div>
                 </div>
 
@@ -87,7 +87,7 @@
                             class="sm:hidden"
                         />
 
-                        {{-- Desktop: With text --}}
+                        {{-- Desktop: With labels --}}
                         <x-filament::button
                             size="sm"
                             color="gray"
@@ -110,20 +110,20 @@
                     </div>
 
                     {{-- Display Options --}}
-                    <div class="flex flex-wrap items-center gap-3 sm:gap-5">
-                        <label class="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm cursor-pointer">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <label class="inline-flex items-center gap-2 text-sm cursor-pointer">
                             <x-filament::input.checkbox wire:model.live="showScopeLevel" />
-                            <span class="text-gray-600 dark:text-gray-400">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_scope_level') }}</span>
+                            <span class="fi-color-gray">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_scope_level') }}</span>
                         </label>
 
-                        <label class="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm cursor-pointer">
+                        <label class="inline-flex items-center gap-2 text-sm cursor-pointer">
                             <x-filament::input.checkbox wire:model.live="showPath" />
-                            <span class="text-gray-600 dark:text-gray-400">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_path') }}</span>
+                            <span class="fi-color-gray">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_path') }}</span>
                         </label>
 
-                        <label class="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm cursor-pointer">
+                        <label class="inline-flex items-center gap-2 text-sm cursor-pointer">
                             <x-filament::input.checkbox wire:model.live="showChildCount" />
-                            <span class="text-gray-600 dark:text-gray-400">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_child_count') }}</span>
+                            <span class="fi-color-gray">{{ __('filament-astart::filament-astart.resources.organization_tree.tree.show_child_count') }}</span>
                         </label>
                     </div>
                 </div>
@@ -131,40 +131,36 @@
         </div>
 
         {{-- Tree Container --}}
-        <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
-            <div class="p-3 sm:p-4">
-                @php
-                    $rootNodes = $this->getRootNodes();
-                @endphp
+        <div class="fi-section rounded-xl p-3 sm:p-4">
+            @php $rootNodes = $this->getRootNodes(); @endphp
 
-                @if($rootNodes->isEmpty())
-                    {{-- Empty State --}}
-                    <div class="text-center py-12 sm:py-16">
-                        <div class="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-                            <x-heroicon-o-building-office-2 class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
-                        </div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
-                            {{ __('filament-astart::filament-astart.resources.organization_tree.tree.no_nodes_yet') }}
-                        </h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-                            {{ __('filament-astart::filament-astart.resources.organization_tree.tree.empty_state_description') }}
-                        </p>
-                        <a
-                            href="{{ $this->getCreateUrl() }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium text-sm"
-                        >
-                            <x-heroicon-o-plus class="w-5 h-5" />
-                            {{ __('filament-astart::filament-astart.resources.organization_tree.tree.add_root_node') }}
-                        </a>
+            @if($rootNodes->isEmpty())
+                {{-- Empty State --}}
+                <div class="text-center py-12">
+                    <div class="astart-empty-icon">
+                        <x-heroicon-o-building-office-2 class="w-8 h-8 fi-color-gray" />
                     </div>
-                @else
-                    <ul class="space-y-0.5 sm:space-y-1">
-                        @foreach($rootNodes as $node)
-                            @include('filament-astart::components.organization-node-tree-item', ['node' => $node, 'level' => 0])
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
+                    <h3 class="text-lg font-medium fi-color-text mb-1">
+                        {{ __('filament-astart::filament-astart.resources.organization_tree.tree.no_nodes_yet') }}
+                    </h3>
+                    <p class="text-sm fi-color-gray mb-6 max-w-sm mx-auto">
+                        {{ __('filament-astart::filament-astart.resources.organization_tree.tree.empty_state_description') }}
+                    </p>
+                    <x-filament::button
+                        :href="$this->getCreateUrl()"
+                        tag="a"
+                        icon="heroicon-o-plus"
+                    >
+                        {{ __('filament-astart::filament-astart.resources.organization_tree.tree.add_root_node') }}
+                    </x-filament::button>
+                </div>
+            @else
+                <ul class="space-y-1">
+                    @foreach($rootNodes as $node)
+                        @include('filament-astart::components.organization-node-tree-item', ['node' => $node, 'level' => 0])
+                    @endforeach
+                </ul>
+            @endif
         </div>
     </div>
 </x-filament-panels::page>

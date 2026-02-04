@@ -5,8 +5,6 @@ namespace AuroraWebSoftware\FilamentAstart;
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
 use AuroraWebSoftware\FilamentAstart\Http\Livewire\StateTransitionListbox;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
-use BezhanSalleh\LanguageSwitch\LanguageSwitch;
-use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -83,15 +81,6 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         Livewire::component('arflow-state-transition-listbox', StateTransitionListbox::class);
 
-        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
-            $switch
-                ->locales(['en', 'tr']);
-        });
-
-        PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
-            $panelSwitch->modalHeading('Available Panels');
-        });
-
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
@@ -150,9 +139,8 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('filament-astart', __DIR__ . '/../resources/dist/components/filament-astart.js'),
             Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
-            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
+//            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
         ];
     }
 

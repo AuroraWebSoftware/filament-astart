@@ -1,15 +1,15 @@
 <?php
 
-namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource\Pages;
+namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\Page;
 
-class ListOrganizationNodesV2 extends Page
+class ListOrganizationTrees extends Page
 {
-    protected static string $resource = OrganizationNodeV2Resource::class;
+    protected static string $resource = OrganizationTreeResource::class;
 
     protected string $view = 'filament-astart::pages.organization-node-tree';
 
@@ -21,11 +21,11 @@ class ListOrganizationNodesV2 extends Page
 
     public string $search = '';
 
-    public bool $showScopeLevel = true;
+    public bool $showScopeLevel = false;
 
     public bool $showPath = false;
 
-    public bool $showChildCount = true;
+    public bool $showChildCount = false;
 
     public ?int $highlightedNodeId = null;
 

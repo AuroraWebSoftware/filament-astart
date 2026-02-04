@@ -4,7 +4,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource\Pages;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Forms\Components\Hidden;
@@ -13,7 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 
-class OrganizationNodeV2Resource extends Resource
+class OrganizationTreeResource extends Resource
 {
     use AStartNavigationGroup;
     use AStartResourceAccessPolicy;
@@ -22,7 +22,7 @@ class OrganizationNodeV2Resource extends Resource
 
     protected static ?string $resourceKey = 'organization_tree';
 
-    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-share';
+    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-share';
 
     protected static ?string $slug = 'organization-tree';
 
@@ -83,9 +83,9 @@ class OrganizationNodeV2Resource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrganizationNodesV2::route('/'),
-            'create' => Pages\CreateOrganizationNodeV2::route('/create'),
-            'edit' => Pages\EditOrganizationNodeV2::route('/{record}/edit'),
+            'index' => Pages\ListOrganizationTrees::route('/'),
+            'create' => Pages\CreateOrganizationTree::route('/create'),
+            'edit' => Pages\EditOrganizationTree::route('/{record}/edit'),
         ];
     }
 }

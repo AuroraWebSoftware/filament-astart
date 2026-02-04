@@ -5,12 +5,14 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\UserResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Notifications\UserCredentialsNotification;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
 {
     use AStartPageLabels;
+    use HasFiLoginIntegration;
 
     protected static string $resource = UserResource::class;
 
@@ -31,7 +33,7 @@ class CreateUser extends CreateRecord
         // Generate password if needed
         if ($useRandomPassword && empty($data['password'])) {
             $length = config('filament-astart.user_creation.random_password_length', 16);
-            $randomPassword = \Illuminate\Support\Str::password($length);
+            $randomPassword = $this->generatePassword($length);
             $data['password'] = \Illuminate\Support\Facades\Hash::make($randomPassword);
             $this->plainPassword = $randomPassword;
         } elseif (! empty($data['generated_password_display'])) {
@@ -63,9 +65,48 @@ class CreateUser extends CreateRecord
 
     protected function afterCreate(): void
     {
+        // Force password reset on first login (FiLogin feature)
+        if (config('filament-astart.user_creation.force_password_reset', false) && static::hasFiLogin()) {
+            $policyClass = static::getFiLoginPasswordPolicyModel();
+            if ($policyClass) {
+                $panelId = filament()->getCurrentPanel()?->getId() ?? 'admin';
+                $policyClass::forceChange($this->record, $panelId);
+            }
+        }
+
         if ($this->shouldSendEmail && $this->plainPassword) {
             $this->sendCredentialsEmail();
         }
+    }
+
+    /**
+     * Generate a readable password with limited symbols (not at the beginning)
+     */
+    protected function generatePassword(int $length = 16): string
+    {
+        $letters = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ';
+        $numbers = '23456789';
+        $symbols = '!@#$%&*';
+
+        // Start with a letter
+        $password = $letters[random_int(0, strlen($letters) - 1)];
+
+        // Add more letters and numbers for the base
+        $baseChars = $letters . $numbers;
+        $baseLength = $length - 3; // Reserve space for 2 symbols
+
+        for ($i = 1; $i < $baseLength; $i++) {
+            $password .= $baseChars[random_int(0, strlen($baseChars) - 1)];
+        }
+
+        // Add 2 symbols at random positions (not at the beginning)
+        for ($i = 0; $i < 2; $i++) {
+            $position = random_int(2, strlen($password));
+            $symbol = $symbols[random_int(0, strlen($symbols) - 1)];
+            $password = substr($password, 0, $position) . $symbol . substr($password, $position);
+        }
+
+        return $password;
     }
 
     protected function sendCredentialsEmail(): void

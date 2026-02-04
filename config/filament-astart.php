@@ -5,6 +5,28 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Features (Third-party Integrations)
+    |--------------------------------------------------------------------------
+    | These features are only active when FilamentAstartPlugin is registered
+    | to a panel. They won't affect panels without the plugin.
+    */
+    'features' => [
+        'language_switch' => [
+            'enabled' => true,
+            'locales' => ['en', 'tr'],
+            'flags' => false,      // Show country flags
+            'circular' => false,   // Circular flag style
+        ],
+
+        'panel_switch' => [
+            'enabled' => false,
+            'modal_heading' => 'Available Panels',
+            'visible' => true,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Resources
     |--------------------------------------------------------------------------
     | active: Determines if resource is registered (true/false)
@@ -46,6 +68,7 @@ return [
     | random_password_length: Length of generated random password
     | force_random_password: Always use random password (hide manual password input)
     | force_send_credentials_email: Always send credentials email (no checkbox)
+    | force_password_reset: Force user to reset password on first login (requires FiloLogin)
     */
     'user_creation' => [
         'allow_random_password' => true,
@@ -53,5 +76,6 @@ return [
         'random_password_length' => 16,
         'force_random_password' => false,
         'force_send_credentials_email' => false,
+        'force_password_reset' => false,
     ],
 ];

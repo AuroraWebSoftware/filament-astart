@@ -1,17 +1,17 @@
 <?php
 
-namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource\Pages;
+namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeV2Resource;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateOrganizationNodeV2 extends CreateRecord
+class CreateOrganizationTree extends CreateRecord
 {
     use AStartPageLabels;
 
-    protected static string $resource = OrganizationNodeV2Resource::class;
+    protected static string $resource = OrganizationTreeResource::class;
 
     protected static ?string $resourceKey = 'organization_tree';
 
