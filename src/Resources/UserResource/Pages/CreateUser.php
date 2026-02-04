@@ -40,8 +40,11 @@ class CreateUser extends CreateRecord
             // Password was generated in form
             $this->plainPassword = $data['generated_password_display'];
             // Ensure password is hashed if not already
-            if (! empty($data['password']) && ! str_starts_with($data['password'], '$2y$')) {
-                $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+            if (! empty($data['password'])) {
+                $hashInfo = password_get_info($data['password']);
+                if ($hashInfo['algo'] === null) {
+                    $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+                }
             }
         }
 

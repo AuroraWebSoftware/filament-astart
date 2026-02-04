@@ -111,7 +111,7 @@ class OrganizationNodeResource extends Resource
                     ->label(__('filament-astart::filament-astart.resources.organization_node.actions.child_node'))
                     ->color('info')
                     ->icon('heroicon-o-arrow-right')
-                    ->url(fn ($record) => "/admin/organization-nodes?parent_id={$record->id}"),
+                    ->url(fn ($record) => static::getUrl('index', ['parent_id' => $record->id])),
                 EditAction::make()
                     ->label(__('filament-astart::filament-astart.resources.organization_node.actions.edit_node')),
 

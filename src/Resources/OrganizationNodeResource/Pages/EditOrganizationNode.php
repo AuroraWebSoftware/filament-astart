@@ -56,8 +56,8 @@ class EditOrganizationNode extends EditRecord
                             ->send();
 
                         return $parentId
-                            ? redirect("/admin/organization-nodes?parent_id={$parentId}")
-                            : redirect('/admin/organization-nodes');
+                            ? redirect(static::getResource()::getUrl('index', ['parent_id' => $parentId]))
+                            : redirect(static::getResource()::getUrl('index'));
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title(__('filament-astart::filament-astart.resources.organization_node.messages.error'))

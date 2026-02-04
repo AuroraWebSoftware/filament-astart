@@ -32,6 +32,27 @@ class ViewUser extends ViewRecord
     protected static ?string $pageType = 'view';
 
     /**
+     * Check if user is locked (helper to avoid DRY violation)
+     */
+    protected function isUserLocked($record = null, ?string $panelId = null): bool
+    {
+        if (! static::hasFiLogin()) {
+            return false;
+        }
+
+        $record = $record ?? $this->record;
+        $panelId = $panelId ?? (filament()->getCurrentPanel()?->getId() ?? 'admin');
+        $lockoutClass = static::getFiLoginUserLockoutModel();
+
+        $lockout = $lockoutClass::where('user_model_type', get_class($record))
+            ->where('user_id', $record->getAuthIdentifier())
+            ->where('panel_id', $panelId)
+            ->first();
+
+        return $lockout && ($lockout->is_permanent || ($lockout->locked_until && $lockout->locked_until->isFuture()));
+    }
+
+    /**
      * Toggle lock/unlock account
      */
     public function toggleLockAction(): void
@@ -49,19 +70,16 @@ class ViewUser extends ViewRecord
             $lockoutClass = static::getFiLoginUserLockoutModel();
             $panelId = filament()->getCurrentPanel()?->getId() ?? 'admin';
 
-            // Check current lock status directly from database (bypass lockout.enabled setting)
-            $lockout = $lockoutClass::where('user_model_type', get_class($this->record))
-                ->where('user_id', $this->record->getAuthIdentifier())
-                ->where('panel_id', $panelId)
-                ->first();
-
-            $isLocked = $lockout && ($lockout->is_permanent || ($lockout->locked_until && $lockout->locked_until->isFuture()));
+            $isLocked = $this->isUserLocked();
 
             if ($isLocked) {
                 // Unlock using FiLogin API
-                if ($lockout) {
-                    $lockout->unlock();
-                }
+                $lockout = $lockoutClass::where('user_model_type', get_class($this->record))
+                    ->where('user_id', $this->record->getAuthIdentifier())
+                    ->where('panel_id', $panelId)
+                    ->first();
+
+                $lockout?->unlock();
 
                 Notification::make()
                     ->title(__('filament-astart::filament-astart.resources.user.messages.account_unlocked'))
@@ -279,42 +297,10 @@ class ViewUser extends ViewRecord
                         TextEntry::make('lockout_status')
                             ->label(__('filament-astart::filament-astart.resources.user.fields.lockout_status'))
                             ->badge()
-                            ->state(function ($record) {
-                                if (! static::hasFiLogin()) {
-                                    return 'N/A';
-                                }
-                                $lockoutClass = static::getFiLoginUserLockoutModel();
-                                $panelId = filament()->getCurrentPanel()?->getId() ?? 'admin';
-
-                                // Direkt veritabanından kontrol et (lockout.enabled ayarını bypass)
-                                $lockout = $lockoutClass::where('user_model_type', get_class($record))
-                                    ->where('user_id', $record->getAuthIdentifier())
-                                    ->where('panel_id', $panelId)
-                                    ->first();
-
-                                $isLocked = $lockout && ($lockout->is_permanent || ($lockout->locked_until && $lockout->locked_until->isFuture()));
-
-                                return $isLocked
-                                    ? __('filament-astart::filament-astart.resources.user.status.locked')
-                                    : __('filament-astart::filament-astart.resources.user.status.unlocked');
-                            })
-                            ->color(function ($record) {
-                                if (! static::hasFiLogin()) {
-                                    return 'gray';
-                                }
-                                $lockoutClass = static::getFiLoginUserLockoutModel();
-                                $panelId = filament()->getCurrentPanel()?->getId() ?? 'admin';
-
-                                // Direkt veritabanından kontrol et (lockout.enabled ayarını bypass)
-                                $lockout = $lockoutClass::where('user_model_type', get_class($record))
-                                    ->where('user_id', $record->getAuthIdentifier())
-                                    ->where('panel_id', $panelId)
-                                    ->first();
-
-                                $isLocked = $lockout && ($lockout->is_permanent || ($lockout->locked_until && $lockout->locked_until->isFuture()));
-
-                                return $isLocked ? 'danger' : 'success';
-                            }),
+                            ->state(fn ($record) => $this->isUserLocked($record)
+                                ? __('filament-astart::filament-astart.resources.user.status.locked')
+                                : __('filament-astart::filament-astart.resources.user.status.unlocked'))
+                            ->color(fn ($record) => $this->isUserLocked($record) ? 'danger' : 'success'),
 
                         TextEntry::make('active_sessions')
                             ->label(__('filament-astart::filament-astart.resources.user.fields.active_sessions'))
@@ -612,15 +598,7 @@ class ViewUser extends ViewRecord
 
         // FiLogin: Security Actions (Single Button with Modal) - First/Left
         if (static::hasFiLogin()) {
-            $lockoutClass = static::getFiLoginUserLockoutModel();
-
-            // Direkt veritabanından kontrol et (lockout.enabled ayarını bypass)
-            $lockout = $lockoutClass::where('user_model_type', get_class($this->record))
-                ->where('user_id', $this->record->getAuthIdentifier())
-                ->where('panel_id', $panelId)
-                ->first();
-
-            $isLocked = $lockout && ($lockout->is_permanent || ($lockout->locked_until && $lockout->locked_until->isFuture()));
+            $isLocked = $this->isUserLocked();
 
             $actions[] = Action::make('securityActions')
                 ->label(__('filament-astart::filament-astart.resources.user.actions.security_actions'))
