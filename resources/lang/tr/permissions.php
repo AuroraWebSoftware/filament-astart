@@ -2,9 +2,10 @@
 
 return [
 
-    'user' => 'Kulanıcılar',
-    'organization_scope' => 'Organizasyon Scope',
-    'organization_node' => 'Organizasyon Node',
+    'user' => 'Kullanıcılar',
+    'organization_scope' => 'Organizasyon Kapsamları',
+    'organization_node' => 'Organizasyon Düğümleri',
+    'organization_tree' => 'Organizasyon Ağacı',
     'role' => 'Roller',
 
     'cannot_delete_role_assigned_to_user' => 'Bu rol bir veya birden fazla kullanıcıya atanmış. Silinemez!',
@@ -33,6 +34,13 @@ return [
     'organization_node_delete' => 'Organizasyon Düğümünü Sil',
     'organization_node_create' => 'Organizasyon Düğümü Oluştur',
     'organization_node_update' => 'Organizasyon Düğümünü Güncelle',
+
+    'organization_tree_view' => 'Organizasyon Ağacını Görüntüle',
+    'organization_tree_view_any' => 'Organizasyon Ağacı Menüsünü Görüntüle',
+    'organization_tree_edit' => 'Organizasyon Ağacını Düzenle',
+    'organization_tree_delete' => 'Ağaçtan Sil',
+    'organization_tree_create' => 'Ağaca Ekle',
+    'organization_tree_update' => 'Ağaç Düğümünü Güncelle',
 
     'role_view' => 'Rolü Görüntüle',
     'role_view_any' => 'Rol Menüsünü Görüntüle',

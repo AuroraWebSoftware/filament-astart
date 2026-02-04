@@ -2,9 +2,9 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages;
 
-use AuroraWebSoftware\AAuth\Facades\AAuth;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -12,7 +12,13 @@ use Illuminate\Database\QueryException;
 
 class EditOrganizationScope extends EditRecord
 {
+    use AStartPageLabels;
+
     protected static string $resource = OrganizationScopeResource::class;
+
+    protected static ?string $resourceKey = 'organization_scope';
+
+    protected static ?string $pageType = 'edit';
 
     protected function getHeaderActions(): array
     {
@@ -28,7 +34,7 @@ class EditOrganizationScope extends EditRecord
                         $record->delete();
 
                         Notification::make()
-                            ->title(__('filament-astart::organization-scope.delete_success', ['name' => $name]))
+                            ->title(__('filament-astart::filament-astart.resources.organization_scope.messages.delete_success', ['name' => $name]))
                             ->success()
                             ->send();
 
@@ -39,10 +45,10 @@ class EditOrganizationScope extends EditRecord
                     } catch (QueryException $e) {
 
                         Notification::make()
-                            ->title(__('filament-astart::organization-scope.delete_failed'))
+                            ->title(__('filament-astart::filament-astart.resources.organization_scope.messages.delete_failed'))
                             ->body(
                                 str_contains($e->getMessage(), 'roles_organization_scope_id_foreign')
-                                    ? __('filament-astart::organization-scope.delete_fk_roles')
+                                    ? __('filament-astart::filament-astart.resources.organization_scope.messages.delete_fk_roles')
                                     : __('filament-astart::messages.delete_fk_generic')
                             )
                             ->danger()
@@ -54,20 +60,4 @@ class EditOrganizationScope extends EditRecord
 
         ];
     }
-
-    //    public static function parseFilamentResourceName(string $class)
-    //    {
-    //        $classBase = class_basename($class);
-    //        $modelName = str_replace('Resource', '', $classBase);
-    //        return \Illuminate\Support\Str::snake($modelName);
-    //    }
-    //
-    //    public static function canAccess(array $parameters = []): bool
-    //    {
-    // //        dd(self::getResourcePageName());
-    // //        dd(self::getSlug());
-    //        $parsed = self::parseFilamentResourceName(self::getResource());
-    // //        dd($parsed);
-    //        return AAuth::can($parsed.'_'. self::getResourcePageName());
-    //    }
 }

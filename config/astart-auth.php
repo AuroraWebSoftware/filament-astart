@@ -35,6 +35,14 @@ return [
                 'update',
                 'view_any',
             ],
+            'OrganizationTree' => [
+                'view',
+                'edit',
+                'delete',
+                'create',
+                'update',
+                'view_any',
+            ],
         ],
         'pages' => [
             //            'Settings' => [

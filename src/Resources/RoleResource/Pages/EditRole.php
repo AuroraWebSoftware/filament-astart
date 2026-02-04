@@ -3,66 +3,72 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;
-use Filament\Pages\Page;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class EditRole extends EditRecord
 {
+    use AStartPageLabels;
+
     protected static string $resource = RoleResource::class;
+
+    protected static ?string $resourceKey = 'role';
+
+    protected static ?string $pageType = 'edit';
 
     protected array $permissionPayload = [];
 
-    public static function isPageBelongsToResource(string $pageClass): bool
-    {
-        if (! class_exists($pageClass)) {
-            return false;
-        }
-
-        $reflection = new \ReflectionClass($pageClass);
-
-        if ($reflection->hasProperty('resource')) {
-            $property = $reflection->getProperty('resource');
-            $property->setAccessible(true);
-            $value = $property->getValue();
-            if (! empty($value) && is_subclass_of($value, Resource::class)) {
-                return true;
-            }
-        }
-
-        if ($reflection->hasMethod('getResource')) {
-            $method = $reflection->getMethod('getResource');
-
-            return $method->getDeclaringClass()->getName() !== Page::class;
-        }
-
-        return false;
-    }
-
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $assignedCodes = DB::table('role_permission')
+        // Mevcut permission'ları DB'den çek
+        $assignedPermissions = DB::table('role_permission')
             ->where('role_id', $this->record->id)
-            ->pluck('permission')
-            ->toArray();
+            ->get()
+            ->keyBy('permission');
 
         $config = config('astart-auth.permissions');
         $permissions = [];
         $groupToggles = [];
         $allChecked = true;
 
-        foreach ($config as $type => $list) {
-            foreach ($list as $group => $actions) {
+        foreach ($config as $type => $groups) {
+            foreach ($groups as $group => $actions) {
                 $groupAll = true;
-                foreach ($actions as $action) {
-                    $code = Str::snake($group) . '_' . Str::snake($action);
-                    $checked = in_array($code, $assignedCodes);
-                    data_set($permissions, "$type.$group.$action", $checked);
+
+                foreach ($actions as $key => $value) {
+                    // Geriye uyumluluk: string ise parametresiz, array ise parametreli
+                    if (is_string($value)) {
+                        $actionKey = $value;
+                        $configParameters = [];
+                    } else {
+                        $actionKey = $key;
+                        $configParameters = $value['parameters'] ?? [];
+                    }
+
+                    $code = Str::snake($group) . '_' . Str::snake($actionKey);
+                    $dbPermission = $assignedPermissions->get($code);
+                    $checked = $dbPermission !== null;
+
+                    // Permission checkbox durumu - enabled key'inde tut
+                    data_set($permissions, "$type.$group.$actionKey.enabled", $checked);
+
+                    // Parametreleri yükle
+                    if (! empty($configParameters)) {
+                        $savedParameters = [];
+                        if ($dbPermission?->parameters) {
+                            $savedParameters = json_decode($dbPermission->parameters, true) ?? [];
+                        }
+                        foreach ($configParameters as $paramName => $paramConfig) {
+                            $paramValue = $savedParameters[$paramName] ?? $paramConfig['default'] ?? null;
+                            data_set($permissions, "$type.$group.$actionKey.params.$paramName", $paramValue);
+                        }
+                    }
 
                     $groupAll = $groupAll && $checked;
                 }
+
                 $groupToggles["select_all_{$type}_{$group}"] = $groupAll;
                 $allChecked = $allChecked && $groupAll;
             }
@@ -80,8 +86,7 @@ class EditRole extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        //        dd($data);
-        $this->permissionPayload = $this->patchPermissionsForSave($data['permissions'] ?? []);
+        $this->permissionPayload = $this->processPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
 
         return $data;
@@ -92,28 +97,32 @@ class EditRole extends EditRecord
         $this->syncRolePermissions($this->record->id, $this->permissionPayload);
     }
 
-    private function syncRolePermissions(int $roleId, array $rawPermissions): void
+    private function syncRolePermissions(int $roleId, array $processedPermissions): void
     {
-        DB::transaction(function () use ($roleId, $rawPermissions) {
-            $permissions = config('astart-auth.permissions');
-
-            foreach ($permissions as $type => $list) {
-                foreach ($list as $group => $actions) {
-                    foreach ($actions as $action) {
-                        $code = Str::snake($group) . '_' . Str::snake($action);
-                        $checked = data_get($rawPermissions, "$type.$group.$action") === true;
-                        $this->upsertPivot($roleId, $code, $checked);
-                    }
-                }
+        DB::transaction(function () use ($roleId, $processedPermissions) {
+            foreach ($processedPermissions as $permissionData) {
+                $this->upsertPermission(
+                    $roleId,
+                    $permissionData['code'],
+                    $permissionData['checked'],
+                    $permissionData['parameters']
+                );
             }
         });
     }
 
-    private function upsertPivot(int $roleId, string $code, bool $checked): void
+    private function upsertPermission(int $roleId, string $code, bool $checked, ?array $parameters): void
     {
         if ($checked) {
-            DB::table('role_permission')
-                ->updateOrInsert(['role_id' => $roleId, 'permission' => $code]);
+            DB::table('role_permission')->updateOrInsert(
+                [
+                    'role_id' => $roleId,
+                    'permission' => $code,
+                ],
+                [
+                    'parameters' => $parameters ? json_encode($parameters) : null,
+                ]
+            );
         } else {
             DB::table('role_permission')
                 ->where('role_id', $roleId)
@@ -122,21 +131,68 @@ class EditRole extends EditRecord
         }
     }
 
-    private function patchPermissionsForSave(array $rawPermissions): array
+    private function processPermissionsForSave(array $rawPermissions): array
     {
         $permissions = config('astart-auth.permissions');
-        $patched = $rawPermissions;
+        $processed = [];
 
-        foreach ($permissions as $type => $list) {
-            foreach ($list as $group => $actions) {
-                foreach ($actions as $action) {
-                    if (! isset($patched[$type][$group][$action])) {
-                        $patched[$type][$group][$action] = false;
+        foreach ($permissions as $type => $groups) {
+            foreach ($groups as $group => $actions) {
+                foreach ($actions as $key => $value) {
+                    // Geriye uyumluluk: string ise parametresiz, array ise parametreli
+                    if (is_string($value)) {
+                        $actionKey = $value;
+                        $configParameters = [];
+                    } else {
+                        $actionKey = $key;
+                        $configParameters = $value['parameters'] ?? [];
                     }
+
+                    $code = Str::snake($group) . '_' . Str::snake($actionKey);
+                    $permissionData = $rawPermissions[$type][$group][$actionKey] ?? [];
+
+                    // Checkbox durumunu al - enabled key'inden
+                    $checked = false;
+                    if (is_array($permissionData)) {
+                        $checked = ! empty($permissionData['enabled']);
+                    } elseif (is_bool($permissionData)) {
+                        $checked = $permissionData;
+                    }
+
+                    // Parametreleri al
+                    $parameters = null;
+                    if ($checked && ! empty($configParameters)) {
+                        $parameters = [];
+                        foreach ($configParameters as $paramName => $paramConfig) {
+                            $paramValue = $permissionData['params'][$paramName] ?? null;
+                            if ($paramValue !== null && $paramValue !== '') {
+                                $parameters[$paramName] = $this->castParameterValue($paramValue, $paramConfig['type'] ?? 'string');
+                            }
+                        }
+                        if (empty($parameters)) {
+                            $parameters = null;
+                        }
+                    }
+
+                    $processed[] = [
+                        'code' => $code,
+                        'checked' => $checked,
+                        'parameters' => $parameters,
+                    ];
                 }
             }
         }
 
-        return $patched;
+        return $processed;
+    }
+
+    private function castParameterValue(mixed $value, string $type): mixed
+    {
+        return match ($type) {
+            'integer' => (int) $value,
+            'boolean' => (bool) $value,
+            'array' => is_array($value) ? $value : [$value],
+            default => $value,
+        };
     }
 }

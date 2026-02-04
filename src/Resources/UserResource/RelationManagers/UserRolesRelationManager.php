@@ -2,7 +2,7 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers;
 
-use AuroraWebSoftware\AAuth\Models\OrganizationNode;
+use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -26,15 +26,18 @@ class UserRolesRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Rol')->searchable(),
-                Tables\Columns\BadgeColumn::make('type')->label('Tür')->colors([
-                    'success' => 'system',
-                    'warning' => 'organization',
-                ]),
                 Tables\Columns\TextColumn::make('pivot.organization_node_id')
-                    ->label('Organizasyon Düğümü')
+                    ->label('Organization Node')
                     ->formatStateUsing(
                         fn ($state, $record) => $record->pivot->organization_node_id
                         ? OrganizationNode::find($record->pivot->organization_node_id)?->name
+                        : '—'
+                    ),
+                Tables\Columns\TextColumn::make('organization_scope')
+                    ->label('Organization Scope')
+                    ->formatStateUsing(
+                        fn ($state, $record) => $record->pivot->organization_node_id
+                        ? OrganizationNode::find($record->pivot->organization_node_id)?->organizationScope?->name
                         : '—'
                     ),
             ])

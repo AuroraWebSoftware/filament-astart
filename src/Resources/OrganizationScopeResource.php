@@ -7,6 +7,7 @@ use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\CreateOrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\EditOrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\Pages\ListOrganizationScopes;
+use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -22,37 +23,53 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrganizationScopeResource extends Resource
 {
+    use AStartNavigationGroup;
     use AStartResourceAccessPolicy;
 
     protected static ?string $model = OrganizationScope::class;
 
-    protected static null | string | \UnitEnum $navigationGroup = 'AStart';
+    protected static ?string $resourceKey = 'organization_scope';
 
     protected static null | string | \BackedEnum $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_scope.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_scope.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament-astart::filament-astart.resources.organization_scope.plural');
+    }
 
     public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->schema([
                 TextInput::make('name')
-                    ->label(__('filament-astart::organization-scope.name'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.name'))
                     ->required(),
 
                 Placeholder::make('level')
-                    ->label(__('filament-astart::organization-scope.level'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.level'))
                     ->content(fn (?OrganizationScope $record) => $record?->level)
                     ->visibleOn('edit'),
 
                 Select::make('status')
-                    ->label(__('filament-astart::organization-scope.status'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.status'))
                     ->required()
                     ->options([
-                        'active' => __('filament-astart::organization-scope.status_active'),
-                        'passive' => __('filament-astart::organization-scope.status_passive'),
+                        'active' => __('filament-astart::filament-astart.resources.organization_scope.fields.status_active'),
+                        'passive' => __('filament-astart::filament-astart.resources.organization_scope.fields.status_passive'),
                     ]),
 
                 TextInput::make('level')
-                    ->label(__('filament-astart::organization-scope.level'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.level'))
                     ->visibleOn('create'),
 
             ]);
@@ -63,15 +80,15 @@ class OrganizationScopeResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('filament-astart::organization-scope.name'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.name'))
                     ->sortable(),
 
                 TextColumn::make('level')
-                    ->label(__('filament-astart::organization-scope.level'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.level'))
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('filament-astart::organization-scope.status'))
+                    ->label(__('filament-astart::filament-astart.resources.organization_scope.fields.status'))
                     ->sortable(),
             ])
             ->filters([

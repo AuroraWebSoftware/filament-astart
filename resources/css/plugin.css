@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/* Plugin view'larını tara */
+@source "../views/**/*.blade.php";
+
+/* Filament dark mode variant */
+@variant dark (&:where(.dark, .dark *));
+
+/* ============================================
+   Organization Tree Styles
+   ============================================ */
+
+/* Search Input */
+.astart-search-input {
+    @apply w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 outline-none;
+}
+.astart-search-input:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 1px var(--primary-500);
+}
+.astart-search-input:where(.dark, .dark *) {
+    @apply border-gray-700 bg-gray-800 text-white;
+}
+.astart-search-input:focus:where(.dark, .dark *) {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 1px var(--primary-500);
+}
+
+/* Search Dropdown */
+.astart-search-dropdown {
+    @apply absolute z-50 top-full left-0 right-0 mt-1 rounded-lg shadow-lg ring-1 ring-gray-950/5 max-h-64 overflow-y-auto bg-white;
+}
+.astart-search-dropdown:where(.dark, .dark *) {
+    @apply bg-gray-800 ring-white/10;
+}
+
+/* Dropdown Item */
+.astart-dropdown-item {
+    @apply w-full px-3 py-2 text-left flex items-center gap-2 text-sm;
+}
+.astart-dropdown-item:hover {
+    @apply bg-gray-50;
+}
+.astart-dropdown-item:where(.dark, .dark *):hover {
+    @apply bg-white/5;
+}
+
+/* Tree Row */
+.astart-tree-row {
+    @apply flex items-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-1 sm:px-3 rounded-lg cursor-pointer transition-colors;
+}
+.astart-tree-row:hover {
+    @apply bg-gray-50;
+}
+.astart-tree-row:where(.dark, .dark *):hover {
+    @apply bg-white/5;
+}
+
+/* Tree Row Highlighted */
+.astart-tree-row-highlighted {
+    @apply ring-2;
+    background-color: color-mix(in srgb, var(--primary-500) 10%, transparent);
+    --tw-ring-color: var(--primary-500);
+}
+.astart-tree-row-highlighted:where(.dark, .dark *) {
+    background-color: color-mix(in srgb, var(--primary-400) 15%, transparent);
+}
+
+/* Tree Expand Button */
+.astart-expand-btn {
+    @apply w-6 h-6 flex-shrink-0 flex items-center justify-center rounded transition-colors;
+}
+.astart-expand-btn-mobile {
+    @apply w-5 h-5 flex-shrink-0 flex items-center justify-center rounded transition-colors;
+}
+.astart-expand-btn:hover,
+.astart-expand-btn-mobile:hover {
+    @apply bg-gray-100;
+}
+.astart-expand-btn:where(.dark, .dark *):hover,
+.astart-expand-btn-mobile:where(.dark, .dark *):hover {
+    @apply bg-white/10;
+}
+
+/* Empty State Icon Container */
+.astart-empty-icon {
+    @apply mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4;
+}
+.astart-empty-icon:where(.dark, .dark *) {
+    @apply bg-gray-800;
+}
+
+/* Loading State */
+.astart-loading {
+    @apply flex items-center gap-2 py-2 text-gray-500 text-sm;
+}
+.astart-loading:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* Folder Icon */
+.astart-folder-icon {
+    @apply w-5 h-5;
+    color: var(--primary-500);
+}
+.astart-folder-icon-mobile {
+    @apply w-4 h-4;
+    color: var(--primary-500);
+}
+
+/* Document Icon */
+.astart-document-icon {
+    @apply w-5 h-5 text-gray-400;
+}
+.astart-document-icon-mobile {
+    @apply w-4 h-4 text-gray-400;
+}
+.astart-document-icon:where(.dark, .dark *),
+.astart-document-icon-mobile:where(.dark, .dark *) {
+    @apply text-gray-500;
+}
+
+/* ============================================
+   Role Switch Styles
+   ============================================ */
+
+/* Page Title */
+.astart-page-title {
+    @apply mb-2 text-3xl font-bold text-gray-900;
+}
+.astart-page-title:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* Page Title Mobile Responsive */
+.astart-page-title-mobile {
+    @apply mb-2 text-2xl md:text-3xl font-bold text-gray-900;
+}
+.astart-page-title-mobile:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* Page Description */
+.astart-page-description {
+    @apply text-gray-600;
+}
+.astart-page-description:where(.dark, .dark *) {
+    @apply text-gray-300;
+}
+
+/* Role Card */
+.astart-role-card {
+    @apply relative h-35 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ring-1 ring-gray-950/5 transition-all duration-200 hover:shadow-md;
+}
+.astart-role-card:where(.dark, .dark *) {
+    @apply border-gray-800 bg-gray-900 ring-white/10;
+}
+
+/* Role Name */
+.astart-role-name {
+    @apply truncate text-lg font-semibold text-gray-900;
+}
+.astart-role-name:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* Role Node Text */
+.astart-role-node-text {
+    @apply line-clamp-2 text-gray-500;
+}
+.astart-role-node-text:where(.dark, .dark *) {
+    @apply text-gray-300;
+}
+
+/* Footer Text */
+.astart-footer-text {
+    @apply text-sm text-gray-500;
+}
+.astart-footer-text:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* Simple Role Card */
+.astart-role-card-simple {
+    @apply px-4 py-3 rounded-lg border border-gray-200 bg-white transition-all duration-150;
+}
+.astart-role-card-simple:hover {
+    border-color: var(--primary-500);
+}
+.astart-role-card-simple:where(.dark, .dark *) {
+    @apply border-gray-700 bg-gray-800;
+}
+.astart-role-card-simple:where(.dark, .dark *):hover {
+    border-color: var(--primary-500);
+}
+
+/* Simple Role Name */
+.astart-role-name-simple {
+    @apply text-base font-medium text-gray-900;
+}
+.astart-role-name-simple:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* Simple Role Node */
+.astart-role-node-simple {
+    @apply text-sm text-gray-500 truncate;
+}
+.astart-role-node-simple:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* Role Arrow */
+.astart-role-arrow {
+    @apply h-5 w-5 text-gray-400 transition-all duration-150;
+}
+.group:hover .astart-role-arrow {
+    @apply translate-x-0.5;
+    color: var(--primary-500);
+}
+.astart-role-arrow:where(.dark, .dark *) {
+    @apply text-gray-500;
+}
+.group:hover .astart-role-arrow:where(.dark, .dark *) {
+    color: var(--primary-400);
+}
+
+/* ============================================
+   User Infolists Styles
+   ============================================ */
+
+/* Session Card */
+.astart-session-card {
+    @apply fi-section rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 p-4;
+}
+.astart-session-card:where(.dark, .dark *) {
+    @apply bg-gray-900 ring-white/10;
+}
+.astart-session-card-current {
+    @apply ring-2;
+    --tw-ring-color: var(--primary-500);
+}
+
+/* Session Icon Container */
+.astart-session-icon {
+    @apply flex-shrink-0 p-2 bg-gray-50 rounded-lg;
+}
+.astart-session-icon:where(.dark, .dark *) {
+    @apply bg-white/5;
+}
+
+/* Table Header Row */
+.astart-table-header {
+    @apply border-b border-gray-200;
+}
+.astart-table-header:where(.dark, .dark *) {
+    @apply border-white/5;
+}
+
+/* Table Body */
+.astart-table-body {
+    @apply divide-y divide-gray-100;
+}
+.astart-table-body:where(.dark, .dark *) {
+    @apply divide-white/5;
+}

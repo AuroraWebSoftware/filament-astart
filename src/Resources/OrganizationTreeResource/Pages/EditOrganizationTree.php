@@ -1,21 +1,21 @@
 <?php
 
-namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages;
+namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pages;
 
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
-class EditOrganizationNode extends EditRecord
+class EditOrganizationTree extends EditRecord
 {
     use AStartPageLabels;
 
-    protected static string $resource = OrganizationNodeResource::class;
+    protected static string $resource = OrganizationTreeResource::class;
 
-    protected static ?string $resourceKey = 'organization_node';
+    protected static ?string $resourceKey = 'organization_tree';
 
     protected static ?string $pageType = 'edit';
 
@@ -43,8 +43,6 @@ class EditOrganizationNode extends EditRecord
                 )
                 ->modalSubmitActionLabel(__('filament-astart::filament-astart.resources.organization_node.messages.yes_delete'))
                 ->action(function ($record, $action) {
-                    $parentId = $record->parent_id;
-
                     try {
                         $recordName = $record->name;
                         $record->delete();
@@ -55,9 +53,7 @@ class EditOrganizationNode extends EditRecord
                             ->success()
                             ->send();
 
-                        return $parentId
-                            ? redirect(static::getResource()::getUrl('index', ['parent_id' => $parentId]))
-                            : redirect(static::getResource()::getUrl('index'));
+                        return redirect(static::getResource()::getUrl('index'));
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title(__('filament-astart::filament-astart.resources.organization_node.messages.error'))
@@ -69,5 +65,10 @@ class EditOrganizationNode extends EditRecord
                     }
                 }),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
     }
 }

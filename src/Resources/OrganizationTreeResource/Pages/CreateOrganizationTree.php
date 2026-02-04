@@ -1,19 +1,19 @@
 <?php
 
-namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pages;
+namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
-use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
+use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateOrganizationNode extends CreateRecord
+class CreateOrganizationTree extends CreateRecord
 {
     use AStartPageLabels;
 
-    protected static string $resource = OrganizationNodeResource::class;
+    protected static string $resource = OrganizationTreeResource::class;
 
-    protected static ?string $resourceKey = 'organization_node';
+    protected static ?string $resourceKey = 'organization_tree';
 
     protected static ?string $pageType = 'create';
 
@@ -38,5 +38,10 @@ class CreateOrganizationNode extends CreateRecord
 
         $record->path = trim($parentPath ? $parentPath . '/' : '') . $record->id;
         $record->save();
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
     }
 }
