@@ -22,7 +22,7 @@ class OrganizationTreeResource extends Resource
 
     protected static ?string $resourceKey = 'organization_tree';
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-share';
+    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-share';
 
     protected static ?string $slug = 'organization-tree';
 

@@ -140,7 +140,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         return [
             Css::make('filament-astart-styles', __DIR__ . '/../resources/dist/filament-astart.css'),
-//            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
+            //            Js::make('filament-astart-scripts', __DIR__ . '/../resources/dist/filament-astart.js'),
         ];
     }
 
