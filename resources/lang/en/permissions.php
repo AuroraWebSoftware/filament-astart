@@ -2,8 +2,9 @@
 
 return [
     'user' => 'Users',
-    'organization_scope' => 'Organizasyon Scope',
-    'organization_node' => 'Organizasyon Node',
+    'organization_scope' => 'Organization Scopes',
+    'organization_node' => 'Organization Nodes',
+    'organization_tree' => 'Organization Tree',
     'role' => 'Roles',
 
     'cannot_delete_role_assigned_to_user' => 'This role has been assigned to one or more users. It cannot be deleted!',
@@ -32,6 +33,13 @@ return [
     'organization_node_delete' => 'Delete Organization Nodes',
     'organization_node_create' => 'Create Organization Node',
     'organization_node_update' => 'Update Organization Node',
+
+    'organization_tree_view' => 'View Organization Tree',
+    'organization_tree_view_any' => 'View Organization Tree Menu',
+    'organization_tree_edit' => 'Edit Organization Tree',
+    'organization_tree_delete' => 'Delete from Tree',
+    'organization_tree_create' => 'Create in Tree',
+    'organization_tree_update' => 'Update Tree Node',
 
     'role_view' => 'View Roles',
     'role_view_any' => 'View Roles Menu',
