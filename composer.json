@@ -27,7 +27,7 @@
         "bezhansalleh/filament-panel-switch": "^2.0",
         "bezhansalleh/filament-language-switch": "^4.0",
         "aurorawebsoftware/arflow": "^12.0.0",
-        "prism-php/prism": "v0.67.0",
+        "prism-php/prism": "v0.99.0",
         "aurorawebsoftware/acalendar": "^12.0.0",
         "ysfkaya/filament-phone-input": "^4"
     },
