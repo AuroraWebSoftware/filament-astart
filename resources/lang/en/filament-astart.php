@@ -383,6 +383,7 @@ return [
     ],
 
     'role_switch' => [
+        'greeting' => 'Welcome, :name',
         'select_role_title' => 'Role Selection',
         'select_role_description' => 'Select a role to continue',
         'switch_role_footer' => 'You can switch between different roles as needed',
