@@ -22,6 +22,8 @@ class RoleSwitch extends Page
 
     public array $roles = [];
 
+    public string $userName = '';
+
     public function getLayout(): string
     {
         return 'filament-astart::layouts.guest';
@@ -39,6 +41,7 @@ class RoleSwitch extends Page
 
         $user = Filament::auth()->user();
         $userId = $user?->getAuthIdentifier();
+        $this->userName = $user?->name ?? '';
 
         $this->roles = DB::table('user_role_organization_node')
             ->where('user_role_organization_node.user_id', $userId)

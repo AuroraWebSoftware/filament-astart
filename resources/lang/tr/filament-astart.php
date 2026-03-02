@@ -383,6 +383,7 @@ return [
     ],
 
     'role_switch' => [
+        'greeting' => 'Hoş geldin, :name',
         'select_role_title' => 'Rol Seçimi',
         'select_role_description' => 'Devam etmek için bir rol seçin',
         'switch_role_footer' => 'İhtiyacınıza göre farklı roller arasında geçiş yapabilirsiniz',
