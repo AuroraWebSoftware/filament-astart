@@ -267,6 +267,53 @@
 }
 
 /* ============================================
+   User Menu Styles
+   ============================================ */
+
+/* Hide default profile header (replaced by custom name+email) */
+.fi-user-menu .fi-dropdown-header {
+    display: none !important;
+}
+
+/* User Menu Header (name + email) */
+.astart-user-menu-header {
+    @apply px-3 py-3;
+}
+
+/* User Menu Name */
+.astart-user-menu-name {
+    @apply text-sm font-semibold text-gray-950;
+}
+.astart-user-menu-name:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* User Menu Email */
+.astart-user-menu-email {
+    @apply mt-0.5 text-xs text-gray-500;
+}
+.astart-user-menu-email:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* Role Badge (next to avatar) */
+.astart-role-badge-text {
+    @apply text-sm font-medium text-gray-700;
+}
+.astart-role-badge-text:where(.dark, .dark *) {
+    @apply text-gray-300;
+}
+
+/* Super Admin Badge */
+.astart-super-admin-badge {
+    @apply text-sm font-medium;
+    color: var(--primary-600);
+}
+.astart-super-admin-badge:where(.dark, .dark *) {
+    color: var(--primary-400);
+}
+
+/* ============================================
    User Infolists Styles
    ============================================ */
 
