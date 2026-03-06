@@ -4,8 +4,10 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class EditRole extends EditRecord
@@ -20,9 +22,43 @@ class EditRole extends EditRecord
 
     protected array $permissionPayload = [];
 
+    protected function getHeaderActions(): array
+    {
+        $assignedUsers = DB::table('user_role_organization_node')
+            ->join('users', 'users.id', '=', 'user_role_organization_node.user_id')
+            ->leftJoin('organization_nodes', 'organization_nodes.id', '=', 'user_role_organization_node.organization_node_id')
+            ->leftJoin('organization_scopes', 'organization_scopes.id', '=', 'organization_nodes.organization_scope_id')
+            ->where('user_role_organization_node.role_id', $this->record->id)
+            ->select([
+                'users.id',
+                'users.name',
+                'users.email',
+                DB::raw("STRING_AGG(DISTINCT organization_nodes.name, ', ') as node_names"),
+                DB::raw("STRING_AGG(DISTINCT organization_scopes.name, ', ') as scope_names"),
+            ])
+            ->groupBy('users.id', 'users.name', 'users.email')
+            ->get();
+
+        return [
+            Action::make('assignedUsers')
+                ->label(__('filament-astart::filament-astart.resources.role.assigned_users.button'))
+                ->icon('heroicon-o-users')
+                ->color('gray')
+                ->badge($assignedUsers->count())
+                ->modalHeading(__('filament-astart::filament-astart.resources.role.assigned_users.heading'))
+                ->modalDescription(__('filament-astart::filament-astart.resources.role.assigned_users.description', ['role' => $this->record->name]))
+                ->modalContent(new HtmlString(
+                    view('filament-astart::modals.assigned-users', [
+                        'users' => $assignedUsers,
+                    ])->render()
+                ))
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel(__('filament-astart::filament-astart.resources.role.assigned_users.close')),
+        ];
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Mevcut permission'ları DB'den çek
         $assignedPermissions = DB::table('role_permission')
             ->where('role_id', $this->record->id)
             ->get()

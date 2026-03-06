@@ -713,11 +713,17 @@ class ViewUser extends ViewRecord
                     }
                 }
 
-                $user->roles()->syncWithoutDetaching([
-                    $data['role_id'] => [
+                DB::table('user_role_organization_node')->updateOrInsert(
+                    [
+                        'user_id' => $user->getAuthIdentifier(),
+                        'role_id' => $data['role_id'],
                         'organization_node_id' => $selectedOrgNodeId,
                     ],
-                ]);
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
 
                 Notification::make()
                     ->title(__('filament-astart::filament-astart.resources.user.messages.role_added_success'))

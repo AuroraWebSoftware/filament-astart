@@ -226,6 +226,17 @@ return [
                 'widgets' => 'Bileşenler',
                 'custom' => 'Özel Yetkiler',
             ],
+            'assigned_users' => [
+                'button' => 'Atanan Kullanıcılar',
+                'heading' => 'Bu Role Atanan Kullanıcılar',
+                'description' => ':role rolüne atanmış kullanıcılar aşağıda listelenmiştir.',
+                'empty' => 'Bu role henüz kullanıcı atanmamış.',
+                'close' => 'Kapat',
+                'name' => 'Ad',
+                'email' => 'E-posta',
+                'scope' => 'Kapsam',
+                'node' => 'Birim',
+            ],
         ],
 
         'organization_scope' => [

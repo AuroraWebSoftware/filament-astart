@@ -226,6 +226,17 @@ return [
                 'widgets' => 'Widgets',
                 'custom' => 'Custom Permissions',
             ],
+            'assigned_users' => [
+                'button' => 'Assigned Users',
+                'heading' => 'Users Assigned to This Role',
+                'description' => 'Users assigned to the :role role are listed below.',
+                'empty' => 'No users have been assigned to this role yet.',
+                'close' => 'Close',
+                'name' => 'Name',
+                'email' => 'Email',
+                'scope' => 'Scope',
+                'node' => 'Node',
+            ],
         ],
 
         'organization_scope' => [

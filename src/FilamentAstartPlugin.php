@@ -13,6 +13,8 @@ use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
+use Filament\Actions\Action;
+use Filament\Auth\Pages\EditProfile;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\MenuItem;
 use Filament\Panel;
@@ -63,8 +65,23 @@ class FilamentAstartPlugin implements Plugin
             EnsureUserHasRoleSelected::class,
         ]);
 
-        // User Menu - Switch Role
+        // Profile Page
+        $panel->profile();
+
+        // User Menu Items
         $panel->userMenuItems([
+            // Profile header (no URL = renders as header at the top of dropdown)
+            'profile' => fn (Action $action) => $action
+                ->url(null)
+                ->icon(null)
+                ->label(fn (): string => filament()->getUserName(filament()->auth()->user())),
+            // Clickable profile link (sort 99 = above logout, below theme switcher)
+            Action::make('editProfile')
+                ->label('Profil')
+                ->icon('heroicon-o-user-circle')
+                ->url(fn (): string => EditProfile::getUrl())
+                ->sort(99),
+            // Role switch
             MenuItem::make()
                 ->label(fn () => __('filament-astart::filament-astart.role_switch.switch_role'))
                 ->url(fn () => route("filament.{$panel->getId()}.pages.role-switch"))
@@ -114,13 +131,29 @@ class FilamentAstartPlugin implements Plugin
             });
         }
 
-        // User Menu - Role Display
+        // User Menu - Name & Email Display (top of dropdown, replaces hidden header)
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
+            function (): string {
+                $user = filament()->auth()->user();
+
+                if (! $user) {
+                    return '';
+                }
+
+                return '<div class="astart-user-menu-header">'
+                    . '<p class="astart-user-menu-name">' . e(filament()->getUserName($user)) . '</p>'
+                    . '<p class="astart-user-menu-email">' . e($user->email) . '</p>'
+                    . '</div>';
+            }
+        );
+
+        // User Menu - Role Display (next to avatar, outside dropdown)
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_BEFORE,
             function (): string {
-                // Super admin kontrolü
                 if (AAuthUtil::isSuperAdmin()) {
-                    return '<span class="text-sm font-medium text-primary-600 dark:text-primary-400">Super Admin</span>';
+                    return '<span class="astart-super-admin-badge">Super Admin</span>';
                 }
 
                 $roleName = Role::find(session('roleId'))?->name;
@@ -129,7 +162,7 @@ class FilamentAstartPlugin implements Plugin
                     return '';
                 }
 
-                return '<span class="text-sm font-medium text-gray-700 dark:text-gray-300">' . e($roleName) . '</span>';
+                return '<span class="astart-role-badge-text">' . e($roleName) . '</span>';
             }
         );
     }
