@@ -15,6 +15,8 @@
                     <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">ID</th>
                     <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">{{ __('filament-astart::filament-astart.resources.role.assigned_users.name') }}</th>
                     <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">{{ __('filament-astart::filament-astart.resources.role.assigned_users.email') }}</th>
+                    <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">{{ __('filament-astart::filament-astart.resources.role.assigned_users.scope') }}</th>
+                    <th class="fi-ta-header-cell px-3 py-3 text-left text-sm font-semibold fi-color-gray">{{ __('filament-astart::filament-astart.resources.role.assigned_users.node') }}</th>
                 </tr>
             </thead>
             <tbody class="astart-table-body">
@@ -23,6 +25,8 @@
                         <td class="fi-ta-cell px-3 py-3 text-sm fi-color-text">{{ $user->id }}</td>
                         <td class="fi-ta-cell px-3 py-3 text-sm font-medium fi-color-text">{{ $user->name }}</td>
                         <td class="fi-ta-cell px-3 py-3 text-sm fi-color-gray">{{ $user->email }}</td>
+                        <td class="fi-ta-cell px-3 py-3 text-sm fi-color-gray">{{ $user->scope_names ?? '-' }}</td>
+                        <td class="fi-ta-cell px-3 py-3 text-sm fi-color-gray">{{ $user->node_names ?? '-' }}</td>
                     </tr>
                 @endforeach
             </tbody>

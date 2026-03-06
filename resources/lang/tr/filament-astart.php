@@ -234,6 +234,8 @@ return [
                 'close' => 'Kapat',
                 'name' => 'Ad',
                 'email' => 'E-posta',
+                'scope' => 'Kapsam',
+                'node' => 'Birim',
             ],
         ],
 

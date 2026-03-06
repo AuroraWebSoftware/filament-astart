@@ -27,14 +27,16 @@ class EditRole extends EditRecord
         $assignedUsers = DB::table('user_role_organization_node')
             ->join('users', 'users.id', '=', 'user_role_organization_node.user_id')
             ->leftJoin('organization_nodes', 'organization_nodes.id', '=', 'user_role_organization_node.organization_node_id')
+            ->leftJoin('organization_scopes', 'organization_scopes.id', '=', 'organization_nodes.organization_scope_id')
             ->where('user_role_organization_node.role_id', $this->record->id)
             ->select([
                 'users.id',
                 'users.name',
                 'users.email',
-                'organization_nodes.name as organization_node_name',
+                DB::raw("STRING_AGG(DISTINCT organization_nodes.name, ', ') as node_names"),
+                DB::raw("STRING_AGG(DISTINCT organization_scopes.name, ', ') as scope_names"),
             ])
-            ->distinct()
+            ->groupBy('users.id', 'users.name', 'users.email')
             ->get();
 
         return [

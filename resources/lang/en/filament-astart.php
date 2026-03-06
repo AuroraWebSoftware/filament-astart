@@ -234,6 +234,8 @@ return [
                 'close' => 'Close',
                 'name' => 'Name',
                 'email' => 'Email',
+                'scope' => 'Scope',
+                'node' => 'Node',
             ],
         ],
 
