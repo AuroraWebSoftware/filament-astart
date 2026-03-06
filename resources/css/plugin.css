@@ -275,6 +275,11 @@
     display: none !important;
 }
 
+/* Widen user menu dropdown */
+.fi-user-menu .fi-dropdown-panel {
+    @apply min-w-[280px];
+}
+
 /* User Menu Header (name + email) */
 .astart-user-menu-header {
     @apply px-3 py-3;
@@ -290,7 +295,7 @@
 
 /* User Menu Email */
 .astart-user-menu-email {
-    @apply mt-0.5 text-xs text-gray-500;
+    @apply mt-0.5 text-xs text-gray-500 truncate max-w-[250px];
 }
 .astart-user-menu-email:where(.dark, .dark *) {
     @apply text-gray-400;
