@@ -48,6 +48,7 @@ return [
                 ],
             ],
             'fields' => [
+                'avatar' => 'Avatar',
                 'name' => 'Ad',
                 'email' => 'E-posta',
                 'password' => 'Şifre',
@@ -83,6 +84,8 @@ return [
                 'terminate_sessions_confirm' => ':name kullanıcısı tüm cihazlardan çıkış yapacak. Emin misiniz?',
                 'force_password_change' => 'Şifre Değiştirmeye Zorla',
                 'force_password_change_confirm' => ':name kullanıcısı bir sonraki girişinde şifresini değiştirmek zorunda kalacak. Emin misiniz?',
+                'activate' => 'Aktif Et',
+                'deactivate' => 'Pasife Al',
             ],
             'form' => [
                 'role_type' => 'Rol Türü',
@@ -341,6 +344,119 @@ return [
             ],
         ],
 
+        'logiaudit_log' => [
+            'label' => 'Log',
+            'plural' => 'Loglar',
+            'navigation' => 'Loglar',
+            'pages' => [
+                'list' => [
+                    'title' => 'Sistem Logları',
+                    'heading' => 'Sistem Logları',
+                    'subheading' => null,
+                    'breadcrumb' => 'Liste',
+                ],
+                'view' => [
+                    'title' => 'Log Detayı',
+                    'heading' => 'Log Detayı',
+                    'subheading' => null,
+                    'breadcrumb' => 'Görüntüle',
+                ],
+            ],
+            'fields' => [
+                'level' => 'Seviye',
+                'tag' => 'Etiket',
+                'message' => 'Mesaj',
+                'model_type' => 'Model',
+                'model_id' => 'Model ID',
+                'trace_id' => 'Trace ID',
+                'ip_address' => 'IP Adresi',
+                'deletable' => 'Silinebilir',
+                'logged_at' => 'Log Tarihi',
+                'expires_at' => 'Son Geçerlilik',
+                'context' => 'Bağlam',
+            ],
+            'filters' => [
+                'level' => 'Seviye',
+                'tag' => 'Etiket',
+                'deletable' => 'Silinebilir',
+                'from' => 'Başlangıç',
+                'until' => 'Bitiş',
+            ],
+            'sections' => [
+                'log_detail' => 'Log Bilgileri',
+                'model_info' => 'Model Bilgileri',
+                'context' => 'Bağlam Verisi',
+                'timestamps' => 'Zaman Bilgileri',
+            ],
+            'stats' => [
+                'total' => 'Toplam Log',
+                'total_desc' => 'Tüm zamanlar',
+                'errors_24h' => 'Hatalar (24s)',
+                'errors_active' => 'Dikkat gerekiyor',
+                'errors_clear' => 'Sorun yok',
+                'warnings_24h' => 'Uyarılar (24s)',
+                'warnings_active' => 'İncelenmeli',
+                'warnings_clear' => 'Sorun yok',
+                'info_24h' => 'Bilgi (24s)',
+                'info_desc' => 'Bilgilendirme logları',
+            ],
+            'status' => [
+                'yes' => 'Evet',
+                'no' => 'Hayır',
+            ],
+        ],
+
+        'logiaudit_history' => [
+            'label' => 'Değişiklik',
+            'plural' => 'Değişiklik Geçmişi',
+            'navigation' => 'Değişiklik Geçmişi',
+            'pages' => [
+                'list' => [
+                    'title' => 'Değişiklik Geçmişi',
+                    'heading' => 'Değişiklik Geçmişi',
+                    'subheading' => null,
+                    'breadcrumb' => 'Liste',
+                ],
+                'view' => [
+                    'title' => 'Değişiklik Detayı',
+                    'heading' => 'Değişiklik Detayı',
+                    'subheading' => null,
+                    'breadcrumb' => 'Görüntüle',
+                ],
+            ],
+            'fields' => [
+                'action' => 'İşlem',
+                'table' => 'Tablo',
+                'model' => 'Model',
+                'model_id' => 'Model ID',
+                'user' => 'Kullanıcı',
+                'ip_address' => 'IP Adresi',
+                'created_at' => 'Tarih',
+            ],
+            'filters' => [
+                'action' => 'İşlem',
+                'table' => 'Tablo',
+                'from' => 'Başlangıç',
+                'until' => 'Bitiş',
+            ],
+            'actions' => [
+                'created' => 'Oluşturuldu',
+                'updated' => 'Güncellendi',
+                'deleted' => 'Silindi',
+                'restored' => 'Geri Yüklendi',
+            ],
+            'sections' => [
+                'detail' => 'Değişiklik Bilgileri',
+                'changes' => 'Değişiklikler',
+            ],
+            'changes' => [
+                'column' => 'Kolon',
+                'old_value' => 'Eski Değer',
+                'new_value' => 'Yeni Değer',
+            ],
+            'no_changes' => 'Kayıtlı değişiklik bulunamadı.',
+        ],
+
         'organization_tree' => [
             'label' => 'Organizasyon Ağacı',
             'plural' => 'Organizasyon Ağacı',
@@ -391,6 +507,14 @@ return [
                 'edit_node' => 'Düzenle',
             ],
         ],
+    ],
+
+    'user_menu' => [
+        'profile' => 'Profil',
+        'logout' => 'Çıkış Yap',
+        'theme_light' => 'Açık Tema',
+        'theme_dark' => 'Koyu Tema',
+        'theme_system' => 'Sistem',
     ],
 
     'role_switch' => [

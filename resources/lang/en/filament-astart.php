@@ -48,6 +48,7 @@ return [
                 ],
             ],
             'fields' => [
+                'avatar' => 'Avatar',
                 'name' => 'Name',
                 'email' => 'Email',
                 'password' => 'Password',
@@ -83,6 +84,8 @@ return [
                 'terminate_sessions_confirm' => 'This will log out :name from all devices. Are you sure?',
                 'force_password_change' => 'Force Password Change',
                 'force_password_change_confirm' => ':name will be required to change their password on next login. Are you sure?',
+                'activate' => 'Activate',
+                'deactivate' => 'Deactivate',
             ],
             'form' => [
                 'role_type' => 'Role Type',
@@ -341,6 +344,119 @@ return [
             ],
         ],
 
+        'logiaudit_log' => [
+            'label' => 'Log',
+            'plural' => 'Logs',
+            'navigation' => 'Logs',
+            'pages' => [
+                'list' => [
+                    'title' => 'System Logs',
+                    'heading' => 'System Logs',
+                    'subheading' => null,
+                    'breadcrumb' => 'List',
+                ],
+                'view' => [
+                    'title' => 'Log Detail',
+                    'heading' => 'Log Detail',
+                    'subheading' => null,
+                    'breadcrumb' => 'View',
+                ],
+            ],
+            'fields' => [
+                'level' => 'Level',
+                'tag' => 'Tag',
+                'message' => 'Message',
+                'model_type' => 'Model',
+                'model_id' => 'Model ID',
+                'trace_id' => 'Trace ID',
+                'ip_address' => 'IP Address',
+                'deletable' => 'Deletable',
+                'logged_at' => 'Logged At',
+                'expires_at' => 'Expires At',
+                'context' => 'Context',
+            ],
+            'filters' => [
+                'level' => 'Level',
+                'tag' => 'Tag',
+                'deletable' => 'Deletable',
+                'from' => 'From',
+                'until' => 'Until',
+            ],
+            'sections' => [
+                'log_detail' => 'Log Information',
+                'model_info' => 'Model Information',
+                'context' => 'Context Data',
+                'timestamps' => 'Timestamps',
+            ],
+            'stats' => [
+                'total' => 'Total Logs',
+                'total_desc' => 'All time records',
+                'errors_24h' => 'Errors (24h)',
+                'errors_active' => 'Requires attention',
+                'errors_clear' => 'All clear',
+                'warnings_24h' => 'Warnings (24h)',
+                'warnings_active' => 'Review recommended',
+                'warnings_clear' => 'All clear',
+                'info_24h' => 'Info (24h)',
+                'info_desc' => 'Informational logs',
+            ],
+            'status' => [
+                'yes' => 'Yes',
+                'no' => 'No',
+            ],
+        ],
+
+        'logiaudit_history' => [
+            'label' => 'Change',
+            'plural' => 'Change History',
+            'navigation' => 'Change History',
+            'pages' => [
+                'list' => [
+                    'title' => 'Change History',
+                    'heading' => 'Change History',
+                    'subheading' => null,
+                    'breadcrumb' => 'List',
+                ],
+                'view' => [
+                    'title' => 'Change Detail',
+                    'heading' => 'Change Detail',
+                    'subheading' => null,
+                    'breadcrumb' => 'View',
+                ],
+            ],
+            'fields' => [
+                'action' => 'Action',
+                'table' => 'Table',
+                'model' => 'Model',
+                'model_id' => 'Model ID',
+                'user' => 'User',
+                'ip_address' => 'IP Address',
+                'created_at' => 'Date',
+            ],
+            'filters' => [
+                'action' => 'Action',
+                'table' => 'Table',
+                'from' => 'From',
+                'until' => 'Until',
+            ],
+            'actions' => [
+                'created' => 'Created',
+                'updated' => 'Updated',
+                'deleted' => 'Deleted',
+                'restored' => 'Restored',
+            ],
+            'sections' => [
+                'detail' => 'Change Information',
+                'changes' => 'Changes',
+            ],
+            'changes' => [
+                'column' => 'Column',
+                'old_value' => 'Old Value',
+                'new_value' => 'New Value',
+            ],
+            'no_changes' => 'No changes recorded.',
+        ],
+
         'organization_tree' => [
             'label' => 'Organization Tree',
             'plural' => 'Organization Tree',
@@ -391,6 +507,14 @@ return [
                 'edit_node' => 'Edit',
             ],
         ],
+    ],
+
+    'user_menu' => [
+        'profile' => 'Profile',
+        'logout' => 'Logout',
+        'theme_light' => 'Light',
+        'theme_dark' => 'Dark',
+        'theme_system' => 'System',
     ],
 
     'role_switch' => [
