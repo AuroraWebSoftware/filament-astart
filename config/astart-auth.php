@@ -43,6 +43,14 @@ return [
                 'update',
                 'view_any',
             ],
+            'LogiAuditLog' => [
+                'view',
+                'view_any',
+            ],
+            'LogiAuditHistory' => [
+                'view',
+                'view_any',
+            ],
         ],
         'pages' => [
             //            'Settings' => [

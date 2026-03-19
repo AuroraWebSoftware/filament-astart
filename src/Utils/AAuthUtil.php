@@ -18,9 +18,9 @@ class AAuthUtil
         } catch (\Exception $e) {
             $panelId = Filament::getCurrentPanel()?->getId() ?? 'admin';
             redirect()->route("filament.{$panelId}.pages.role-switch");
-        }
 
-        return true;
+            return false;
+        }
     }
 
     public static function isSuperAdmin(): bool
