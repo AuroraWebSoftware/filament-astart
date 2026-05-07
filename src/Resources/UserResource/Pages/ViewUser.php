@@ -9,6 +9,7 @@ use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
@@ -258,6 +259,15 @@ class ViewUser extends ViewRecord
                     ->columns(3)
                     ->columnSpanFull()
                     ->schema([
+                        ImageEntry::make('avatar_path')
+                            ->label(__('filament-astart::filament-astart.resources.user.fields.avatar'))
+                            ->circular()
+                            ->size(80)
+                            ->visible(fn () => config('filament-astart.avatar.enabled', false)
+                                && \Illuminate\Support\Facades\Schema::hasColumn($this->record->getTable(), 'avatar_path')
+                                && $this->record->avatar_path)
+                            ->columnSpanFull(),
+
                         TextEntry::make('name')
                             ->label(__('filament-astart::filament-astart.resources.user.fields.name'))
                             ->weight(FontWeight::Bold),

@@ -4,6 +4,7 @@ namespace AuroraWebSoftware\FilamentAstart;
 
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
 use AuroraWebSoftware\FilamentAstart\Http\Livewire\StateTransitionListbox;
+use AuroraWebSoftware\FilamentAstart\Resources\LogiAuditLogResource\Widgets\LogiAuditLogStatsWidget;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
@@ -80,6 +81,13 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Livewire::component('arflow-state-transition-listbox', StateTransitionListbox::class);
+
+        if (class_exists(\AuroraWebSoftware\LogiAudit\Models\LogiAuditLog::class)) {
+            Livewire::component(
+                'aurora-web-software.filament-astart.resources.logi-audit-log-resource.widgets.logi-audit-log-stats-widget',
+                LogiAuditLogStatsWidget::class
+            );
+        }
 
         // Asset Registration
         FilamentAsset::register(

@@ -267,41 +267,27 @@
 }
 
 /* ============================================
-   User Menu Styles
+   User Menu Styles (Modern Mode)
    ============================================ */
 
-/* Hide default profile header (replaced by custom name+email) */
-.fi-user-menu .fi-dropdown-header {
+/* Modern mode: hide default profile header */
+.fi-user-menu:has(.astart-modern-menu) .fi-dropdown-header {
     display: none !important;
 }
 
-/* Widen user menu dropdown */
-.fi-user-menu .fi-dropdown-panel {
+/* Modern mode: widen dropdown - responsive */
+.fi-user-menu:has(.astart-modern-menu) .fi-dropdown-panel {
+    max-width: calc(100vw - 1rem);
     @apply min-w-[280px];
 }
-
-/* User Menu Header (name + email) */
-.astart-user-menu-header {
-    @apply px-3 py-3;
+@media (min-width: 640px) {
+    .fi-user-menu:has(.astart-modern-menu) .fi-dropdown-panel {
+        max-width: none;
+        @apply min-w-[340px];
+    }
 }
 
-/* User Menu Name */
-.astart-user-menu-name {
-    @apply text-sm font-semibold text-gray-950;
-}
-.astart-user-menu-name:where(.dark, .dark *) {
-    @apply text-white;
-}
-
-/* User Menu Email */
-.astart-user-menu-email {
-    @apply mt-0.5 text-xs text-gray-500 truncate max-w-[250px];
-}
-.astart-user-menu-email:where(.dark, .dark *) {
-    @apply text-gray-400;
-}
-
-/* Role Badge (next to avatar) */
+/* Role Badge (next to avatar - classic mode) */
 .astart-role-badge-text {
     @apply text-sm font-medium text-gray-700;
 }
@@ -316,6 +302,372 @@
 }
 .astart-super-admin-badge:where(.dark, .dark *) {
     color: var(--primary-400);
+}
+
+/* ============================================
+   Modern User Menu Styles
+   ============================================ */
+
+/* When modern menu is active, hide all default Filament dropdown content */
+.astart-modern-menu ~ * {
+    display: none !important;
+}
+
+/* Modern Menu Container */
+.astart-modern-menu {
+    @apply min-w-0 w-full;
+}
+@media (min-width: 640px) {
+    .astart-modern-menu {
+        @apply min-w-[340px];
+    }
+}
+
+/* Modern Header - centered layout */
+.astart-modern-header {
+    @apply flex flex-col items-center px-3 pt-4 pb-2 text-center;
+}
+@media (min-width: 640px) {
+    .astart-modern-header {
+        @apply px-4 pt-5 pb-3;
+    }
+}
+
+/* Modern Avatar - initials fallback */
+.astart-modern-avatar {
+    @apply flex items-center justify-center w-11 h-11 rounded-full text-sm font-bold text-white mb-2;
+    background-color: var(--primary-500);
+}
+@media (min-width: 640px) {
+    .astart-modern-avatar {
+        @apply w-14 h-14 text-lg mb-3;
+    }
+}
+.astart-modern-avatar:where(.dark, .dark *) {
+    background-color: var(--primary-400);
+}
+
+/* Modern Avatar - real image */
+.astart-modern-avatar-img {
+    @apply w-11 h-11 rounded-full object-cover mb-2;
+}
+@media (min-width: 640px) {
+    .astart-modern-avatar-img {
+        @apply w-14 h-14 mb-3;
+    }
+}
+
+/* Modern Name - centered */
+.astart-modern-name {
+    @apply text-sm font-semibold text-gray-950 truncate max-w-full;
+}
+.astart-modern-name:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* Modern Email - centered */
+.astart-modern-email {
+    @apply mt-0.5 text-xs text-gray-500 truncate max-w-[220px];
+}
+@media (min-width: 640px) {
+    .astart-modern-email {
+        @apply max-w-full;
+    }
+}
+.astart-modern-email:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* Modern Role Container - centered badges */
+.astart-modern-role {
+    @apply mt-3 flex items-center justify-center gap-1.5 flex-wrap;
+}
+
+/* Modern Role Badge */
+.astart-modern-role-badge {
+    @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset;
+    background-color: color-mix(in srgb, var(--primary-500) 10%, transparent);
+    color: var(--primary-700);
+    --tw-ring-color: color-mix(in srgb, var(--primary-500) 25%, transparent);
+}
+.astart-modern-role-badge:where(.dark, .dark *) {
+    background-color: color-mix(in srgb, var(--primary-400) 15%, transparent);
+    color: var(--primary-300);
+    --tw-ring-color: color-mix(in srgb, var(--primary-400) 25%, transparent);
+}
+
+/* Modern Role Badge - Super Admin */
+.astart-modern-role-badge--super {
+    @apply bg-amber-50 text-amber-700 ring-amber-600/20;
+}
+.astart-modern-role-badge--super:where(.dark, .dark *) {
+    @apply bg-amber-400/10 text-amber-400 ring-amber-400/20;
+}
+
+/* Modern Role Badge - Node */
+.astart-modern-role-badge--node {
+    @apply bg-gray-50 text-gray-600 ring-gray-500/20;
+}
+.astart-modern-role-badge--node:where(.dark, .dark *) {
+    @apply bg-gray-400/10 text-gray-300 ring-gray-400/20;
+}
+
+/* Modern Divider */
+.astart-modern-divider {
+    @apply my-1 border-t border-gray-100;
+}
+.astart-modern-divider:where(.dark, .dark *) {
+    @apply border-white/5;
+}
+
+/* Modern Theme Switcher - full-width segmented control */
+.astart-modern-theme {
+    @apply flex items-center justify-center py-1.5 px-3;
+}
+@media (min-width: 640px) {
+    .astart-modern-theme {
+        @apply py-2 px-4;
+    }
+}
+
+/* Modern Theme Inner - full-width pill container */
+.astart-modern-theme-inner {
+    @apply flex items-center w-full rounded-xl bg-gray-100 p-1 gap-1;
+}
+.astart-modern-theme-inner:where(.dark, .dark *) {
+    @apply bg-white/5;
+}
+
+/* Modern Theme Button */
+.astart-modern-theme-btn {
+    @apply flex flex-1 items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-medium text-gray-500 transition-all;
+}
+@media (min-width: 640px) {
+    .astart-modern-theme-btn {
+        @apply gap-2 py-2;
+    }
+}
+.astart-modern-theme-btn:hover {
+    @apply text-gray-900 bg-white shadow-sm;
+}
+.astart-modern-theme-btn:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+.astart-modern-theme-btn:where(.dark, .dark *):hover {
+    @apply text-white bg-white/10;
+}
+
+/* Modern Theme Button - Active */
+.astart-modern-theme-btn--active {
+    @apply shadow-sm;
+    background-color: color-mix(in srgb, var(--primary-500) 15%, white);
+    color: var(--primary-700);
+}
+.astart-modern-theme-btn--active:where(.dark, .dark *) {
+    background-color: color-mix(in srgb, var(--primary-400) 20%, transparent);
+    color: var(--primary-300);
+}
+
+/* Modern Theme Button - hide label on mobile, show icon only */
+.astart-modern-theme-btn span {
+    @apply hidden;
+}
+@media (min-width: 640px) {
+    .astart-modern-theme-btn span {
+        @apply inline;
+    }
+}
+
+/* Modern Theme Button Icon */
+.astart-modern-theme-btn svg {
+    @apply w-4 h-4;
+}
+
+/* Modern Menu Items */
+.astart-modern-menu-items {
+    @apply py-1;
+}
+
+/* Modern Menu Item */
+.astart-modern-menu-item {
+    @apply flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 transition-colors;
+}
+@media (min-width: 640px) {
+    .astart-modern-menu-item {
+        @apply gap-3 px-4 py-2.5;
+    }
+}
+.astart-modern-menu-item:hover {
+    @apply bg-gray-50;
+}
+.astart-modern-menu-item:where(.dark, .dark *) {
+    @apply text-gray-200;
+}
+.astart-modern-menu-item:where(.dark, .dark *):hover {
+    @apply bg-white/5;
+}
+
+/* Modern Menu Icon */
+.astart-modern-menu-icon {
+    @apply w-5 h-5 flex-shrink-0;
+}
+
+/* Modern Footer - profile left, logout right */
+.astart-modern-footer {
+    @apply flex items-center justify-between px-1.5 py-1.5 overflow-hidden;
+}
+@media (min-width: 640px) {
+    .astart-modern-footer {
+        @apply px-2 py-2;
+    }
+}
+
+/* Modern Footer Button */
+.astart-modern-footer-btn {
+    @apply flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-gray-600 rounded-lg transition-colors whitespace-nowrap;
+}
+@media (min-width: 640px) {
+    .astart-modern-footer-btn {
+        @apply gap-2 px-3 py-2;
+    }
+}
+.astart-modern-footer-btn:hover {
+    @apply bg-gray-100 text-gray-900;
+}
+.astart-modern-footer-btn:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+.astart-modern-footer-btn:where(.dark, .dark *):hover {
+    @apply bg-white/5 text-gray-200;
+}
+
+/* Modern Footer Button - Danger (logout) */
+.astart-modern-footer-btn--danger {
+    @apply text-red-500;
+}
+.astart-modern-footer-btn--danger:hover {
+    @apply bg-red-50 text-red-700;
+}
+.astart-modern-footer-btn--danger:where(.dark, .dark *) {
+    @apply text-red-400;
+}
+.astart-modern-footer-btn--danger:where(.dark, .dark *):hover {
+    @apply bg-red-400/10 text-red-300;
+}
+
+/* ============================================
+   UserSelect Component (Avatar-enabled)
+   ============================================ */
+
+/* Avatar thumbnail in select options */
+.astart-user-select-avatar {
+    @apply h-7 w-7 shrink-0 rounded-full object-cover ring-1 ring-gray-200;
+}
+.astart-user-select-avatar:where(.dark, .dark *) {
+    @apply ring-white/10;
+}
+
+/* User name in select options */
+.astart-user-select-name {
+    @apply text-sm font-medium text-gray-950;
+}
+.astart-user-select-name:where(.dark, .dark *) {
+    @apply text-white;
+}
+
+/* User email in select options */
+.astart-user-select-email {
+    @apply ml-2 text-xs text-gray-500;
+}
+.astart-user-select-email:where(.dark, .dark *) {
+    @apply text-gray-400;
+}
+
+/* ============================================
+   LogiAudit Stats Widget - Colored Cards
+   ============================================ */
+
+/* Primary - Total Logs */
+.astart-stat-primary {
+    @apply ring-2;
+    --tw-ring-color: var(--primary-500);
+}
+.astart-stat-primary .fi-icon {
+    color: var(--primary-500) !important;
+}
+.astart-stat-primary .fi-wi-stats-overview-stat-value {
+    color: var(--primary-600) !important;
+}
+.astart-stat-primary:where(.dark, .dark *) .fi-wi-stats-overview-stat-value {
+    color: var(--primary-400) !important;
+}
+
+/* Danger - Errors */
+.astart-stat-danger {
+    @apply ring-2 ring-red-500 bg-red-50;
+}
+.astart-stat-danger:where(.dark, .dark *) {
+    @apply bg-red-950/30;
+}
+.astart-stat-danger .fi-icon {
+    @apply !text-red-500;
+}
+.astart-stat-danger .fi-wi-stats-overview-stat-value {
+    @apply !text-red-600;
+}
+.astart-stat-danger:where(.dark, .dark *) .fi-wi-stats-overview-stat-value {
+    @apply !text-red-400;
+}
+
+/* Warning */
+.astart-stat-warning {
+    @apply ring-2 ring-yellow-500 bg-yellow-50;
+}
+.astart-stat-warning:where(.dark, .dark *) {
+    @apply bg-yellow-950/30;
+}
+.astart-stat-warning .fi-icon {
+    @apply !text-yellow-500;
+}
+.astart-stat-warning .fi-wi-stats-overview-stat-value {
+    @apply !text-yellow-700;
+}
+.astart-stat-warning:where(.dark, .dark *) .fi-wi-stats-overview-stat-value {
+    @apply !text-yellow-400;
+}
+
+/* Success - No Issues */
+.astart-stat-success {
+    @apply ring-2 ring-green-500 bg-green-50;
+}
+.astart-stat-success:where(.dark, .dark *) {
+    @apply bg-green-950/30;
+}
+.astart-stat-success .fi-icon {
+    @apply !text-green-500;
+}
+.astart-stat-success .fi-wi-stats-overview-stat-value {
+    @apply !text-green-600;
+}
+.astart-stat-success:where(.dark, .dark *) .fi-wi-stats-overview-stat-value {
+    @apply !text-green-400;
+}
+
+/* Info */
+.astart-stat-info {
+    @apply ring-2 ring-sky-500 bg-sky-50;
+}
+.astart-stat-info:where(.dark, .dark *) {
+    @apply bg-sky-950/30;
+}
+.astart-stat-info .fi-icon {
+    @apply !text-sky-500;
+}
+.astart-stat-info .fi-wi-stats-overview-stat-value {
+    @apply !text-sky-600;
+}
+.astart-stat-info:where(.dark, .dark *) .fi-wi-stats-overview-stat-value {
+    @apply !text-sky-400;
 }
 
 /* ============================================

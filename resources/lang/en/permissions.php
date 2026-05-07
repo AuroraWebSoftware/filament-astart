@@ -37,7 +37,7 @@ return [
     'organization_tree_view' => 'View Organization Tree',
     'organization_tree_view_any' => 'View Organization Tree Menu',
     'organization_tree_edit' => 'Edit Organization Tree',
-    'organization_tree_delete' => 'Delete from Tree',
+    'organization_tree_delete' => 'Delete fro m Tree',
     'organization_tree_create' => 'Create in Tree',
     'organization_tree_update' => 'Update Tree Node',
 
@@ -47,6 +47,14 @@ return [
     'role_delete' => 'Edit Roles',
     'role_create' => 'Create Roles',
     'role_update' => 'Update Roles',
+
+    'logi_audit_log' => 'System Logs',
+    'logi_audit_log_view' => 'View Logs',
+    'logi_audit_log_view_any' => 'View Logs Menu',
+
+    'logi_audit_history' => 'Change History',
+    'logi_audit_history_view' => 'View Change History',
+    'logi_audit_history_view_any' => 'View Change History Menu',
 
     'settings_view' => 'View Settings',
     'settings_edit' => 'Edit Settings',

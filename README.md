@@ -101,6 +101,73 @@ Password: password
 
 ---
 
+## 🎨 Features
+
+### Modern User Menu
+
+The plugin provides an enhanced user dropdown menu with avatar, role badges, organization node display, and a theme switcher. Configurable via `config/filament-astart.php`:
+
+```php
+'user_menu_style' => env('ASTART_USER_MENU_STYLE', 'classic'),
+// 'classic' = Default Filament user menu
+// 'modern'  = Enhanced menu with avatar, role badge, org node, theme switcher
+```
+
+The modern menu fully supports Filament's `userMenuItems()` API — any items registered via `$panel->userMenuItems([...])` will automatically appear in the modern menu.
+
+### LogiAudit Integration (Optional)
+
+Built-in read-only pages for [LogiAudit](https://github.com/AuroraWebSoftware/LogiAudit) log viewing and change history. **No composer dependency required** — pages only appear when the LogiAudit package is installed.
+
+- **System Logs** — Filterable log viewer with level badges, tag support, date range filters, and a stats widget (colored cards for errors, warnings, info)
+- **Change History** — Model change tracking with old/new value comparison table
+
+Both pages require AAuth permissions to be granted. Configure in `config/astart-auth.php`:
+
+```php
+'LogiAuditLog' => ['view', 'view_any'],
+'LogiAuditHistory' => ['view', 'view_any'],
+```
+
+Resource visibility can also be toggled in `config/filament-astart.php`:
+
+```php
+'logiaudit_log' => ['active' => true, 'navigation_group_key' => null],
+'logiaudit_history' => ['active' => true, 'navigation_group_key' => null],
+```
+
+> Backward compatible with older LogiAudit versions — columns like `tag` and `causer_type` are checked at runtime.
+
+### User Active/Passive Toggle
+
+Instead of deleting users (which causes orphan records in related tables), users can be activated or deactivated via a toggle button on the edit page. Requires an `is_active` column on the users table.
+
+### Avatar Support
+
+Optional avatar upload and display throughout the plugin. Enable in config:
+
+```php
+'avatar' => [
+    'enabled' => env('ASTART_AVATAR_ENABLED', false),
+],
+```
+
+When enabled, adds avatar upload to user form, displays avatars in user view, user menu, and select components.
+
+### UserSelect / UserMultiSelect Components
+
+Reusable form components for selecting users with optional avatar display:
+
+```php
+use AuroraWebSoftware\FilamentAstart\Forms\Components\UserSelect;
+use AuroraWebSoftware\FilamentAstart\Forms\Components\UserMultiSelect;
+
+UserSelect::make('user_id'),
+UserMultiSelect::make('user_ids'),
+```
+
+---
+
 ## ⚙️ Manual Publish Options
 
 You may publish each resource manually if needed:

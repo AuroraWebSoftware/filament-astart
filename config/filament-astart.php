@@ -27,6 +27,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User Menu Style
+    |--------------------------------------------------------------------------
+    | 'classic' = Default Filament user menu
+    | 'modern'  = Enhanced menu with avatar, role badge, org node, divider
+    */
+    'user_menu_style' => env('ASTART_USER_MENU_STYLE', 'classic'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Resources
     |--------------------------------------------------------------------------
     | active: Determines if resource is registered (true/false)
@@ -55,6 +64,28 @@ return [
             'active' => true,
             'navigation_group_key' => null,
         ],
+        'logiaudit_log' => [
+            'active' => true,
+            'navigation_group_key' => null,
+        ],
+        'logiaudit_history' => [
+            'active' => true,
+            'navigation_group_key' => null,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Avatar
+    |--------------------------------------------------------------------------
+    | enabled: Show user avatars in select components, user menu, and user form
+    |   - Uses Filament's built-in avatar system (HasAvatar, avatar_url, or ui-avatars.com fallback)
+    |   - Storage disk is determined by Filament/Laravel default (FILESYSTEM_DISK or filament config)
+    |   - false = plain text labels, initials in menu, no upload field (default)
+    |   - true  = avatar images everywhere + upload field in user form
+    */
+    'avatar' => [
+        'enabled' => env('ASTART_AVATAR_ENABLED', false),
     ],
 
     /*

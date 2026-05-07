@@ -49,6 +49,14 @@ return [
     'role_create' => 'Rol Oluştur',
     'role_update' => 'Rol Güncelle',
 
+    'logi_audit_log' => 'Sistem Logları',
+    'logi_audit_log_view' => 'Logları Görüntüle',
+    'logi_audit_log_view_any' => 'Log Menüsünü Görüntüle',
+
+    'logi_audit_history' => 'Değişiklik Geçmişi',
+    'logi_audit_history_view' => 'Değişiklik Geçmişini Görüntüle',
+    'logi_audit_history_view_any' => 'Değişiklik Geçmişi Menüsünü Görüntüle',
+
     'settings_view' => 'Ayarları Görüntüle',
     'settings_edit' => 'Ayarları Düzenle',
     'settings_delete' => 'Ayarları Sil',

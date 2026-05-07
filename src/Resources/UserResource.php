@@ -9,12 +9,10 @@ use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -44,7 +42,7 @@ class UserResource extends Resource
 
     protected static ?string $resourceKey = 'user';
 
-    protected static string | null | \BackedEnum $navigationIcon = 'heroicon-o-user';
+    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-user';
 
     public static function getNavigationLabel(): string
     {
@@ -67,13 +65,27 @@ class UserResource extends Resource
         $auto = $op === 'view' ? 'none' : 'polite';
         $isCreate = $op === 'create';
 
+        $avatarEnabled = config('filament-astart.avatar.enabled', false)
+            && \Illuminate\Support\Facades\Schema::hasColumn((new User)->getTable(), 'avatar_path');
+
         return $schema
             ->extraAttributes(['autocomplete' => 'off'])
             ->schema([
                 Section::make()
                     ->columns(2)
                     ->columnSpanFull()
-                    ->schema([
+                    ->schema(array_filter([
+                        $avatarEnabled
+                            ? FileUpload::make('avatar_path')
+                                ->label(__('filament-astart::filament-astart.resources.user.fields.avatar'))
+                                ->avatar()
+                                ->imageEditor()
+                                ->imageEditorAspectRatios(['1:1'])
+                                ->circleCropper()
+                                ->directory('avatars')
+                                ->columnSpanFull()
+                            : null,
+
                         TextInput::make('name')
                             ->label(__('filament-astart::filament-astart.resources.user.fields.name'))
                             ->required()
@@ -118,7 +130,7 @@ class UserResource extends Resource
                             ->disabled(fn (string $context) => $context === 'view')
                             ->visible(fn () => \Illuminate\Support\Facades\Schema::hasColumn((new User)->getTable(), 'is_active'))
                             ->columnSpan(1),
-                    ]),
+                    ])),
 
                 // Password Section - Only for Create
                 Section::make(__('filament-astart::filament-astart.resources.user.form.password_section'))
@@ -360,13 +372,8 @@ class UserResource extends Resource
 
                 EditAction::make(),
 
-                DeleteAction::make(),
             ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
