@@ -5,11 +5,13 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pa
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\LogsResourceMutations;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateOrganizationNode extends CreateRecord
 {
     use AStartPageLabels;
+    use LogsResourceMutations;
 
     protected static string $resource = OrganizationNodeResource::class;
 
@@ -38,5 +40,7 @@ class CreateOrganizationNode extends CreateRecord
 
         $record->path = trim($parentPath ? $parentPath . '/' : '') . $record->id;
         $record->save();
+
+        $this->logCreated($record, 'org.node', 'organizasyon birimi');
     }
 }

@@ -6,8 +6,11 @@ use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
+use AuroraWebSoftware\FilamentAstart\Utils\AStartLogger;
+use AuroraWebSoftware\FilamentAstart\Utils\RoleAssignmentLogger;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Auth\Notifications\ResetPassword;
 use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -19,6 +22,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class ViewUser extends ViewRecord
@@ -82,6 +86,13 @@ class ViewUser extends ViewRecord
 
                 $lockout?->unlock();
 
+                AStartLogger::log(
+                    tag: 'user.security',
+                    message: sprintf('%s adlı kullanıcının kilidini açtı', AStartLogger::describeRecord($this->record)),
+                    context: ['action' => 'unlocked', 'panel_id' => $panelId],
+                    target: $this->record,
+                );
+
                 Notification::make()
                     ->title(__('filament-astart::filament-astart.resources.user.messages.account_unlocked'))
                     ->success()
@@ -90,6 +101,13 @@ class ViewUser extends ViewRecord
                 // Lock permanently using FiLogin API
                 $lockout = $lockoutClass::getOrCreate($this->record, $panelId);
                 $lockout->lockUser(0, true); // 0 minutes, permanent=true
+
+                AStartLogger::log(
+                    tag: 'user.security',
+                    message: sprintf('%s adlı kullanıcıyı kalıcı olarak kilitledi', AStartLogger::describeRecord($this->record)),
+                    context: ['action' => 'locked', 'panel_id' => $panelId, 'permanent' => true],
+                    target: $this->record,
+                );
 
                 Notification::make()
                     ->title(__('filament-astart::filament-astart.resources.user.messages.account_locked'))
@@ -128,6 +146,13 @@ class ViewUser extends ViewRecord
 
             // Use FiLogin's forceChange method
             $policyClass::forceChange($this->record, $panelId);
+
+            AStartLogger::log(
+                tag: 'user.security',
+                message: sprintf('%s adlı kullanıcı için şifre değişimini zorunlu kıldı', AStartLogger::describeRecord($this->record)),
+                context: ['action' => 'force_password_change', 'panel_id' => $panelId],
+                target: $this->record,
+            );
 
             Notification::make()
                 ->title(__('filament-astart::filament-astart.resources.user.messages.password_change_forced'))
@@ -192,6 +217,20 @@ class ViewUser extends ViewRecord
                 $this->record->save();
             }
 
+            AStartLogger::log(
+                tag: 'user.security',
+                message: sprintf(
+                    '%s adlı kullanıcının %d oturumunu sonlandırdı',
+                    AStartLogger::describeRecord($this->record),
+                    count($sessionIds),
+                ),
+                context: [
+                    'action' => 'terminate_sessions',
+                    'session_count' => count($sessionIds),
+                ],
+                target: $this->record,
+            );
+
             Notification::make()
                 ->title(__('filament-astart::filament-astart.resources.user.messages.sessions_terminated'))
                 ->success()
@@ -215,18 +254,26 @@ class ViewUser extends ViewRecord
     {
         try {
             $user = $this->record;
-            $broker = \Illuminate\Support\Facades\Password::broker(filament()->getAuthPasswordBroker());
+            $broker = Password::broker(filament()->getAuthPasswordBroker());
 
             $status = $broker->sendResetLink(
                 ['email' => $user->email],
                 function ($user, string $token): void {
-                    $notification = app(\Filament\Auth\Notifications\ResetPassword::class, ['token' => $token]);
+                    $notification = app(ResetPassword::class, ['token' => $token]);
                     $notification->url = filament()->getResetPasswordUrl($token, $user);
                     $user->notifyNow($notification);
                 }
             );
 
-            if ($status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT) {
+            if ($status === Password::RESET_LINK_SENT) {
+                AStartLogger::log(
+                    tag: 'user.security',
+                    message: sprintf('%s adlı kullanıcıya şifre sıfırlama e-postası gönderdi', AStartLogger::describeRecord($this->record)),
+                    context: ['action' => 'send_password_reset', 'email' => $user->email ?? null],
+                    retentionDays: 30,
+                    target: $this->record,
+                );
+
                 Notification::make()
                     ->title(__('filament-astart::filament-astart.resources.user.messages.password_reset_sent'))
                     ->success()
@@ -733,6 +780,12 @@ class ViewUser extends ViewRecord
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]
+                );
+
+                RoleAssignmentLogger::logAssigned(
+                    (int) $user->getAuthIdentifier(),
+                    (int) $data['role_id'],
+                    $selectedOrgNodeId !== null ? (int) $selectedOrgNodeId : null,
                 );
 
                 Notification::make()

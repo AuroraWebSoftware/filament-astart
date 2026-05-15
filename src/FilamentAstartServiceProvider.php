@@ -2,10 +2,14 @@
 
 namespace AuroraWebSoftware\FilamentAstart;
 
+use AuroraWebSoftware\AAuth\Models\RoleModelAbacRule;
 use AuroraWebSoftware\FilamentAstart\Commands\FilamentAstartCommand;
+use AuroraWebSoftware\FilamentAstart\Commands\NormalizeAbacRulesCommand;
 use AuroraWebSoftware\FilamentAstart\Http\Livewire\StateTransitionListbox;
+use AuroraWebSoftware\FilamentAstart\Observers\RoleModelAbacRuleObserver;
 use AuroraWebSoftware\FilamentAstart\Resources\LogiAuditLogResource\Widgets\LogiAuditLogStatsWidget;
 use AuroraWebSoftware\FilamentAstart\Testing\TestsFilamentAstart;
+use AuroraWebSoftware\LogiAudit\Models\LogiAuditLog;
 use Filament\Facades\Filament;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -82,11 +86,14 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         Livewire::component('arflow-state-transition-listbox', StateTransitionListbox::class);
 
-        if (class_exists(\AuroraWebSoftware\LogiAudit\Models\LogiAuditLog::class)) {
+        if (class_exists(LogiAuditLog::class)) {
             Livewire::component(
                 'aurora-web-software.filament-astart.resources.logi-audit-log-resource.widgets.logi-audit-log-stats-widget',
                 LogiAuditLogStatsWidget::class
             );
+
+            // Forward ABAC rule CRUD events to LogiAudit (semantic log).
+            RoleModelAbacRule::observe(RoleModelAbacRuleObserver::class);
         }
 
         // Asset Registration
@@ -159,6 +166,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
     {
         return [
             FilamentAstartCommand::class,
+            NormalizeAbacRulesCommand::class,
         ];
     }
 
@@ -195,6 +203,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             'create_filament-astart_table',
             'create_astart_examples_table',
             '2025_05_17_143421_create_argraph_tables',
+            '2026_05_12_000000_add_unique_index_to_role_model_abac_rules',
         ];
     }
 

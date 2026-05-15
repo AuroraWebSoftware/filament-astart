@@ -166,6 +166,63 @@ UserSelect::make('user_id'),
 UserMultiSelect::make('user_ids'),
 ```
 
+### ABAC Rule Management
+
+Visual, repeater-based editor for **Attribute-Based Access Control** rules
+on the role edit page. Rules are stored in aauth's `role_model_abac_rules`
+table and applied automatically through a wrapper scope that also
+bypasses the filter for super-admin users.
+
+**Quick start:**
+
+1. Make a model ABAC-enabled — implement `AAuthABACModelInterface` and
+   use this plugin's `AStartAbacModel` trait (recommended; super-admin
+   bypass is built in):
+
+   ```php
+   use AuroraWebSoftware\AAuth\Interfaces\AAuthABACModelInterface;
+   use AuroraWebSoftware\FilamentAstart\Traits\AStartAbacModel;
+
+   class Document extends Model implements AAuthABACModelInterface
+   {
+       use AStartAbacModel;
+
+       public static function getModelType(): string { return 'document'; }
+       public static function getABACRules(): array { return []; }
+   }
+   ```
+
+   > Prefer `AStartAbacModel` over aauth's `AAuthABACModel`. The plugin
+   > trait wraps aauth's scope and short-circuits filtering for
+   > super-admin (configured via `aauth-advanced.super_admin`).
+
+2. Register it in `config/astart-auth.php`:
+
+   ```php
+   'abac' => [
+       'enabled' => true,
+       'models' => [
+           'document' => [
+               'class' => \App\Models\Document::class,
+               'label' => 'Documents',
+               'attributes' => [
+                   'status' => ['type' => 'string', 'options' => ['draft', 'active']],
+                   'amount' => ['type' => 'numeric'],
+               ],
+           ],
+       ],
+   ],
+   ```
+
+3. Open any role's edit page → the **ABAC Rules** tab will appear with a
+   section per registered model and a repeater rule builder.
+
+The editor supports a top-level `AND/OR` operator, condition blocks, and
+one level of nested condition groups. Only attributes listed in the
+whitelist are selectable. Saving an empty rule deletes the row so the
+global scope is not broken. See [`docs/ABAC_USAGE.md`](docs/ABAC_USAGE.md)
+for the full guide.
+
 ---
 
 ## ⚙️ Manual Publish Options

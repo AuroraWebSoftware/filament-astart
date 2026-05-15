@@ -3,8 +3,10 @@
 namespace AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers;
 
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
+use AuroraWebSoftware\FilamentAstart\Utils\RoleAssignmentLogger;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +18,7 @@ class UserRolesRelationManager extends RelationManager
 
     protected static ?string $title = 'Tanımlı Roller';
 
-    public function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public function form(Schema $schema): Schema
     {
         return $schema;
     }
@@ -58,6 +60,12 @@ class UserRolesRelationManager extends RelationManager
                             ->where('role_id', $roleId)
                             ->where('organization_node_id', $nodeId)
                             ->delete();
+
+                        RoleAssignmentLogger::logRevoked(
+                            (int) $userId,
+                            (int) $roleId,
+                            $nodeId !== null ? (int) $nodeId : null,
+                        );
 
                         $action->success();
                         $this->ownerRecord->refresh();

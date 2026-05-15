@@ -4,9 +4,13 @@ namespace AuroraWebSoftware\FilamentAstart\Resources;
 
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
+use AuroraWebSoftware\AAuth\Models\RolePermission;
+use AuroraWebSoftware\FilamentAstart\Forms\Components\AbacRuleBuilder;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
+use AuroraWebSoftware\FilamentAstart\Utils\AAuthUtil;
+use AuroraWebSoftware\FilamentAstart\Utils\AStartLogger;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -24,6 +28,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
@@ -55,7 +60,7 @@ class RoleResource extends Resource
         return __('filament-astart::filament-astart.resources.role.plural');
     }
 
-    public static function form(Form | \Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Form | Schema $schema): Schema
     {
         $permissionConfig = config('astart-auth.permissions');
 
@@ -76,11 +81,14 @@ class RoleResource extends Resource
             ->filter(fn ($actions) => ! empty($actions))
             ->count();
 
+        $abacModels = AAuthUtil::isAbacEnabled() ? AAuthUtil::getAbacModels() : [];
+        $abacCount = count($abacModels);
+
         return $schema
             ->schema([
                 Fieldset::make(__('filament-astart::filament-astart.resources.role.plural'))
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('filament-astart::filament-astart.resources.role.fields.name'))
                             ->required()
                             ->unique(column: 'name', ignoreRecord: true),
@@ -158,9 +166,48 @@ class RoleResource extends Resource
                                 ->badge($customCount)
                                 ->schema(static::buildPermissionGroups($permissionConfig['custom_permission'] ?? [], 'custom_permission')),
                         ] : []),
+
+                        ...($abacCount > 0 ? [
+                            Tabs\Tab::make(__('filament-astart::filament-astart.resources.role.tabs.abac'))
+                                ->icon('heroicon-o-funnel')
+                                ->badge($abacCount)
+                                ->schema(static::buildAbacSections($abacModels)),
+                        ] : []),
                     ])
                     ->columnSpan('full'),
             ]);
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $abacModels
+     * @return array<int, Section>
+     */
+    protected static function buildAbacSections(array $abacModels): array
+    {
+        $sections = [];
+
+        foreach ($abacModels as $modelType => $definition) {
+            $label = $definition['label'] ?? $modelType;
+            $class = is_string($definition['class'] ?? null) ? $definition['class'] : null;
+            $attributeCount = count($definition['attributes'] ?? []);
+
+            $description = __('filament-astart::filament-astart.abac.section_description', [
+                'model_type' => $modelType,
+                'class' => $class ?? '—',
+                'count' => $attributeCount,
+            ]);
+
+            $sections[] = Section::make($label)
+                ->icon('heroicon-o-rectangle-stack')
+                ->description($description)
+                ->collapsible()
+                ->collapsed(false)
+                ->schema([
+                    AbacRuleBuilder::make($modelType, "abac_rules.{$modelType}"),
+                ]);
+        }
+
+        return $sections;
     }
 
     protected static function buildPermissionGroups(array $groups, string $type): array
@@ -410,8 +457,21 @@ class RoleResource extends Resource
                             return;
                         }
 
-                        DB::table('role_permission')->where('role_id', $record->id)->delete();
-                        DB::table('roles')->where('id', $record->id)->delete();
+                        $roleLabel = AStartLogger::describeRecord($record);
+                        $roleId = $record->id;
+
+                        // Eloquent path keeps observers in the loop.
+                        RolePermission::query()
+                            ->where('role_id', $record->id)
+                            ->get()
+                            ->each(fn ($row) => $row->delete());
+                        $record->delete();
+
+                        AStartLogger::log(
+                            tag: 'rbac.role',
+                            message: sprintf('%s adlı rolü sildi', $roleLabel),
+                            context: ['action' => 'deleted', 'role_id' => $roleId],
+                        );
 
                         Notification::make()
                             ->title(__('filament-astart::permissions.role_deleted_successfully'))

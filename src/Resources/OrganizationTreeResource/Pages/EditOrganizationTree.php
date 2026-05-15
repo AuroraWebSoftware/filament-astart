@@ -4,6 +4,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pa
 
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\LogsResourceMutations;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -12,12 +13,25 @@ use Filament\Resources\Pages\EditRecord;
 class EditOrganizationTree extends EditRecord
 {
     use AStartPageLabels;
+    use LogsResourceMutations;
 
     protected static string $resource = OrganizationTreeResource::class;
 
     protected static ?string $resourceKey = 'organization_tree';
 
     protected static ?string $pageType = 'edit';
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $this->snapshotForLog($this->record);
+
+        return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        $this->logUpdated($this->record, 'org.tree', 'organizasyon ağacı birimi');
+    }
 
     protected function getFormSchema(): array
     {
@@ -45,6 +59,7 @@ class EditOrganizationTree extends EditRecord
                 ->action(function ($record, $action) {
                     try {
                         $recordName = $record->name;
+                        $this->logDeleted($record, 'org.tree', 'organizasyon ağacı birimi');
                         $record->delete();
 
                         Notification::make()

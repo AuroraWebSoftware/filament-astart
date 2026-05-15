@@ -4,6 +4,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource\Pa
 
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationNodeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\LogsResourceMutations;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -12,12 +13,25 @@ use Filament\Resources\Pages\EditRecord;
 class EditOrganizationNode extends EditRecord
 {
     use AStartPageLabels;
+    use LogsResourceMutations;
 
     protected static string $resource = OrganizationNodeResource::class;
 
     protected static ?string $resourceKey = 'organization_node';
 
     protected static ?string $pageType = 'edit';
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $this->snapshotForLog($this->record);
+
+        return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        $this->logUpdated($this->record, 'org.node', 'organizasyon birimi');
+    }
 
     protected function getFormSchema(): array
     {
@@ -47,6 +61,7 @@ class EditOrganizationNode extends EditRecord
 
                     try {
                         $recordName = $record->name;
+                        $this->logDeleted($record, 'org.node', 'organizasyon birimi');
                         $record->delete();
 
                         Notification::make()
