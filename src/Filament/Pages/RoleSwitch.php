@@ -75,10 +75,78 @@ class RoleSwitch extends Page
             abort(403, 'Rol bulunamadı.');
         }
 
+        $previousRoleId = session('roleId');
         session(['roleId' => $role->id]);
+
+        $this->logRoleSwitch($user, $previousRoleId, (int) $role->id);
 
         $panelId = Filament::getCurrentPanel()?->getId() ?? 'admin';
 
         return redirect()->route("filament.{$panelId}.pages.dashboard");
+    }
+
+    /**
+     * Write a semantic `auth.role_switch` entry to LogiAuditLog when
+     * audit is enabled and LogiAudit is installed. Silent no-op
+     * otherwise. Skipped when the role didn't actually change (initial
+     * single-role auto-select).
+     */
+    private function logRoleSwitch(?object $user, mixed $previousRoleId, int $newRoleId): void
+    {
+        if (! config('astart-auth.log.enabled', false)) {
+            return;
+        }
+
+        if (! function_exists('addLog')) {
+            return;
+        }
+
+        if ($previousRoleId !== null && (int) $previousRoleId === $newRoleId) {
+            return;
+        }
+
+        try {
+            $previousId = $previousRoleId !== null ? (int) $previousRoleId : null;
+            $previousName = $previousId !== null ? DB::table('roles')->where('id', $previousId)->value('name') : null;
+            $newName = DB::table('roles')->where('id', $newRoleId)->value('name');
+
+            $actor = $this->describeUser($user);
+            $from = $previousId !== null
+                ? sprintf('%s (#%d)', is_string($previousName) ? $previousName : '—', $previousId)
+                : 'yok';
+            $to = sprintf('%s (#%d)', is_string($newName) ? $newName : '—', $newRoleId);
+
+            addLog('info', sprintf('%s aktif rolünü %s → %s olarak değiştirdi', $actor, $from, $to), [
+                'tag' => 'auth.role_switch',
+                'ip_address' => request()?->ip(),
+                // Role switching is high-volume and low forensic value;
+                // expire after a week so the table doesn't bloat.
+                'delete_after_days' => 7,
+                'context' => [
+                    'previous_role_id' => $previousId,
+                    'previous_role_name' => is_string($previousName) ? $previousName : null,
+                    'new_role_id' => $newRoleId,
+                    'new_role_name' => is_string($newName) ? $newName : null,
+                    'user_id' => $user?->getAuthIdentifier(),
+                    'user_name' => is_object($user) && isset($user->name) ? $user->name : null,
+                    'user_class' => $user !== null ? $user::class : null,
+                ],
+            ]);
+        } catch (\Throwable) {
+            // Swallow — audit failure must not break role switching.
+        }
+    }
+
+    private function describeUser(?object $user): string
+    {
+        if ($user === null) {
+            return 'sistem';
+        }
+
+        if (is_object($user) && isset($user->name) && is_string($user->name) && $user->name !== '') {
+            return sprintf('%s (#%s)', $user->name, $user->getAuthIdentifier());
+        }
+
+        return sprintf('#%s', $user->getAuthIdentifier());
     }
 }

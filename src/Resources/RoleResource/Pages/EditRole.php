@@ -2,8 +2,11 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 
+use AuroraWebSoftware\AAuth\Models\RolePermission;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\HandlesAbacRules;
+use AuroraWebSoftware\FilamentAstart\Utils\AStartLogger;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +16,7 @@ use Illuminate\Support\Str;
 class EditRole extends EditRecord
 {
     use AStartPageLabels;
+    use HandlesAbacRules;
 
     protected static string $resource = RoleResource::class;
 
@@ -21,6 +25,14 @@ class EditRole extends EditRecord
     protected static ?string $pageType = 'edit';
 
     protected array $permissionPayload = [];
+
+    protected array $abacRulesPayload = [];
+
+    /** @var array<int, string> */
+    protected array $previousPermissionCodes = [];
+
+    /** @var array<string, mixed> */
+    protected array $previousRoleAttributes = [];
 
     protected function getHeaderActions(): array
     {
@@ -117,6 +129,8 @@ class EditRole extends EditRecord
             data_set($data, $key, $state);
         }
 
+        $data['abac_rules'] = $this->loadAbacRules((int) $this->record->id);
+
         return $data;
     }
 
@@ -125,12 +139,133 @@ class EditRole extends EditRecord
         $this->permissionPayload = $this->processPermissionsForSave($data['permissions'] ?? []);
         unset($data['permissions']);
 
+        $abacRules = is_array($data['abac_rules'] ?? null) ? $data['abac_rules'] : [];
+        $this->validateAbacRulesPayload($abacRules);
+        $this->abacRulesPayload = $abacRules;
+        unset($data['abac_rules']);
+
+        // Snapshot what's currently on the role so afterSave can emit
+        // human-readable diff logs (changes + permission delta).
+        $this->previousRoleAttributes = $this->record->getOriginal();
+        $this->previousPermissionCodes = RolePermission::query()
+            ->where('role_id', $this->record->id)
+            ->pluck('permission')
+            ->all();
+
         return $data;
     }
 
     protected function afterSave(): void
     {
         $this->syncRolePermissions($this->record->id, $this->permissionPayload);
+        $this->saveAbacRules((int) $this->record->id, $this->abacRulesPayload);
+
+        $changes = $this->summariseRoleChanges();
+
+        if ($changes !== []) {
+            AStartLogger::log(
+                tag: 'rbac.role',
+                message: sprintf(
+                    '%s adlı rolü güncelledi: %s',
+                    AStartLogger::describeRecord($this->record),
+                    $this->formatChanges($changes),
+                ),
+                context: [
+                    'action' => 'updated',
+                    'changes' => $changes,
+                ],
+                target: $this->record,
+            );
+        }
+
+        $this->logPermissionAggregate($this->record->id, $this->previousPermissionCodes, $this->permissionPayload);
+    }
+
+    /**
+     * Compare $this->record's current attributes against the snapshot
+     * taken before save, returning only keys whose value actually
+     * changed and that aren't pure noise (updated_at).
+     *
+     * @return array<string, array{from: mixed, to: mixed}>
+     */
+    private function summariseRoleChanges(): array
+    {
+        $ignored = ['updated_at', 'created_at'];
+        $diff = [];
+
+        foreach ($this->record->getAttributes() as $key => $newValue) {
+            if (in_array($key, $ignored, true)) {
+                continue;
+            }
+
+            $oldValue = $this->previousRoleAttributes[$key] ?? null;
+
+            if ($oldValue === $newValue) {
+                continue;
+            }
+
+            $diff[$key] = ['from' => $oldValue, 'to' => $newValue];
+        }
+
+        return $diff;
+    }
+
+    /**
+     * @param  array<string, array{from: mixed, to: mixed}>  $changes
+     */
+    private function formatChanges(array $changes): string
+    {
+        $parts = [];
+
+        foreach ($changes as $key => $values) {
+            $parts[] = sprintf(
+                "%s='%s'→'%s'",
+                $key,
+                is_scalar($values['from']) ? $values['from'] : '—',
+                is_scalar($values['to']) ? $values['to'] : '—',
+            );
+        }
+
+        return implode(', ', $parts);
+    }
+
+    /**
+     * Emit a single aggregate `rbac.permissions` log entry summarising
+     * the permission delta for this save.
+     *
+     * @param  array<int, string>  $previous
+     * @param  array<int, array{code: string, checked: bool, parameters: ?array}>  $processed
+     */
+    private function logPermissionAggregate(int $roleId, array $previous, array $processed): void
+    {
+        $newSet = collect($processed)
+            ->filter(fn (array $p): bool => $p['checked'])
+            ->pluck('code')
+            ->all();
+
+        $added = array_values(array_diff($newSet, $previous));
+        $removed = array_values(array_diff($previous, $newSet));
+
+        if ($added === [] && $removed === []) {
+            return;
+        }
+
+        AStartLogger::log(
+            tag: 'rbac.permissions',
+            message: sprintf(
+                '%s rolünün yetkilerini güncelledi: eklenen [%s], kaldırılan [%s]',
+                AStartLogger::describeRecord($this->record),
+                implode(', ', $added) ?: '—',
+                implode(', ', $removed) ?: '—',
+            ),
+            context: [
+                'action' => 'updated',
+                'role_id' => $roleId,
+                'added' => $added,
+                'removed' => $removed,
+            ],
+            target: $this->record,
+        );
     }
 
     private function syncRolePermissions(int $roleId, array $processedPermissions): void
@@ -149,22 +284,32 @@ class EditRole extends EditRecord
 
     private function upsertPermission(int $roleId, string $code, bool $checked, ?array $parameters): void
     {
+        // Eloquent route keeps RolePermission's audit observer in the loop.
+        // For deletes we fetch first and call $row->delete() so the
+        // `deleted` event fires (mass deletes via builder do not).
         if ($checked) {
-            DB::table('role_permission')->updateOrInsert(
+            // `parameters` is array-cast on RolePermission, so pass the
+            // raw array — Eloquent handles JSON encoding. Manual
+            // json_encode() double-encodes and breaks aauth's
+            // PermissionAddedEvent which expects ?array.
+            RolePermission::query()->updateOrCreate(
                 [
                     'role_id' => $roleId,
                     'permission' => $code,
                 ],
                 [
-                    'parameters' => $parameters ? json_encode($parameters) : null,
+                    'parameters' => $parameters,
                 ]
             );
-        } else {
-            DB::table('role_permission')
-                ->where('role_id', $roleId)
-                ->where('permission', $code)
-                ->delete();
+
+            return;
         }
+
+        RolePermission::query()
+            ->where('role_id', $roleId)
+            ->where('permission', $code)
+            ->get()
+            ->each(fn (RolePermission $row) => $row->delete());
     }
 
     private function processPermissionsForSave(array $rawPermissions): array

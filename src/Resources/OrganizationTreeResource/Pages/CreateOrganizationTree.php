@@ -5,11 +5,13 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource\Pa
 use AuroraWebSoftware\FilamentAstart\Model\OrganizationNode;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationTreeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\LogsResourceMutations;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateOrganizationTree extends CreateRecord
 {
     use AStartPageLabels;
+    use LogsResourceMutations;
 
     protected static string $resource = OrganizationTreeResource::class;
 
@@ -38,6 +40,8 @@ class CreateOrganizationTree extends CreateRecord
 
         $record->path = trim($parentPath ? $parentPath . '/' : '') . $record->id;
         $record->save();
+
+        $this->logCreated($record, 'org.tree', 'organizasyon ağacı birimi');
     }
 
     protected function getRedirectUrl(): string

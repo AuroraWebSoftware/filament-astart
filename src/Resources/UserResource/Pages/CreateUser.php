@@ -6,8 +6,10 @@ use AuroraWebSoftware\FilamentAstart\Notifications\UserCredentialsNotification;
 use AuroraWebSoftware\FilamentAstart\Resources\UserResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
+use AuroraWebSoftware\FilamentAstart\Utils\AStartLogger;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Hash;
 
 class CreateUser extends CreateRecord
 {
@@ -34,7 +36,7 @@ class CreateUser extends CreateRecord
         if ($useRandomPassword && empty($data['password'])) {
             $length = config('filament-astart.user_creation.random_password_length', 16);
             $randomPassword = $this->generatePassword($length);
-            $data['password'] = \Illuminate\Support\Facades\Hash::make($randomPassword);
+            $data['password'] = Hash::make($randomPassword);
             $this->plainPassword = $randomPassword;
         } elseif (! empty($data['generated_password_display'])) {
             // Password was generated in form
@@ -43,7 +45,7 @@ class CreateUser extends CreateRecord
             if (! empty($data['password'])) {
                 $hashInfo = password_get_info($data['password']);
                 if ($hashInfo['algo'] === null) {
-                    $data['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+                    $data['password'] = Hash::make($data['password']);
                 }
             }
         }
@@ -80,6 +82,24 @@ class CreateUser extends CreateRecord
         if ($this->shouldSendEmail && $this->plainPassword) {
             $this->sendCredentialsEmail();
         }
+
+        $email = is_string($this->record->email ?? null) ? $this->record->email : null;
+
+        AStartLogger::log(
+            tag: 'user.lifecycle',
+            message: sprintf(
+                '%s%s adlı kullanıcıyı oluşturdu',
+                AStartLogger::describeRecord($this->record),
+                $email !== null ? sprintf(' (%s)', $email) : '',
+            ),
+            context: [
+                'action' => 'created',
+                'target_user_id' => $this->record->getKey(),
+                'target_user_name' => $this->record->name ?? null,
+                'target_user_email' => $email,
+            ],
+            target: $this->record,
+        );
     }
 
     /**

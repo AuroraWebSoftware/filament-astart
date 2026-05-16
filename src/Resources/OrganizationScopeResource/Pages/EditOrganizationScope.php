@@ -5,6 +5,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource\P
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\FilamentAstart\Resources\OrganizationScopeResource;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
+use AuroraWebSoftware\FilamentAstart\Traits\LogsResourceMutations;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -13,12 +14,25 @@ use Illuminate\Database\QueryException;
 class EditOrganizationScope extends EditRecord
 {
     use AStartPageLabels;
+    use LogsResourceMutations;
 
     protected static string $resource = OrganizationScopeResource::class;
 
     protected static ?string $resourceKey = 'organization_scope';
 
     protected static ?string $pageType = 'edit';
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $this->snapshotForLog($this->record);
+
+        return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        $this->logUpdated($this->record, 'org.scope', 'organizasyon kapsamı');
+    }
 
     protected function getHeaderActions(): array
     {
@@ -31,6 +45,7 @@ class EditOrganizationScope extends EditRecord
                 ->action(function (OrganizationScope $record, Action $action) {
                     try {
                         $name = $record->name;
+                        $this->logDeleted($record, 'org.scope', 'organizasyon kapsamı');
                         $record->delete();
 
                         Notification::make()
