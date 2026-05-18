@@ -4,8 +4,28 @@ All notable changes to `filament-astart` will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- Migration `2026_05_18_000000_add_avatar_path_to_users_table` ships
+  the `avatar_path` column the avatar feature relies on. Idempotent
+  and defensive — skips when the `users` table is missing or the
+  column already exists. Lets consumers run `php artisan migrate`
+  after `composer require` instead of writing the migration by hand.
+
 ### Fixed
 
+- ABAC: `AbacRuleBuilder` no longer declares two same-name `value`
+  fields (Select + TextInput) per condition. Filament's Repeater
+  state path management couldn't disambiguate them, which manifested
+  as the "Add block" button silently failing, top-level operator
+  changes spawning duplicate blocks, and blocks being un-deletable.
+  Replaced with a single `TextInput` whose `datalist()` surfaces the
+  registry options as autocomplete when present. The per-block group
+  operator was renamed `group_operator` so it no longer collides with
+  the top-level `logical_operator` state path. `AbacRuleTransformer`
+  and `HandlesAbacRules` read both keys for backward compatibility.
+  Hidden condition fields are explicitly `dehydrated(false)` when in
+  group mode so leftover values don't pollute the save payload.
 - ABAC: `AbacRuleTransformer::fromFormState()` now wraps the output in
   an outer array so `AAuthABACModelScope` can iterate it correctly
   (`foreach ($rules as $rule)` does not capture keys, so the doc-style

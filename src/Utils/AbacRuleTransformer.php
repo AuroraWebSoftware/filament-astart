@@ -11,7 +11,7 @@ namespace AuroraWebSoftware\FilamentAstart\Utils;
  *     'logical_operator' => '&&',
  *     'blocks' => [
  *         ['type' => 'condition', 'attribute' => 'status', 'operator' => '=', 'value' => 'active'],
- *         ['type' => 'group', 'logical_operator' => '||', 'conditions' => [
+ *         ['type' => 'group', 'group_operator' => '||', 'conditions' => [
  *             ['attribute' => 'region', 'operator' => '=', 'value' => 'EU'],
  *         ]],
  *     ],
@@ -253,7 +253,7 @@ class AbacRuleTransformer
 
         return [
             'type' => 'group',
-            'logical_operator' => $logicalOperator,
+            'group_operator' => $logicalOperator,
             'conditions' => $conditions,
         ];
     }
@@ -293,7 +293,12 @@ class AbacRuleTransformer
      */
     private static function blockToGroupNode(array $block): ?array
     {
-        $logicalOperator = $block['logical_operator'] ?? self::DEFAULT_LOGICAL_OPERATOR;
+        // Accept both `group_operator` (current schema) and the legacy
+        // `logical_operator` key so rules saved by older builder
+        // versions still round-trip without dropping the operator.
+        $logicalOperator = $block['group_operator']
+            ?? $block['logical_operator']
+            ?? self::DEFAULT_LOGICAL_OPERATOR;
 
         if (! in_array($logicalOperator, self::ALLOWED_LOGICAL_OPERATORS, true)) {
             $logicalOperator = self::DEFAULT_LOGICAL_OPERATOR;
