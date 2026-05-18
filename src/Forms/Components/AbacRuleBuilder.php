@@ -18,6 +18,16 @@ use Filament\Schemas\Components\Utilities\Set;
  * aauth `rules_json` shape on save. Two-level nesting is supported:
  * a top-level AND/OR plus optional sub-groups (depth = 2). Attribute
  * choices come from the registry whitelist in config/astart-auth.php.
+ *
+ * Design notes:
+ *   - `value` is always a TextInput. When the attribute has registered
+ *     options they show as an autocomplete datalist; otherwise the
+ *     field is free-text. Using a single field (instead of swapping
+ *     between Select / TextInput with the same name) avoids Filament
+ *     state path collisions that caused random "add block" misbehaviour.
+ *   - Hidden condition fields are marked `dehydrated(false)` so a
+ *     block of type=group does not carry leftover `operator` / `value`
+ *     into the save payload.
  */
 class AbacRuleBuilder
 {
@@ -45,7 +55,6 @@ class AbacRuleBuilder
                 ->addActionLabel(__('filament-astart::filament-astart.abac.add_block'))
                 ->collapsible()
                 ->reorderable()
-                ->defaultItems(0)
                 ->itemLabel(fn (array $state): ?string => self::buildBlockLabel($state))
                 ->schema([
                     Select::make('type')
@@ -61,8 +70,9 @@ class AbacRuleBuilder
                         ->label(__('filament-astart::filament-astart.abac.attribute'))
                         ->placeholder(__('filament-astart::filament-astart.abac.placeholder_attribute'))
                         ->options($attributeOptions)
-                        ->required()
+                        ->required(fn (Get $get): bool => $get('type') === 'condition')
                         ->visible(fn (Get $get): bool => $get('type') === 'condition')
+                        ->dehydrated(fn (Get $get): bool => $get('type') === 'condition')
                         ->live()
                         ->afterStateUpdated(fn (Set $set) => $set('value', null)),
 
@@ -70,31 +80,27 @@ class AbacRuleBuilder
                         ->label(__('filament-astart::filament-astart.abac.operator'))
                         ->placeholder(__('filament-astart::filament-astart.abac.placeholder_operator'))
                         ->options($operatorOptions)
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('type') === 'condition'),
-
-                    Select::make('value')
-                        ->label(__('filament-astart::filament-astart.abac.value'))
-                        ->placeholder(__('filament-astart::filament-astart.abac.placeholder_value'))
-                        ->options(fn (Get $get): array => self::valueOptionsFor($modelType, $get('attribute')))
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('type') === 'condition' && self::hasValueOptions($modelType, $get('attribute')))
-                        ->dehydrated(fn (Get $get): bool => $get('type') === 'condition' && self::hasValueOptions($modelType, $get('attribute'))),
+                        ->required(fn (Get $get): bool => $get('type') === 'condition')
+                        ->visible(fn (Get $get): bool => $get('type') === 'condition')
+                        ->dehydrated(fn (Get $get): bool => $get('type') === 'condition'),
 
                     TextInput::make('value')
                         ->label(__('filament-astart::filament-astart.abac.value'))
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('type') === 'condition' && ! self::hasValueOptions($modelType, $get('attribute')))
-                        ->dehydrated(fn (Get $get): bool => $get('type') === 'condition' && ! self::hasValueOptions($modelType, $get('attribute'))),
+                        ->placeholder(__('filament-astart::filament-astart.abac.placeholder_value'))
+                        ->datalist(fn (Get $get): array => array_values(self::valueOptionsFor($modelType, $get('attribute'))))
+                        ->required(fn (Get $get): bool => $get('type') === 'condition')
+                        ->visible(fn (Get $get): bool => $get('type') === 'condition')
+                        ->dehydrated(fn (Get $get): bool => $get('type') === 'condition'),
 
                     // ── group fields ────────────────────────────────────
-                    Select::make('logical_operator')
+                    Select::make('group_operator')
                         ->label(__('filament-astart::filament-astart.abac.group_operator'))
                         ->options($logicalOptions)
                         ->default('||')
-                        ->required()
+                        ->required(fn (Get $get): bool => $get('type') === 'group')
                         ->selectablePlaceholder(false)
-                        ->visible(fn (Get $get): bool => $get('type') === 'group'),
+                        ->visible(fn (Get $get): bool => $get('type') === 'group')
+                        ->dehydrated(fn (Get $get): bool => $get('type') === 'group'),
 
                     Repeater::make('conditions')
                         ->label(__('filament-astart::filament-astart.abac.conditions'))
@@ -103,6 +109,7 @@ class AbacRuleBuilder
                         ->reorderable()
                         ->defaultItems(1)
                         ->visible(fn (Get $get): bool => $get('type') === 'group')
+                        ->dehydrated(fn (Get $get): bool => $get('type') === 'group')
                         ->itemLabel(fn (array $state): ?string => self::buildConditionLabel($state))
                         ->schema([
                             Select::make('attribute')
@@ -119,19 +126,11 @@ class AbacRuleBuilder
                                 ->options($operatorOptions)
                                 ->required(),
 
-                            Select::make('value')
-                                ->label(__('filament-astart::filament-astart.abac.value'))
-                                ->placeholder(__('filament-astart::filament-astart.abac.placeholder_value'))
-                                ->options(fn (Get $get): array => self::valueOptionsFor($modelType, $get('attribute')))
-                                ->required()
-                                ->visible(fn (Get $get): bool => self::hasValueOptions($modelType, $get('attribute')))
-                                ->dehydrated(fn (Get $get): bool => self::hasValueOptions($modelType, $get('attribute'))),
-
                             TextInput::make('value')
                                 ->label(__('filament-astart::filament-astart.abac.value'))
-                                ->required()
-                                ->visible(fn (Get $get): bool => ! self::hasValueOptions($modelType, $get('attribute')))
-                                ->dehydrated(fn (Get $get): bool => ! self::hasValueOptions($modelType, $get('attribute'))),
+                                ->placeholder(__('filament-astart::filament-astart.abac.placeholder_value'))
+                                ->datalist(fn (Get $get): array => array_values(self::valueOptionsFor($modelType, $get('attribute'))))
+                                ->required(),
                         ]),
                 ]),
         ])->statePath($statePath ?? $modelType);
@@ -189,7 +188,7 @@ class AbacRuleBuilder
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, string>
      */
     private static function valueOptionsFor(string $modelType, mixed $attribute): array
     {
@@ -198,27 +197,15 @@ class AbacRuleBuilder
         }
 
         $options = AAuthUtil::getAbacAttributeOptions($modelType, $attribute) ?? [];
-
         $mapped = [];
 
         foreach ($options as $option) {
-            $key = is_scalar($option) ? (string) $option : null;
-
-            if ($key !== null) {
-                $mapped[$key] = $key;
+            if (is_scalar($option)) {
+                $mapped[] = (string) $option;
             }
         }
 
         return $mapped;
-    }
-
-    private static function hasValueOptions(string $modelType, mixed $attribute): bool
-    {
-        if (! is_string($attribute) || $attribute === '') {
-            return false;
-        }
-
-        return AAuthUtil::getAbacAttributeOptions($modelType, $attribute) !== null;
     }
 
     /**
@@ -231,7 +218,7 @@ class AbacRuleBuilder
         if ($type === 'group') {
             $count = is_array($state['conditions'] ?? null) ? count($state['conditions']) : 0;
 
-            return sprintf('[%s] (%d)', $state['logical_operator'] ?? '||', $count);
+            return sprintf('[%s] (%d)', $state['group_operator'] ?? '||', $count);
         }
 
         return self::buildConditionLabel($state);

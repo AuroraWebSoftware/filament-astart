@@ -204,6 +204,7 @@ class FilamentAstartServiceProvider extends PackageServiceProvider
             'create_astart_examples_table',
             '2025_05_17_143421_create_argraph_tables',
             '2026_05_12_000000_add_unique_index_to_role_model_abac_rules',
+            '2026_05_18_000000_add_avatar_path_to_users_table',
         ];
     }
 

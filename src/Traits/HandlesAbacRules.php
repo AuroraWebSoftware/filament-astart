@@ -207,7 +207,8 @@ trait HandlesAbacRules
 
         if ($type === 'group') {
             $errors = [];
-            $logicalOperator = $block['logical_operator'] ?? null;
+            // Accept both keys for backward compat with older form payloads.
+            $logicalOperator = $block['group_operator'] ?? $block['logical_operator'] ?? null;
 
             if (! in_array($logicalOperator, ['&&', '||'], true)) {
                 $errors[] = __('filament-astart::filament-astart.abac.errors.invalid_group_operator');
