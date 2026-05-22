@@ -2,6 +2,8 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Utils;
 
+use Illuminate\Support\Str;
+
 /**
  * Two-way translator between the Filament Repeater form state and the
  * aauth `rules_json` array format expected by RoleModelAbacRule.
@@ -81,7 +83,11 @@ class AbacRuleTransformer
             }
 
             if ($block !== null) {
-                $blocks[] = $block;
+                // UUID keys (not numeric indices) are required so Filament's
+                // Repeater can track items across add / delete / reorder.
+                // Numeric keys collide with wire:key on re-index, which
+                // duplicates rows and breaks deletion.
+                $blocks[(string) Str::uuid()] = $block;
             }
         }
 
@@ -243,7 +249,9 @@ class AbacRuleTransformer
 
             if ($condition !== null) {
                 unset($condition['type']);
-                $conditions[] = $condition;
+                // UUID keys for the nested repeater items too (same reason
+                // as the top-level blocks).
+                $conditions[(string) Str::uuid()] = $condition;
             }
         }
 
