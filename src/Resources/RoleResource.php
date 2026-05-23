@@ -5,7 +5,7 @@ namespace AuroraWebSoftware\FilamentAstart\Resources;
 use AuroraWebSoftware\AAuth\Models\OrganizationScope;
 use AuroraWebSoftware\AAuth\Models\Role;
 use AuroraWebSoftware\AAuth\Models\RolePermission;
-use AuroraWebSoftware\FilamentAstart\Forms\Components\AbacRuleBuilder;
+use AuroraWebSoftware\FilamentAstart\Forms\Components\AbacRuleField;
 use AuroraWebSoftware\FilamentAstart\Resources\RoleResource\Pages;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
@@ -203,7 +203,7 @@ class RoleResource extends Resource
                 ->collapsible()
                 ->collapsed(false)
                 ->schema([
-                    AbacRuleBuilder::make($modelType, "abac_rules.{$modelType}"),
+                    AbacRuleField::forModel($modelType, "abac_rules.{$modelType}"),
                 ]);
         }
 

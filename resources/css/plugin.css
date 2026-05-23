@@ -7,6 +7,206 @@
 @variant dark (&:where(.dark, .dark *));
 
 /* ============================================
+   ABAC Rule Builder (custom Alpine field)
+   Tamamen self-contained — hiçbir belirsiz Tailwind utility'sine
+   bağlı değil. Renkler Filament'ın runtime --primary-* / --danger-*
+   değişkenlerini fallback'le kullanır.
+   ============================================ */
+.fi-abac {
+    --abac-border: #e5e7eb;
+    --abac-bg: #ffffff;
+    --abac-bg-subtle: #f9fafb;
+    --abac-text: #111827;
+    --abac-text-muted: #6b7280;
+    --abac-primary: var(--primary-600, #2563eb);
+    --abac-primary-hover: var(--primary-500, #3b82f6);
+    --abac-danger: var(--danger-600, #dc2626);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--abac-border);
+    border-radius: 0.75rem;
+    background-color: var(--abac-bg);
+}
+:where(.dark) .fi-abac {
+    --abac-border: rgba(255, 255, 255, 0.1);
+    --abac-bg: rgba(255, 255, 255, 0.02);
+    --abac-bg-subtle: rgba(255, 255, 255, 0.05);
+    --abac-text: #f9fafb;
+    --abac-text-muted: #9ca3af;
+}
+
+.fi-abac-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+.fi-abac-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--abac-text);
+}
+.fi-abac-help {
+    font-size: 0.75rem;
+    color: var(--abac-text-muted);
+}
+
+/* Form controls — tutarlı boyut */
+.fi-abac-control {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--abac-text);
+    background-color: var(--abac-bg);
+    border: 1px solid var(--abac-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.fi-abac-control:focus {
+    outline: none;
+    border-color: var(--abac-primary);
+    box-shadow: 0 0 0 1px var(--abac-primary);
+}
+.fi-abac-control:hover {
+    border-color: var(--abac-primary-hover);
+}
+
+/* Block card */
+.fi-abac-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--abac-border);
+    border-left: 3px solid var(--abac-primary);
+    border-radius: 0.5rem;
+    background-color: var(--abac-bg-subtle);
+}
+.fi-abac-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.fi-abac-block-type {
+    max-width: 12rem;
+}
+.fi-abac-block-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--abac-primary);
+    background-color: color-mix(in srgb, var(--abac-primary) 12%, transparent);
+    border-radius: 9999px;
+}
+
+/* Condition rows */
+.fi-abac-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+@media (min-width: 640px) {
+    .fi-abac-row {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .fi-abac-row-group {
+        grid-template-columns: 1fr 1fr 1fr auto;
+        align-items: center;
+    }
+}
+
+/* Nested group */
+.fi-abac-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border: 1px dashed var(--abac-border);
+    border-radius: 0.5rem;
+}
+
+/* Buttons */
+.fi-abac-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.fi-abac-btn-primary {
+    background-color: var(--abac-primary);
+    color: #ffffff;
+}
+.fi-abac-btn-primary:hover {
+    background-color: var(--abac-primary-hover);
+}
+.fi-abac-btn-secondary {
+    background-color: transparent;
+    color: var(--abac-text);
+    border-color: var(--abac-border);
+}
+.fi-abac-btn-secondary:hover {
+    background-color: var(--abac-bg-subtle);
+}
+
+/* Link-style actions */
+.fi-abac-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--abac-primary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+.fi-abac-link:hover {
+    color: var(--abac-primary-hover);
+}
+.fi-abac-remove {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--abac-danger);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    white-space: nowrap;
+}
+.fi-abac-remove:hover {
+    opacity: 0.8;
+}
+
+/* Empty state */
+.fi-abac-empty {
+    padding: 1.25rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--abac-text-muted);
+    background-color: var(--abac-bg-subtle);
+    border-radius: 0.5rem;
+}
+
+/* Actions row */
+.fi-abac-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* ============================================
    Organization Tree Styles
    ============================================ */
 
