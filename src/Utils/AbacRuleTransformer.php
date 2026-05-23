@@ -2,8 +2,6 @@
 
 namespace AuroraWebSoftware\FilamentAstart\Utils;
 
-use Illuminate\Support\Str;
-
 /**
  * Two-way translator between the Filament Repeater form state and the
  * aauth `rules_json` array format expected by RoleModelAbacRule.
@@ -83,11 +81,12 @@ class AbacRuleTransformer
             }
 
             if ($block !== null) {
-                // UUID keys (not numeric indices) are required so Filament's
-                // Repeater can track items across add / delete / reorder.
-                // Numeric keys collide with wire:key on re-index, which
-                // duplicates rows and breaks deletion.
-                $blocks[(string) Str::uuid()] = $block;
+                // Plain indexed array — the custom Alpine builder expects
+                // `blocks` to be a JS array (Array.isArray) and assigns its
+                // own client-side `_uid` per item. Associative/UUID keys
+                // would serialise to a JS object and the builder would
+                // discard the loaded rules.
+                $blocks[] = $block;
             }
         }
 
@@ -249,9 +248,9 @@ class AbacRuleTransformer
 
             if ($condition !== null) {
                 unset($condition['type']);
-                // UUID keys for the nested repeater items too (same reason
-                // as the top-level blocks).
-                $conditions[(string) Str::uuid()] = $condition;
+                // Plain indexed array (see toFormState note) — Alpine
+                // expects a JS array and adds its own _uid.
+                $conditions[] = $condition;
             }
         }
 

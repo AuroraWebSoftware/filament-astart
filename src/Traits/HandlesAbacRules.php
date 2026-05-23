@@ -15,7 +15,7 @@ use Throwable;
 /**
  * Shared ABAC rule load/save logic for RoleResource pages
  * (CreateRole + EditRole). Bridges between the Filament form state
- * produced by AbacRuleBuilder and the aauth `role_model_abac_rules` table.
+ * produced by AbacRuleField and the aauth `role_model_abac_rules` table.
  */
 trait HandlesAbacRules
 {

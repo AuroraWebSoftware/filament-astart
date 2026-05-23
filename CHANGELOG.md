@@ -12,8 +12,35 @@ All notable changes to `filament-astart` will be documented in this file.
   column already exists. Lets consumers run `php artisan migrate`
   after `composer require` instead of writing the migration by hand.
 
+### Changed
+
+- ABAC builder styling is now fully self-contained in `plugin.css`
+  (`.fi-abac-*` classes with explicit sizing, colored buttons, dark
+  mode, and `var(--primary-*)` / `var(--danger-*)` accents with hex
+  fallbacks). No longer relies on Filament semantic color utilities
+  (`text-danger-600`, `bg-primary-600`) which aren't emitted by the
+  panel/plugin Tailwind builds and left controls unstyled. Run
+  `npm run build` (plugin) + `php artisan filament:assets` (app)
+  after updating.
+- ABAC rule builder rewritten as a **custom Alpine.js field**
+  (`AbacRuleField` + `forms.components.abac-rule-builder` view),
+  replacing the Filament Repeater-based `AbacRuleBuilder`. The rule
+  tree is now managed entirely client-side (add / remove / group
+  operations happen in the browser with no Livewire round-trips) and
+  entangled to the field state. This permanently resolves the
+  Repeater `wire:key` collisions that, in some environments, made
+  "Add block" duplicate or no-op items and blocked deletion. The
+  form-state shape is unchanged, so `AbacRuleTransformer` and
+  `HandlesAbacRules` validation are untouched.
+
 ### Fixed
 
+- ABAC: existing rules now load into the custom builder. `toFormState`
+  returns `blocks` / `conditions` as plain indexed arrays again (an
+  earlier UUID-keyed version, added for the old Filament Repeater,
+  serialised to a JS object — the Alpine builder's `Array.isArray`
+  guard then discarded the loaded rules). The Alpine field assigns its
+  own client-side `_uid` per item.
 - ABAC: `AbacRuleBuilder` no longer declares two same-name `value`
   fields (Select + TextInput) per condition. Filament's Repeater
   state path management couldn't disambiguate them, which manifested
