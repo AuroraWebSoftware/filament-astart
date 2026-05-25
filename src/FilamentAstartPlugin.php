@@ -102,10 +102,17 @@ class FilamentAstartPlugin implements Plugin
         $languageSwitchConfig = config('filament-astart.features.language_switch', []);
         if (($languageSwitchConfig['enabled'] ?? false) && class_exists(LanguageSwitch::class)) {
             LanguageSwitch::configureUsing(function (LanguageSwitch $switch) use ($languageSwitchConfig) {
-                $switch->locales($languageSwitchConfig['locales'] ?? ['en']);
+                $locales = $languageSwitchConfig['locales'] ?? ['en'];
+                $switch->locales($locales);
 
-                if ($languageSwitchConfig['flags'] ?? false) {
-                    $switch->flags();
+                // language-switch v4.3+ requires flags() to receive a
+                // locale => country-code map; the bare flags() call was removed.
+                $flags = $languageSwitchConfig['flags'] ?? false;
+
+                if (is_array($flags) && $flags !== []) {
+                    $switch->flags($flags);
+                } elseif ($flags === true) {
+                    $switch->flags(array_combine($locales, $locales));
                 }
 
                 if ($languageSwitchConfig['circular'] ?? false) {
@@ -120,19 +127,20 @@ class FilamentAstartPlugin implements Plugin
             $isEnabled = $panelSwitchConfig['enabled'] ?? false;
 
             PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) use ($panelSwitchConfig, $isEnabled) {
-                // Disabled ise gizle
-                if (! $isEnabled) {
-                    $panelSwitch->visible(false);
+                // panel-switch v3 derives visibility from the number of switchable
+                // panels (isVisible() === count(panels) >= 2) and no longer exposes
+                // a visible() setter. To hide the switcher we restrict it to the
+                // current panel only, which drops the count below the threshold.
+                $shouldHide = ! $isEnabled || ($panelSwitchConfig['visible'] ?? true) === false;
+
+                if ($shouldHide) {
+                    $panelSwitch->panels([filament()->getCurrentPanel()?->getId()]);
 
                     return;
                 }
 
                 if ($heading = ($panelSwitchConfig['modal_heading'] ?? null)) {
                     $panelSwitch->modalHeading($heading);
-                }
-
-                if (isset($panelSwitchConfig['visible'])) {
-                    $panelSwitch->visible($panelSwitchConfig['visible']);
                 }
             });
         }
