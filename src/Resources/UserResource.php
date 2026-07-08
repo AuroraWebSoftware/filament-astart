@@ -8,6 +8,7 @@ use AuroraWebSoftware\FilamentAstart\Resources\UserResource\RelationManagers\Use
 use AuroraWebSoftware\FilamentAstart\Traits\AStartNavigationGroup;
 use AuroraWebSoftware\FilamentAstart\Traits\AStartResourceAccessPolicy;
 use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
+use AuroraWebSoftware\FilamentAstart\Utils\UserCustomActions;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -372,6 +373,7 @@ class UserResource extends Resource
 
                 EditAction::make(),
 
+                ...UserCustomActions::for('table'),
             ])
             ->bulkActions([]);
     }
