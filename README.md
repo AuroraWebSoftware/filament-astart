@@ -223,6 +223,72 @@ whitelist are selectable. Saving an empty rule deletes the row so the
 global scope is not broken. See [`docs/ABAC_USAGE.md`](docs/ABAC_USAGE.md)
 for the full guide.
 
+### User Custom Actions (Dynamic Links)
+
+Config-driven links attached to the **User resource**. Each link points to a
+route declared in **your** host application (assignment, matching, etc.) and
+decides where it renders — the table row actions, the user detail (view) page,
+or both. The plugin declares no routes: if the target route is not registered
+the link is simply not rendered (no broken links).
+
+Define links under `user_actions` in `config/filament-astart.php`:
+
+```php
+'user_actions' => [
+    [
+        'key'        => 'assignment',            // action name & translation fallback
+        'placement'  => ['table', 'view'],       // ['table'], ['view'] or both
+        'route'      => 'admin.user-assignments', // host route name (must exist)
+        'params'     => ['user' => 'id'],        // route_param => record attribute
+        'query'      => [],                       // extra static query params (optional)
+        'label'      => 'Assignment',            // null => translation, then headline(key)
+        'icon'       => 'heroicon-o-arrows-right-left',
+        'color'      => 'info',
+        'new_tab'    => false,
+        'sort'       => 10,                       // order among custom actions
+        'permission' => null,                     // null=everyone, string=AAuth slug, or callable
+    ],
+],
+```
+
+The matching host route:
+
+```php
+Route::get('/admin/user-assignment/{user}', function (string $user) {
+    // ... your assignment / matching screen
+})->name('admin.user-assignments');
+```
+
+Run `php artisan config:clear` and the link appears on the User list rows and
+detail page. `params` are resolved with `data_get($record, ...)`, so nested
+attributes work too (e.g. `['team' => 'team.id']`).
+
+**Permission gate** (evaluated on every render via `->visible()`):
+
+| `permission` value | Result |
+|---|---|
+| `null` / `''` | Visible to everyone |
+| `'some_slug'` (string) | Visible when `AAuthUtil::can('some_slug')` (super-admin bypass included) |
+| `fn () => bool` (callable) | Visible per the closure's return value |
+
+When using a string permission, register it under `custom_permission` in
+`config/astart-auth.php` so it is selectable on the Role screen. The permission
+code is generated as `snake(group) . '_' . snake(action)`, so write the group
+and action separately to match your `permission` slug exactly:
+
+```php
+// code 'astart_user_assignment_access' — matches the config slug above
+'custom_permission' => [
+    'astart_user' => ['assignment_access'],
+],
+```
+
+Optionally add `filament-astart::permissions` translations for the group
+(`astart_user`) and permission (`astart_user_assignment_access`) keys so the
+Role screen shows friendly labels instead of the raw keys. Then grant the
+permission to the user's **active** role — AAuth's `can()` only checks the
+currently active role.
+
 ---
 
 ## ⚙️ Manual Publish Options

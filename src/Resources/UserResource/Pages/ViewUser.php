@@ -8,6 +8,7 @@ use AuroraWebSoftware\FilamentAstart\Traits\AStartPageLabels;
 use AuroraWebSoftware\FilamentAstart\Traits\HasFiLoginIntegration;
 use AuroraWebSoftware\FilamentAstart\Utils\AStartLogger;
 use AuroraWebSoftware\FilamentAstart\Utils\RoleAssignmentLogger;
+use AuroraWebSoftware\FilamentAstart\Utils\UserCustomActions;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Auth\Notifications\ResetPassword;
@@ -796,6 +797,11 @@ class ViewUser extends ViewRecord
                 $this->dispatch('close-modal', id: 'securityActions');
                 $this->js('window.location.reload()');
             });
+
+        // Host-configured dynamic user links (config: filament-astart.user_actions)
+        foreach (UserCustomActions::for('view') as $customAction) {
+            $actions[] = $customAction;
+        }
 
         return $actions;
     }
