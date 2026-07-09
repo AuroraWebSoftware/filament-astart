@@ -109,4 +109,42 @@ return [
         'force_send_credentials_email' => false,
         'force_password_reset' => false,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Custom Actions (Dynamic Links)
+    |--------------------------------------------------------------------------
+    | Extra, host-defined links attached to the User resource. Each entry points
+    | to a route declared in YOUR application (assignment, matching, etc.) and
+    | decides where it shows up: the table row actions, the detail (view) page,
+    | or both. If the route is not registered, the link is not rendered.
+    |
+    | Each definition supports:
+    |   key        Unique key (used for the action name & translation fallback)
+    |   placement  Where to render: ['table'], ['view'] or ['table', 'view']
+    |   enabled    Toggle the link on/off (default: true)
+    |   route      Host application route name (required, must exist)
+    |   params     route_param => record attribute, e.g. ['user' => 'id']
+    |   query      Extra static query parameters (optional)
+    |   label      Explicit label; null falls back to translation, then key
+    |   icon       Heroicon name (default: heroicon-o-link)
+    |   color      Filament color (default: gray)
+    |   new_tab    Open in a new browser tab (default: false)
+    |   sort       Order among the custom actions (default: 0)
+    |   permission Optional AAuth permission slug or callable; null = everyone
+    |
+    | Example:
+    | 'user_actions' => [
+    |     [
+    |         'key'        => 'assignment',
+    |         'placement'  => ['table', 'view'],
+    |         'route'      => 'admin.user-assignments',
+    |         'params'     => ['user' => 'id'],
+    |         'icon'       => 'heroicon-o-link',
+    |         'color'      => 'info',
+    |         'permission' => null,
+    |     ],
+    | ],
+    */
+    'user_actions' => [],
 ];

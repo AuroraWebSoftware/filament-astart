@@ -223,6 +223,39 @@ whitelist are selectable. Saving an empty rule deletes the row so the
 global scope is not broken. See [`docs/ABAC_USAGE.md`](docs/ABAC_USAGE.md)
 for the full guide.
 
+### User Custom Actions (Dynamic Links)
+
+Config-driven links attached to the **User resource** — rendered as table row
+actions and/or on the user detail (view) page. Each link points to a **named
+route in your host application** (assignment, matching, profile, etc.), maps
+record attributes to route parameters, and can be gated behind an AAuth
+permission. If the route is not registered, the link is silently hidden.
+
+> ⚠️ The `user_actions` key is **not** added to an already-published config on
+> update — add it to your published `config/filament-astart.php` manually.
+
+```php
+'user_actions' => [
+    [
+        'key'        => 'assignment',
+        'placement'  => ['table', 'view'],   // ['table'], ['view'] or both
+        'route'      => 'admin.user-assignments',
+        'params'     => ['user' => 'id'],     // route_param => record attribute
+        'label'      => 'Assignment / Matching',
+        'icon'       => 'heroicon-o-arrows-right-left',
+        'color'      => 'info',
+        'new_tab'    => true,
+        'sort'       => 10,
+        'permission' => null,                 // null = everyone, or an AAuth slug / callable
+    ],
+],
+```
+
+Both the table row and the detail page are driven by a single resolver
+(`UserCustomActions::for()`), so one definition works in both places. The full
+field reference is documented in the `user_actions` block comments inside
+`config/filament-astart.php`.
+
 ---
 
 ## ⚙️ Manual Publish Options
